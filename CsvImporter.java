@@ -39,7 +39,10 @@ public class CsvImporter {
         return students;
     }
 
-
+    /**
+     * Reads course codes from the CSV file.
+     * Skips the header row and returns a list of course codes.
+     */
     public static List<String> loadCoursesFromCsv(File csvFile) throws IOException {
         List<String> courseList = new ArrayList<>();
 
@@ -48,42 +51,52 @@ public class CsvImporter {
             boolean isHeader = true;
 
             while ((line = br.readLine()) != null) {
-                // Skip the header row
+                // Skip empty lines safely
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                // Skip the first header line
                 if (isHeader) {
                     isHeader = false;
                     continue;
                 }
 
-                if (!line.trim().isEmpty()) {
-                    courseList.add(line.trim());
-                }
+                courseList.add(line.trim());
             }
         }
         return courseList;
     }
 
-
+    /**
+     * Parses the attendance CSV to map Course Codes to Student IDs.
+     * Handles empty lines, single quotes, and the custom 2-line format.
+     */
     public static Map<String, List<String>> loadAttendanceFromCsv(File csvFile) throws IOException {
         Map<String, List<String>> attendanceMap = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            String courseLine;
+            String line;
 
-            // Iterate through the file handling the alternating line format
-            while ((courseLine = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
+                // Skip empty separator lines to maintain sync
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
 
-                // Line 1: Course Code
-                String courseCode = courseLine.trim();
+                // First non-empty line is the Course Code
+                String courseCode = line.trim();
 
-                // Line 2: List of Students (as a string)
+                // Next line is the Student List
                 String studentsLine = br.readLine();
 
-                if (studentsLine != null) {
+                if (studentsLine != null && !studentsLine.trim().isEmpty()) {
                     List<String> studentIds = new ArrayList<>();
 
-                    // Clean the format: ["2022...", "2023..."] -> 2022..., 2023...
+                    // Clean brackets [] and single/double quotes
                     String cleanLine = studentsLine.replace("[", "")
                             .replace("]", "")
+                            .replace("'", "")
                             .replace("\"", "");
 
                     String[] ids = cleanLine.split(",");
