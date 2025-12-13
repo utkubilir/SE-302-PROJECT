@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.examplanner.ui.MainController">
+   
+   <!-- Sidebar -->
+   <left>
+      <VBox fx:id="sidebar" prefWidth="250.0" styleClass="sidebar" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+               <Label styleClass="app-title" text="Exam Planner" />
+            </HBox>
+            
+            <VBox spacing="5">
+               <Button fx:id="btnDataImport" maxWidth="Infinity" mnemonicParsing="false" onAction="#showDataImport" styleClass="nav-button, active" text="Data Import" />
+                <Button fx:id="btnDashboard" maxWidth="Infinity" mnemonicParsing="false" onAction="#showDashboard" styleClass="nav-button" text="Dashboard" />
+               <Button fx:id="btnTimetable" maxWidth="Infinity" mnemonicParsing="false" onAction="#showTimetable" styleClass="nav-button" text="Timetable" />
+               <Button fx:id="btnFilter" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleFilter" styleClass="nav-button" text="Filter / Search" />
+               <Separator />
+               <Button fx:id="btnStudentPortal" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleStudentPortal" styleClass="nav-button" text="Student Portal (Login)" />
+            </VBox>
+            
+            <Region VBox.vgrow="ALWAYS" />
+            
+            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleExit" styleClass="nav-button" text="Exit" />
+         </children>
+      </VBox>
+   </left>
+
+   <!-- Main Content Area -->
+   <center>
+      <StackPane styleClass="content-area" BorderPane.alignment="CENTER">
+         
+         <!-- Data Import View -->
+         <VBox fx:id="viewDataImport" spacing="20.0">
+            <children>
+               <VBox>
+                  <Label styleClass="section-title" text="Data Import" />
+                  <Label styleClass="section-subtitle" text="Import required data files to begin" />
+               </VBox>
+
+               <VBox spacing="15">
+                  <!-- Courses Card -->
+                  <HBox styleClass="card" onMouseClicked="#handleLoadCourses" alignment="CENTER_LEFT" spacing="15">
+                     <Label text="📄" style="-fx-font-size: 24px;"/>
+                     <VBox>
+                        <Label styleClass="card-title" text="Courses" />
+                        <Label fx:id="lblCoursesStatus" styleClass="card-subtitle" text="courses.csv • Not loaded" />
+                     </VBox>
+                  </HBox>
+
+                  <!-- Students Card -->
+                  <HBox styleClass="card" onMouseClicked="#handleLoadStudents" alignment="CENTER_LEFT" spacing="15">
+                     <Label text="🎓" style="-fx-font-size: 24px;"/>
+                     <VBox>
+                        <Label styleClass="card-title" text="Students" />
+                        <Label fx:id="lblStudentsStatus" styleClass="card-subtitle" text="students.csv • Not loaded" />
+                     </VBox>
+                  </HBox>
+
+                  <!-- Classrooms Card -->
+                  <HBox styleClass="card" onMouseClicked="#handleLoadClassrooms" alignment="CENTER_LEFT" spacing="15">
+                     <Label text="🏢" style="-fx-font-size: 24px;"/>
+                     <VBox>
+                        <Label styleClass="card-title" text="Classrooms" />
+                        <Label fx:id="lblClassroomsStatus" styleClass="card-subtitle" text="rooms.csv • Not loaded" />
+                     </VBox>
+                  </HBox>
+
+                  <!-- Attendance Card -->
+                  <HBox styleClass="card" onMouseClicked="#handleLoadAttendance" alignment="CENTER_LEFT" spacing="15">
+                     <Label text="👥" style="-fx-font-size: 24px;"/>
+                     <VBox>
+                        <Label styleClass="card-title" text="Attendance" />
+                        <Label fx:id="lblAttendanceStatus" styleClass="card-subtitle" text="attendance.csv • Not loaded" />
+                     </VBox>
+                  </HBox>
+               </VBox>
+
+               <Region VBox.vgrow="ALWAYS" />
+
+               <Button fx:id="btnGenerateDataImport" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate Timetable" />
+            </children>
+            <padding>
+               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+         </VBox>
+
+         <!-- Timetable View -->
+         <VBox fx:id="viewTimetable" spacing="20.0" visible="false">
+            <children>
+               <HBox alignment="CENTER_LEFT" spacing="20">
+                   <Button text="← Back" onAction="#showDataImport" styleClass="secondary-button" />
+                  <VBox>
+                     <Label styleClass="section-title" text="Exam Schedule" />
+                     <Label styleClass="section-subtitle" text="December 2024 - Final Exams" />
+                  </VBox>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <javafx.scene.control.CheckBox fx:id="chkStrictConstraints" text="Strict Mode (2h Gap)" style="-fx-text-fill: -fx-color-text-secondary; -fx-alignment: center;" />
+                  <Region prefWidth="10" />
+                  <Button fx:id="btnToolbarFilter" mnemonicParsing="false" onAction="#handleFilter" styleClass="secondary-button" text="Filters" />
+                  <Button fx:id="btnConflicts" mnemonicParsing="false" onAction="#handleConflicts" styleClass="secondary-button" text="Conflicts" />
+                  <Button fx:id="btnBlackoutDates" mnemonicParsing="false" onAction="#handleBlackoutDatesConfig" styleClass="secondary-button" text="Blackout Dates" />
+                  <Button fx:id="btnExport" mnemonicParsing="false" onAction="#handleExport" styleClass="secondary-button" text="Export CSV" />
+                  <Button fx:id="btnGenerateTimetable" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate Timetable" />
+               </HBox>
+
+               <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                  <content>
+                     <GridPane fx:id="timetableGrid" styleClass="timetable-grid">
+                        <!-- Grid content will be generated dynamically -->
+                     </GridPane>
+                  </content>
+               </ScrollPane>
+            </children>
+            <padding>
+               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+         </VBox>
+
+         <!-- Dashboard View -->
+         <VBox fx:id="viewDashboard" spacing="20.0" visible="false">
+             <padding>
+                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+             </padding>
+             <children>
+                 <Label styleClass="section-title" text="Analytics Dashboard" />
+                 <Label styleClass="section-subtitle" text="Schedule Insights" />
+                 
+                 <HBox spacing="20" VBox.vgrow="ALWAYS">
+                     <VBox styleClass="card" HBox.hgrow="ALWAYS">
+                         <Label styleClass="card-title" text="Exams Per Day" />
+                         <javafx.scene.chart.BarChart fx:id="chartExamsPerDay">
+                             <xAxis>
+                                 <javafx.scene.chart.CategoryAxis label="Date" />
+                             </xAxis>
+                             <yAxis>
+                                 <javafx.scene.chart.NumberAxis label="Count" />
+                             </yAxis>
+                         </javafx.scene.chart.BarChart>
+                     </VBox>
+                     
+                     <VBox styleClass="card" HBox.hgrow="ALWAYS">
+                         <Label styleClass="card-title" text="Room Utilization" />
+                         <javafx.scene.chart.PieChart fx:id="chartRoomUsage" />
+                     </VBox>
+                 </HBox>
+             </children>
+         </VBox>
+
+      </StackPane>
+   </center>
+   
+</BorderPane>
