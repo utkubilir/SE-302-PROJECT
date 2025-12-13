@@ -1,4 +1,6 @@
-package com.example.studentdb;
+package com.examplanner.services;
+
+import com.examplanner.domain.Student;
 
 import java.io.BufferedReader;
 import java.io.File;

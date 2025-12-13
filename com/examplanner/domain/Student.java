@@ -1,4 +1,4 @@
-package com.example.studentdb;
+package com.examplanner.domain;
 
 public class Student {
     private String studentId;

@@ -1,4 +1,6 @@
-package com.example.studentdb;
+package com.examplanner.persistence;
+
+import com.examplanner.domain.Student;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -1,5 +1,8 @@
-package com.example.studentdb;
+package com.examplanner.ui;
 
+import com.examplanner.domain.Student;
+import com.examplanner.persistence.DatabaseManager;
+import com.examplanner.services.CsvImporter;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

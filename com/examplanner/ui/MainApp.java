@@ -14,7 +14,7 @@ public class MainApp extends Application {
         try {
 
             com.examplanner.persistence.DatabaseManager.initializeDatabase();
-            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("MainView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("com/examplanner/ui/MainView.fxml"));
             scene = new Scene(fxmlLoader.load(), 1200, 800);
             stage.setScene(scene);
             stage.setTitle("Exam Timetable Planner");
