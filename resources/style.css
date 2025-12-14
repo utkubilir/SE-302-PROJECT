@@ -1,0 +1,93 @@
+
+.root {
+    -fx-color-primary: #8B5CF6;
+    -fx-color-primary-light: #EDE9FE;
+    -fx-color-text: #1F2937;
+    -fx-color-text-secondary: #6B7280;
+    -fx-color-bg: #FFFFFF;
+    -fx-color-border: #E5E7EB;
+    -fx-color-success: #10B981;
+    -fx-color-warning: #F59E0B;
+    -fx-color-error: #EF4444;
+
+    -fx-font-family: 'System';
+    -fx-background-color: -fx-color-bg;
+}
+
+.sidebar {
+    -fx-background-color: white;
+    -fx-border-color: transparent -fx-color-border transparent transparent;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+}
+
+.app-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-color-text;
+    -fx-padding: 0 0 20 0;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-color-text-secondary;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 14px;
+    -fx-padding: 10 15;
+    -fx-cursor: hand;
+    -fx-background-radius: 8;
+}
+
+.nav-button:hover {
+    -fx-background-color: -fx-color-primary-light;
+    -fx-text-fill: -fx-color-primary;
+}
+
+.nav-button.active {
+    -fx-background-color: -fx-color-primary-light;
+    -fx-text-fill: -fx-color-primary;
+    -fx-font-weight: bold;
+}
+
+.content-area {
+    -fx-padding: 30;
+    -fx-background-color: #F9FAFB;
+}
+
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-color-text;
+}
+
+.section-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-color-text-secondary;
+    -fx-padding: 5 0 20 0;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 10, 0, 0, 4);
+    -fx-padding: 20;
+    -fx-border-color: -fx-color-border;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+}
+
+.card:hover {
+    -fx-border-color: -fx-color-primary;
+}
+
+.card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-color-text;
+}
+
+.card-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-color-text-secondary;
+}
