@@ -14,15 +14,13 @@ public class ConstraintChecker {
 
     public boolean checkAll(Exam candidateExam, ScheduleState state) {
         if (!isWithinTimeWindow(candidateExam.getSlot())) return false;
-
         List<Student> students = state.getStudentsForCourse(candidateExam.getCourse().getCode());
         if (students.size() > candidateExam.getClassroom().getCapacity()) return false;
         if (!isClassroomAvailable(candidateExam.getClassroom(), candidateExam.getSlot(), state.getExams())) return false;
 
         for (Student s : students) {
-            if (violatesDailyLimit(s, candidateExam.getSlot(), state)) {
-                return false;
-            }
+            if (violatesDailyLimit(s, candidateExam.getSlot(), state)) return false;
+            if (!hasMinimumGap(s, candidateExam.getSlot(), state)) return false;
         }
         return true;
     }
@@ -44,4 +42,15 @@ public class ConstraintChecker {
         int count = state.getExamsCountForStudentDate(student.getId(), slot.getDate());
         return count >= maxExamsPerDay;
     }
+    public boolean hasMinimumGap(Student student, ExamSlot slot, ScheduleState state) {
+        List<Exam> dayExams = state.getExamsForStudentDate(student.getId(), slot.getDate());
+        for (Exam existing : dayExams) {
+            long gap1 = Duration.between(existing.getSlot().getEndTime(), slot.getStartTime()).toMinutes();
+            long gap2 = Duration.between(slot.getEndTime(), existing.getSlot().getStartTime()).toMinutes();
+            if (gap1 >= 0 && gap1 < minGapMinutes) return false;
+            if (gap2 >= 0 && gap2 < minGapMinutes) return false;
+        }
+        return true;
+    }
+
 }
