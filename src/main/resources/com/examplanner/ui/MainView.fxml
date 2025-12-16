@@ -119,6 +119,7 @@
                   <Button fx:id="btnToolbarFilter" mnemonicParsing="false" onAction="#handleFilter" styleClass="secondary-button" text="Filters" />
                   <Button fx:id="btnConflicts" mnemonicParsing="false" onAction="#handleConflicts" styleClass="secondary-button" text="Conflicts" />
                   <Button fx:id="btnExport" mnemonicParsing="false" onAction="#handleExport" styleClass="secondary-button" text="Export CSV" />
+                  <Button fx:id="btnExportPdf" mnemonicParsing="false" onAction="#handleExportPdf" styleClass="secondary-button" text="Export PDF" />
                   <Button fx:id="btnGenerateTimetable" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate Timetable" />
                </HBox>
 

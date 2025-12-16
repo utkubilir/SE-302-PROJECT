@@ -581,6 +581,116 @@ public class MainController {
     }
 
     @FXML
+    private void handleExportPdf() {
+        if (currentTimetable == null || currentTimetable.getExams().isEmpty()) {
+            showError("No Timetable", "Nothing to export.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export Timetable to PDF");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+        fileChooser.setInitialFileName("timetable_export.pdf");
+        File file = fileChooser.showSaveDialog(btnTimetable.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                exportToPdf(file);
+                showInformation("Export Successful", "Timetable exported to " + file.getName());
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Export Failed", "Could not save PDF: " + e.getMessage());
+            }
+        }
+    }
+
+    private void exportToPdf(File file) throws Exception {
+        com.itextpdf.kernel.pdf.PdfWriter writer = new com.itextpdf.kernel.pdf.PdfWriter(file);
+        com.itextpdf.kernel.pdf.PdfDocument pdf = new com.itextpdf.kernel.pdf.PdfDocument(writer);
+        com.itextpdf.layout.Document document = new com.itextpdf.layout.Document(pdf,
+                com.itextpdf.kernel.geom.PageSize.A4);
+        document.setMargins(40, 40, 40, 40);
+
+        // Title
+        com.itextpdf.layout.element.Paragraph title = new com.itextpdf.layout.element.Paragraph("Exam Timetable")
+                .setFontSize(24)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(10);
+        document.add(title);
+
+        // Subtitle
+        com.itextpdf.layout.element.Paragraph subtitle = new com.itextpdf.layout.element.Paragraph(
+                "Generated on " + LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM d, yyyy")))
+                .setFontSize(12)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(20);
+        document.add(subtitle);
+
+        // Create table
+        float[] columnWidths = { 100f, 80f, 80f, 150f, 80f };
+        com.itextpdf.layout.element.Table table = new com.itextpdf.layout.element.Table(columnWidths);
+        table.setWidth(com.itextpdf.layout.properties.UnitValue.createPercentValue(100));
+
+        // Header cells with styling
+        com.itextpdf.kernel.colors.Color headerColor = new com.itextpdf.kernel.colors.DeviceRgb(139, 92, 246);
+        String[] headers = { "Date", "Start", "End", "Course", "Room" };
+        for (String header : headers) {
+            com.itextpdf.layout.element.Cell cell = new com.itextpdf.layout.element.Cell()
+                    .add(new com.itextpdf.layout.element.Paragraph(header).setBold())
+                    .setBackgroundColor(headerColor)
+                    .setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE)
+                    .setPadding(8)
+                    .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+            table.addHeaderCell(cell);
+        }
+
+        // Sort exams
+        List<Exam> sortedExams = new ArrayList<>(currentTimetable.getExams());
+        sortedExams.sort(Comparator.comparing((Exam e) -> e.getSlot().getDate())
+                .thenComparing(e -> e.getSlot().getStartTime()));
+
+        // Data rows
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("MMM d, yyyy");
+        DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
+        com.itextpdf.kernel.colors.Color altRowColor = new com.itextpdf.kernel.colors.DeviceRgb(249, 250, 251);
+
+        int rowIndex = 0;
+        for (Exam exam : sortedExams) {
+            com.itextpdf.kernel.colors.Color rowColor = (rowIndex % 2 == 0)
+                    ? com.itextpdf.kernel.colors.ColorConstants.WHITE
+                    : altRowColor;
+
+            table.addCell(createCell(exam.getSlot().getDate().format(dateFmt), rowColor));
+            table.addCell(createCell(exam.getSlot().getStartTime().format(timeFmt), rowColor));
+            table.addCell(createCell(exam.getSlot().getEndTime().format(timeFmt), rowColor));
+            table.addCell(createCell(exam.getCourse().getCode() + " - " + exam.getCourse().getName(), rowColor));
+            table.addCell(createCell(exam.getClassroom().getName(), rowColor));
+            rowIndex++;
+        }
+
+        document.add(table);
+
+        // Footer
+        com.itextpdf.layout.element.Paragraph footer = new com.itextpdf.layout.element.Paragraph(
+                "Total Exams: " + sortedExams.size())
+                .setFontSize(10)
+                .setMarginTop(20)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.RIGHT);
+        document.add(footer);
+
+        document.close();
+    }
+
+    private com.itextpdf.layout.element.Cell createCell(String content, com.itextpdf.kernel.colors.Color bgColor) {
+        return new com.itextpdf.layout.element.Cell()
+                .add(new com.itextpdf.layout.element.Paragraph(content).setFontSize(10))
+                .setBackgroundColor(bgColor)
+                .setPadding(6)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.LEFT);
+    }
+
+    @FXML
     private void handleConflicts() {
         if (currentTimetable == null) {
             showError("No Timetable", "Please generate a timetable first.");
