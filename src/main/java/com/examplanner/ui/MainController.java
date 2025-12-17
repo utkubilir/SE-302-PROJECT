@@ -100,7 +100,7 @@ public class MainController {
     @FXML
     private TableColumn<Exam, String> colCourseCode;
     @FXML
-    private TableColumn<Exam, Integer> colDay;
+    private TableColumn<Exam, String> colDay;
     @FXML
     private TableColumn<Exam, String> colTimeSlot;
     @FXML
@@ -109,6 +109,9 @@ public class MainController {
     private TableColumn<Exam, Integer> colStudents;
     @FXML
     private TableColumn<Exam, Void> colActions;
+
+    @FXML
+    private javafx.scene.control.TextField txtCourseSearch;
 
     @FXML
     private javafx.scene.control.ProgressBar progressBar;
@@ -133,6 +136,13 @@ public class MainController {
     public void initialize() {
         constraintChecker.setMinGapMinutes(180); // Default to requirements
         showDataImport();
+
+        // Setup course search listener
+        if (txtCourseSearch != null) {
+            txtCourseSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+                filterTableByCourseCode(newValue);
+            });
+        }
 
         // Load data from DB
         List<Course> loadedCourses = repository.loadCourses();
@@ -171,6 +181,29 @@ public class MainController {
                     refreshTimetable();
                 }
             }
+        }
+    }
+
+    private void filterTableByCourseCode(String searchText) {
+        if (currentTimetable == null || currentTimetable.getExams().isEmpty()) {
+            return;
+        }
+
+        if (searchText == null || searchText.trim().isEmpty()) {
+            // Show all exams
+            List<Exam> sortedExams = new ArrayList<>(currentTimetable.getExams());
+            sortedExams.sort(Comparator.comparing((Exam e) -> e.getSlot().getDate())
+                    .thenComparing(e -> e.getSlot().getStartTime()));
+            examTableView.setItems(FXCollections.observableArrayList(sortedExams));
+        } else {
+            // Filter by course code
+            String lowerSearch = searchText.toLowerCase().trim();
+            List<Exam> filteredExams = currentTimetable.getExams().stream()
+                    .filter(e -> e.getCourse().getCode().toLowerCase().contains(lowerSearch))
+                    .sorted(Comparator.comparing((Exam e) -> e.getSlot().getDate())
+                            .thenComparing(e -> e.getSlot().getStartTime()))
+                    .collect(Collectors.toList());
+            examTableView.setItems(FXCollections.observableArrayList(filteredExams));
         }
     }
 
@@ -593,23 +626,8 @@ public class MainController {
             return;
         }
 
-        List<String> choices = new ArrayList<>();
-        choices.add("Student");
-        choices.add("Course");
-
-        javafx.scene.control.ChoiceDialog<String> dialog = new javafx.scene.control.ChoiceDialog<>("Student", choices);
-        dialog.setTitle("Filter Timetable");
-        dialog.setHeaderText("Select Filter Type");
-        dialog.setContentText("Choose what to filter by:");
-
-        java.util.Optional<String> result = dialog.showAndWait();
-        result.ifPresent(type -> {
-            if (type.equals("Student")) {
-                filterByStudent();
-            } else {
-                filterByCourse();
-            }
-        });
+        // Directly show student filter (Course filter is now in the table search bar)
+        filterByStudent();
     }
 
     private void filterByStudent() {
@@ -1199,6 +1217,7 @@ public class MainController {
         examTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // Find the start date for day numbering
         LocalDate startDate = currentTimetable.getExams().stream()
@@ -1216,11 +1235,10 @@ public class MainController {
         colCourseCode
                 .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCourse().getCode()));
 
-        // Day column
+        // Date column (shows actual date, not day number)
         colDay.setCellValueFactory(cellData -> {
             LocalDate examDate = cellData.getValue().getSlot().getDate();
-            int dayNum = (int) java.time.temporal.ChronoUnit.DAYS.between(startDate, examDate) + 1;
-            return new SimpleIntegerProperty(dayNum).asObject();
+            return new SimpleStringProperty(examDate.format(dateFmt));
         });
 
         // Time Slot column
@@ -1249,7 +1267,17 @@ public class MainController {
             private final Button editBtn = new Button("Edit");
             {
                 editBtn.setStyle(
-                        "-fx-background-color: #F59E0B; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 4;");
+                        "-fx-background-color: transparent; -fx-text-fill: #8B5CF6; -fx-cursor: hand; " +
+                                "-fx-border-color: #8B5CF6; -fx-border-radius: 4; -fx-background-radius: 4; " +
+                                "-fx-font-size: 14px; -fx-padding: 4 10;");
+                editBtn.setOnMouseEntered(e -> editBtn.setStyle(
+                        "-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-cursor: hand; " +
+                                "-fx-border-color: #8B5CF6; -fx-border-radius: 4; -fx-background-radius: 4; " +
+                                "-fx-font-size: 14px; -fx-padding: 4 10;"));
+                editBtn.setOnMouseExited(e -> editBtn.setStyle(
+                        "-fx-background-color: transparent; -fx-text-fill: #8B5CF6; -fx-cursor: hand; " +
+                                "-fx-border-color: #8B5CF6; -fx-border-radius: 4; -fx-background-radius: 4; " +
+                                "-fx-font-size: 14px; -fx-padding: 4 10;"));
                 editBtn.setOnAction(event -> {
                     Exam exam = getTableView().getItems().get(getIndex());
                     showExamDetails(exam);
