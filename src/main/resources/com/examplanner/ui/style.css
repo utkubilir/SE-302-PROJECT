@@ -702,3 +702,536 @@
 .dark-mode .student-list-view .list-cell:even {
     -fx-background-color: #111827;
 }
+
+/* ===== DARK MODE - TEXT FIELDS & INPUTS ===== */
+.dark-mode .text-field,
+.dark-mode .text-area,
+.dark-mode .password-field {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+    -fx-border-color: #374151;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-prompt-text-fill: #6B7280;
+}
+
+.dark-mode .text-field:focused,
+.dark-mode .text-area:focused,
+.dark-mode .password-field:focused {
+    -fx-border-color: #8B5CF6;
+    -fx-background-color: #111827;
+}
+
+/* ===== DARK MODE - COMBO BOX & CHOICE BOX ===== */
+.dark-mode .combo-box,
+.dark-mode .choice-box {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.dark-mode .combo-box .list-cell,
+.dark-mode .choice-box .list-cell {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .combo-box-popup .list-view {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .combo-box-popup .list-cell {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .combo-box-popup .list-cell:hover {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .combo-box-popup .list-cell:selected {
+    -fx-background-color: #3B2D5C;
+    -fx-text-fill: #A78BFA;
+}
+
+/* ===== DARK MODE - DATE PICKER ===== */
+.dark-mode .date-picker {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.dark-mode .date-picker .text-field {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .date-picker-popup {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .date-picker-popup .month-year-pane {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .date-picker-popup .month-year-pane .label {
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .date-picker-popup .spinner {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .date-picker-popup .spinner .button {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .date-picker-popup .day-cell {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .date-picker-popup .day-cell:hover {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .date-picker-popup .selected {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+}
+
+.dark-mode .date-picker-popup .today {
+    -fx-background-color: #3B2D5C;
+    -fx-text-fill: #A78BFA;
+}
+
+.dark-mode .date-picker-popup .week-number-cell {
+    -fx-text-fill: #6B7280;
+}
+
+.dark-mode .date-picker-popup .day-name-cell {
+    -fx-text-fill: #9CA3AF;
+}
+
+/* ===== DARK MODE - SCROLL PANE ===== */
+.dark-mode .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .scroll-bar {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .scroll-bar .track {
+    -fx-background-color: #1F2937;
+    -fx-border-color: transparent;
+}
+
+.dark-mode .scroll-bar .thumb {
+    -fx-background-color: #4B5563;
+    -fx-background-radius: 4;
+}
+
+.dark-mode .scroll-bar .thumb:hover {
+    -fx-background-color: #6B7280;
+}
+
+.dark-mode .scroll-bar .increment-button,
+.dark-mode .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .scroll-bar .increment-arrow,
+.dark-mode .scroll-bar .decrement-arrow {
+    -fx-background-color: #6B7280;
+}
+
+/* ===== DARK MODE - SEPARATOR ===== */
+.dark-mode .separator .line {
+    -fx-border-color: #374151;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ===== DARK MODE - CHARTS ===== */
+.dark-mode .chart {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .chart-plot-background {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .chart-vertical-grid-lines {
+    -fx-stroke: #374151;
+}
+
+.dark-mode .chart-horizontal-grid-lines {
+    -fx-stroke: #374151;
+}
+
+.dark-mode .chart-alternative-row-fill {
+    -fx-fill: #111827;
+    -fx-stroke: transparent;
+}
+
+.dark-mode .chart-vertical-zero-line,
+.dark-mode .chart-horizontal-zero-line {
+    -fx-stroke: #4B5563;
+}
+
+.dark-mode .axis {
+    -fx-tick-label-fill: #9CA3AF;
+}
+
+.dark-mode .axis-label {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .chart-legend {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .chart-legend-item {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .chart-bar {
+    -fx-bar-fill: #8B5CF6;
+}
+
+.dark-mode .chart-pie {
+    -fx-border-color: #1F2937;
+}
+
+.dark-mode .chart-pie-label {
+    -fx-fill: #D1D5DB;
+}
+
+.dark-mode .chart-pie-label-line {
+    -fx-stroke: #6B7280;
+}
+
+/* ===== DARK MODE - TITLED PANE ===== */
+.dark-mode .titled-pane {
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .titled-pane>.title {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .titled-pane>.title>.arrow-button>.arrow {
+    -fx-background-color: #9CA3AF;
+}
+
+.dark-mode .titled-pane>.content {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+/* ===== DARK MODE - TOOLTIP ===== */
+.dark-mode .tooltip {
+    -fx-background-color: #374151;
+    -fx-text-fill: #F9FAFB;
+    -fx-border-color: #4B5563;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 2);
+}
+
+/* ===== DARK MODE - DIALOG PANE ===== */
+.dark-mode .dialog-pane {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .dialog-pane>.header-panel {
+    -fx-background-color: #111827;
+}
+
+.dark-mode .dialog-pane>.header-panel>.label {
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .dialog-pane>.content.label {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .dialog-pane>.button-bar>.container {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .dialog-pane .button {
+    -fx-background-color: #374151;
+    -fx-text-fill: #F9FAFB;
+    -fx-border-color: #4B5563;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.dark-mode .dialog-pane .button:hover {
+    -fx-background-color: #4B5563;
+}
+
+.dark-mode .dialog-pane .button:default {
+    -fx-background-color: #8B5CF6;
+    -fx-text-fill: white;
+    -fx-border-color: #8B5CF6;
+}
+
+.dark-mode .dialog-pane .button:default:hover {
+    -fx-background-color: #7C3AED;
+}
+
+.dark-mode .dialog-pane .button:cancel {
+    -fx-background-color: #374151;
+    -fx-text-fill: #F87171;
+    -fx-border-color: #F87171;
+}
+
+/* ===== DARK MODE - ALERT ===== */
+.dark-mode .alert {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .alert .dialog-pane {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .alert .dialog-pane>.graphic-container {
+    -fx-background-color: #1F2937;
+}
+
+/* ===== DARK MODE - LIST VIEW ===== */
+.dark-mode .list-view {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .list-view .list-cell {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .list-view .list-cell:even {
+    -fx-background-color: #111827;
+}
+
+.dark-mode .list-view .list-cell:hover {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .list-view .list-cell:selected {
+    -fx-background-color: #3B2D5C;
+    -fx-text-fill: #A78BFA;
+}
+
+/* ===== DARK MODE - TAB PANE ===== */
+.dark-mode .tab-pane {
+    -fx-background-color: #111827;
+}
+
+.dark-mode .tab-pane>.tab-header-area {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .tab-pane>.tab-header-area>.tab-header-background {
+    -fx-background-color: #1F2937;
+    -fx-border-color: transparent transparent #374151 transparent;
+}
+
+.dark-mode .tab-pane .tab {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .tab-pane .tab:selected {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .tab-pane .tab .tab-label {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #A78BFA;
+}
+
+/* ===== DARK MODE - TABLE VIEW (Generic) ===== */
+.dark-mode .table-view {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .table-view .column-header-background {
+    -fx-background-color: #111827;
+}
+
+.dark-mode .table-view .column-header {
+    -fx-background-color: #111827;
+    -fx-border-color: transparent #374151 #374151 transparent;
+}
+
+.dark-mode .table-view .column-header .label {
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .table-view .table-row-cell {
+    -fx-background-color: #1F2937;
+    -fx-border-color: transparent transparent #374151 transparent;
+}
+
+.dark-mode .table-view .table-row-cell:odd {
+    -fx-background-color: #111827;
+}
+
+.dark-mode .table-view .table-row-cell:selected {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .table-view .table-row-cell:hover {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .table-view .table-cell {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .table-view .placeholder .label {
+    -fx-text-fill: #6B7280;
+}
+
+/* ===== DARK MODE - SPINNER ===== */
+.dark-mode .spinner {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .spinner .text-field {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .spinner .increment-arrow-button,
+.dark-mode .spinner .decrement-arrow-button {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .spinner .increment-arrow-button:hover,
+.dark-mode .spinner .decrement-arrow-button:hover {
+    -fx-background-color: #4B5563;
+}
+
+/* ===== DARK MODE - CHECK BOX & RADIO BUTTON ===== */
+.dark-mode .check-box .box {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .check-box:selected .box {
+    -fx-background-color: #8B5CF6;
+    -fx-border-color: #8B5CF6;
+}
+
+.dark-mode .check-box .mark {
+    -fx-background-color: white;
+}
+
+.dark-mode .check-box {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .radio-button .radio {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .radio-button:selected .radio {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #8B5CF6;
+}
+
+.dark-mode .radio-button:selected .dot {
+    -fx-background-color: #8B5CF6;
+}
+
+.dark-mode .radio-button {
+    -fx-text-fill: #D1D5DB;
+}
+
+/* ===== DARK MODE - MENU & CONTEXT MENU ===== */
+.dark-mode .context-menu {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0, 0, 4);
+}
+
+.dark-mode .menu-item {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .menu-item .label {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .menu-item:hover {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .menu-item:focused {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .menu-item:focused .label {
+    -fx-text-fill: #A78BFA;
+}
+
+.dark-mode .separator-menu-item .line {
+    -fx-border-color: #374151;
+}
+
+/* ===== DARK MODE - HYPERLINK ===== */
+.dark-mode .hyperlink {
+    -fx-text-fill: #A78BFA;
+}
+
+.dark-mode .hyperlink:visited {
+    -fx-text-fill: #C4B5FD;
+}
+
+.dark-mode .hyperlink:hover {
+    -fx-text-fill: #DDD6FE;
+}
+
+/* ===== DARK MODE - SLIDER ===== */
+.dark-mode .slider .track {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .slider .thumb {
+    -fx-background-color: #8B5CF6;
+}
+
+.dark-mode .slider .thumb:hover {
+    -fx-background-color: #A78BFA;
+}
+
+/* ===== DARK MODE - FILE CHOOSER ===== */
+.dark-mode .file-chooser-pane {
+    -fx-background-color: #1F2937;
+}
+
+/* ===== DARK MODE - LABELS IN ROOT ===== */
+.dark-mode .label {
+    -fx-text-fill: -fx-color-text;
+}
