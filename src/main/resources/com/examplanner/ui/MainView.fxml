@@ -44,6 +44,7 @@
             
             <Region VBox.vgrow="ALWAYS" />
             
+            <Button fx:id="btnSettings" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSettings" styleClass="nav-button" text="⚙ Settings" />
             <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleExit" styleClass="nav-button" text="Exit" />
          </children>
       </VBox>

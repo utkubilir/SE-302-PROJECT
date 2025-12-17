@@ -479,3 +479,226 @@
     -fx-font-size: 14px;
     -fx-text-fill: #9CA3AF;
 }
+
+/* ===== SETTINGS POPUP STYLES ===== */
+.settings-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 15, 0, 0, 5);
+    -fx-padding: 20;
+    -fx-border-radius: 12;
+    -fx-border-color: -fx-color-border;
+}
+
+.settings-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-color-text;
+    -fx-padding: 0 0 15 0;
+}
+
+.settings-section-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-color-text-secondary;
+    -fx-padding: 10 0 5 0;
+}
+
+.settings-option {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-color-text;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 14px;
+    -fx-padding: 10 15;
+    -fx-cursor: hand;
+    -fx-background-radius: 8;
+}
+
+.settings-option:hover {
+    -fx-background-color: -fx-color-primary-light;
+}
+
+.settings-option.selected {
+    -fx-background-color: -fx-color-primary-light;
+    -fx-text-fill: -fx-color-primary;
+    -fx-font-weight: bold;
+}
+
+/* ===== DARK MODE STYLES ===== */
+.dark-mode.root {
+    -fx-color-primary: #A78BFA;
+    -fx-color-primary-light: #3B2D5C;
+    -fx-color-text: #F9FAFB;
+    -fx-color-text-secondary: #9CA3AF;
+    -fx-color-bg: #111827;
+    -fx-color-border: #374151;
+    -fx-color-success: #34D399;
+    -fx-color-warning: #FBBF24;
+    -fx-color-error: #F87171;
+}
+
+.dark-mode .sidebar {
+    -fx-background-color: #1F2937;
+    -fx-border-color: transparent #374151 transparent transparent;
+}
+
+.dark-mode .content-area {
+    -fx-background-color: #111827;
+}
+
+.dark-mode .card {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .card:hover {
+    -fx-border-color: -fx-color-primary;
+}
+
+.dark-mode .primary-button {
+    -fx-background-color: #8B5CF6;
+}
+
+.dark-mode .primary-button:hover {
+    -fx-background-color: #7C3AED;
+}
+
+.dark-mode .secondary-button {
+    -fx-background-color: #374151;
+    -fx-text-fill: #F9FAFB;
+    -fx-border-color: #4B5563;
+}
+
+.dark-mode .secondary-button:hover {
+    -fx-background-color: #4B5563;
+}
+
+.dark-mode .danger-button {
+    -fx-background-color: #374151;
+    -fx-border-color: #F87171;
+}
+
+.dark-mode .danger-button:hover {
+    -fx-background-color: #451A1A;
+}
+
+.dark-mode .nav-button:hover {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .nav-button.active {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .exam-table {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .exam-table .column-header-background {
+    -fx-background-color: #4C1D95;
+}
+
+.dark-mode .exam-table .column-header {
+    -fx-border-color: transparent #374151 transparent transparent;
+}
+
+.dark-mode .exam-table .column-header .label {
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .exam-table .table-row-cell {
+    -fx-background-color: #1F2937;
+    -fx-border-color: transparent transparent #374151 transparent;
+}
+
+.dark-mode .exam-table .table-row-cell:odd {
+    -fx-background-color: #111827;
+}
+
+.dark-mode .exam-table .table-row-cell:selected {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .exam-table .table-row-cell:hover {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .exam-table .table-cell {
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .manual-section {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .manual-section>.title {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .manual-section:expanded>.title {
+    -fx-border-color: transparent transparent #374151 transparent;
+}
+
+.dark-mode .manual-section>.content {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .manual-content {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .manual-code {
+    -fx-background-color: #111827;
+    -fx-text-fill: #D1D5DB;
+}
+
+.dark-mode .manual-tip {
+    -fx-background-color: #064E3B;
+    -fx-border-color: #10B981;
+}
+
+.dark-mode .manual-tip-text {
+    -fx-text-fill: #6EE7B7;
+}
+
+.dark-mode .manual-warning {
+    -fx-background-color: #451A03;
+    -fx-border-color: #F59E0B;
+}
+
+.dark-mode .manual-warning-text {
+    -fx-text-fill: #FCD34D;
+}
+
+.dark-mode .settings-popup {
+    -fx-background-color: #1F2937;
+    -fx-border-color: #374151;
+}
+
+.dark-mode .settings-option:hover {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .settings-option.selected {
+    -fx-background-color: #3B2D5C;
+}
+
+.dark-mode .progress-bar {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .progress-bar>.track {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .student-list-view .list-cell {
+    -fx-background-color: #1F2937;
+    -fx-text-fill: #F9FAFB;
+}
+
+.dark-mode .student-list-view .list-cell:even {
+    -fx-background-color: #111827;
+}

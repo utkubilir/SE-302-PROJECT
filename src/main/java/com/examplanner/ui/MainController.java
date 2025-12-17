@@ -46,6 +46,8 @@ import java.io.PrintWriter;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class MainController {
 
@@ -79,6 +81,8 @@ public class MainController {
     private VBox viewUserManual;
     @FXML
     private Button btnUserManual;
+    @FXML
+    private Button btnSettings;
     @FXML
     private javafx.scene.chart.BarChart<String, Number> chartExamsPerDay;
     @FXML
@@ -131,6 +135,11 @@ public class MainController {
     private SchedulerService schedulerService = new SchedulerService();
     private com.examplanner.persistence.DataRepository repository = new com.examplanner.persistence.DataRepository();
     private com.examplanner.services.ConstraintChecker constraintChecker = new com.examplanner.services.ConstraintChecker();
+
+    // Settings state
+    private boolean isDarkMode = false;
+    private Locale currentLocale = Locale.ENGLISH;
+    private ResourceBundle bundle;
 
     @FXML
     public void initialize() {
@@ -617,6 +626,182 @@ public class MainController {
     @FXML
     private void handleExit() {
         Platform.exit();
+    }
+
+    @FXML
+    private void handleSettings() {
+        // Create settings popup stage
+        Stage settingsStage = new Stage();
+        settingsStage.initModality(Modality.APPLICATION_MODAL);
+        settingsStage.initStyle(StageStyle.UNDECORATED);
+        settingsStage.setTitle("Settings");
+
+        VBox settingsContent = new VBox(10);
+        settingsContent.getStyleClass().add("settings-popup");
+        settingsContent.setPrefWidth(280);
+
+        // Title
+        Label titleLabel = new Label("⚙ " + (currentLocale.getLanguage().equals("tr") ? "Ayarlar" : "Settings"));
+        titleLabel.getStyleClass().add("settings-title");
+
+        // Theme Section
+        Label themeLabel = new Label(currentLocale.getLanguage().equals("tr") ? "TEMA" : "THEME");
+        themeLabel.getStyleClass().add("settings-section-title");
+
+        Button btnLightMode = new Button(currentLocale.getLanguage().equals("tr") ? "☀ Aydınlık Mod" : "☀ Light Mode");
+        btnLightMode.getStyleClass().add("settings-option");
+        btnLightMode.setMaxWidth(Double.MAX_VALUE);
+        if (!isDarkMode) {
+            btnLightMode.getStyleClass().add("selected");
+        }
+
+        Button btnDarkMode = new Button(currentLocale.getLanguage().equals("tr") ? "🌙 Karanlık Mod" : "🌙 Dark Mode");
+        btnDarkMode.getStyleClass().add("settings-option");
+        btnDarkMode.setMaxWidth(Double.MAX_VALUE);
+        if (isDarkMode) {
+            btnDarkMode.getStyleClass().add("selected");
+        }
+
+        btnLightMode.setOnAction(e -> {
+            if (isDarkMode) {
+                isDarkMode = false;
+                applyTheme();
+                btnLightMode.getStyleClass().add("selected");
+                btnDarkMode.getStyleClass().remove("selected");
+            }
+        });
+
+        btnDarkMode.setOnAction(e -> {
+            if (!isDarkMode) {
+                isDarkMode = true;
+                applyTheme();
+                btnDarkMode.getStyleClass().add("selected");
+                btnLightMode.getStyleClass().remove("selected");
+            }
+        });
+
+        // Language Section
+        Label langLabel = new Label(currentLocale.getLanguage().equals("tr") ? "DİL" : "LANGUAGE");
+        langLabel.getStyleClass().add("settings-section-title");
+
+        Button btnEnglish = new Button("🇬🇧 English");
+        btnEnglish.getStyleClass().add("settings-option");
+        btnEnglish.setMaxWidth(Double.MAX_VALUE);
+        if (currentLocale.getLanguage().equals("en")) {
+            btnEnglish.getStyleClass().add("selected");
+        }
+
+        Button btnTurkish = new Button("🇹🇷 Türkçe");
+        btnTurkish.getStyleClass().add("settings-option");
+        btnTurkish.setMaxWidth(Double.MAX_VALUE);
+        if (currentLocale.getLanguage().equals("tr")) {
+            btnTurkish.getStyleClass().add("selected");
+        }
+
+        btnEnglish.setOnAction(e -> {
+            if (!currentLocale.getLanguage().equals("en")) {
+                currentLocale = Locale.ENGLISH;
+                applyLanguage();
+                btnEnglish.getStyleClass().add("selected");
+                btnTurkish.getStyleClass().remove("selected");
+                // Update popup labels
+                titleLabel.setText("⚙ Settings");
+                themeLabel.setText("THEME");
+                btnLightMode.setText("☀ Light Mode");
+                btnDarkMode.setText("🌙 Dark Mode");
+                langLabel.setText("LANGUAGE");
+            }
+        });
+
+        btnTurkish.setOnAction(e -> {
+            if (!currentLocale.getLanguage().equals("tr")) {
+                currentLocale = new Locale("tr", "TR");
+                applyLanguage();
+                btnTurkish.getStyleClass().add("selected");
+                btnEnglish.getStyleClass().remove("selected");
+                // Update popup labels
+                titleLabel.setText("⚙ Ayarlar");
+                themeLabel.setText("TEMA");
+                btnLightMode.setText("☀ Aydınlık Mod");
+                btnDarkMode.setText("🌙 Karanlık Mod");
+                langLabel.setText("DİL");
+            }
+        });
+
+        // Close button
+        Button btnClose = new Button(currentLocale.getLanguage().equals("tr") ? "Kapat" : "Close");
+        btnClose.getStyleClass().addAll("secondary-button");
+        btnClose.setMaxWidth(Double.MAX_VALUE);
+        btnClose.setOnAction(e -> settingsStage.close());
+
+        settingsContent.getChildren().addAll(
+                titleLabel,
+                themeLabel,
+                btnLightMode,
+                btnDarkMode,
+                langLabel,
+                btnEnglish,
+                btnTurkish,
+                new javafx.scene.layout.Region() {
+                    {
+                        setMinHeight(10);
+                    }
+                },
+                btnClose);
+
+        Scene settingsScene = new Scene(settingsContent);
+        settingsScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+        // Apply current theme to popup
+        if (isDarkMode) {
+            settingsScene.getRoot().getStyleClass().add("dark-mode");
+        }
+
+        settingsStage.setScene(settingsScene);
+
+        // Position relative to main window
+        if (sidebar != null && sidebar.getScene() != null && sidebar.getScene().getWindow() != null) {
+            Stage mainStage = (Stage) sidebar.getScene().getWindow();
+            settingsStage.setX(mainStage.getX() + 50);
+            settingsStage.setY(mainStage.getY() + mainStage.getHeight() - 400);
+        }
+
+        settingsStage.showAndWait();
+    }
+
+    private void applyTheme() {
+        if (viewDataImport.getScene() != null) {
+            if (isDarkMode) {
+                if (!viewDataImport.getScene().getRoot().getStyleClass().contains("dark-mode")) {
+                    viewDataImport.getScene().getRoot().getStyleClass().add("dark-mode");
+                }
+            } else {
+                viewDataImport.getScene().getRoot().getStyleClass().remove("dark-mode");
+            }
+        }
+    }
+
+    private void applyLanguage() {
+        try {
+            bundle = ResourceBundle.getBundle("i18n.messages", currentLocale);
+
+            // Update navigation buttons
+            if (btnDataImport != null)
+                btnDataImport.setText(bundle.getString("nav.dataImport"));
+            if (btnDashboard != null)
+                btnDashboard.setText(bundle.getString("nav.dashboard"));
+            if (btnTimetable != null)
+                btnTimetable.setText(bundle.getString("nav.timetable"));
+            if (btnFilter != null)
+                btnFilter.setText(bundle.getString("nav.studentSearch"));
+            if (btnUserManual != null)
+                btnUserManual.setText(bundle.getString("nav.userManual"));
+            if (btnSettings != null)
+                btnSettings.setText(bundle.getString("nav.settings"));
+
+        } catch (Exception e) {
+            System.err.println("Error loading language bundle: " + e.getMessage());
+        }
     }
 
     @FXML
