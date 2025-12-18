@@ -806,7 +806,8 @@ public class MainController {
                     repository.saveStudents(newStudents);
                     System.out.println("Auto-created " + newStudents.size() + " students from attendance data");
                     // Update students status label
-                    lblStudentsStatus.setText("Auto-imported (" + students.size() + " total)");
+                    lblStudentsStatus
+                            .setText(MessageFormat.format(bundle.getString("status.students.auto"), students.size()));
                     lblStudentsStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
                     lblStudentsStatus.getStyleClass().add("text-success");
                 }
@@ -816,7 +817,8 @@ public class MainController {
                     lblAttendanceStatus.getStyleClass().add("text-warning");
                     showWarning(bundle.getString("import.emptyTitle"), bundle.getString("import.noValidCourses"));
                 } else {
-                    lblAttendanceStatus.setText(file.getName() + " • " + enrollments.size() + " enrollments loaded");
+                    lblAttendanceStatus.setText(MessageFormat.format(bundle.getString("status.attendance.loaded"),
+                            file.getName(), enrollments.size()));
                     lblAttendanceStatus.getStyleClass().add("text-success");
                 }
             } catch (IllegalArgumentException e) {
@@ -825,7 +827,7 @@ public class MainController {
                 lblAttendanceStatus.getStyleClass().add("text-warning");
             } catch (com.examplanner.persistence.DataAccessException e) {
                 showError(bundle.getString("error.database"),
-                        "Failed to save enrollments to database:\n" + e.getMessage());
+                        MessageFormat.format(bundle.getString("error.saveEnrollments"), e.getMessage()));
                 lblAttendanceStatus.setText(bundle.getString("error.database"));
                 lblAttendanceStatus.getStyleClass().add("text-error");
             } catch (Exception e) {
@@ -3303,7 +3305,7 @@ public class MainController {
                 valuesBox.setStyle("-fx-padding: 8 0 0 0;");
 
                 VBox oldBox = new VBox(2);
-                Label oldTitle = new Label("Before:");
+                Label oldTitle = new Label(bundle.getString("history.label.before"));
                 oldTitle.setStyle("-fx-font-size: 10px; -fx-text-fill: #9CA3AF; -fx-font-weight: bold;");
                 Label oldValue = new Label(entry.getOldValue());
                 oldValue.setStyle("-fx-font-size: 11px; -fx-text-fill: #DC2626; -fx-background-color: #FEF2F2; " +
@@ -3314,7 +3316,7 @@ public class MainController {
                 arrow.setStyle("-fx-font-size: 16px; -fx-text-fill: #9CA3AF;");
 
                 VBox newBox = new VBox(2);
-                Label newTitle = new Label("After:");
+                Label newTitle = new Label(bundle.getString("history.label.after"));
                 newTitle.setStyle("-fx-font-size: 10px; -fx-text-fill: #9CA3AF; -fx-font-weight: bold;");
                 Label newValue = new Label(entry.getNewValue());
                 newValue.setStyle("-fx-font-size: 11px; -fx-text-fill: #059669; -fx-background-color: #ECFDF5; " +
@@ -3335,7 +3337,7 @@ public class MainController {
         footer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
         footer.setStyle("-fx-padding: 15 20; -fx-background-color: " + dmBgTertiary() + ";");
 
-        Button closeBtn = new Button("Close");
+        Button closeBtn = new Button(bundle.getString("action.close"));
         closeBtn.getStyleClass().add("secondary-button");
         closeBtn.setOnAction(e -> popup.close());
 
@@ -3361,15 +3363,16 @@ public class MainController {
         double usage = (double) studentCount / capacity * 100;
 
         if (studentCount > capacity) {
-            indicator.setText("❌ Capacity exceeded! " + studentCount + "/" + capacity + " students");
+            indicator.setText(
+                    MessageFormat.format(bundle.getString("validation.capacity.exceeded"), studentCount, capacity));
             indicator.setStyle("-fx-text-fill: #DC2626; -fx-font-size: 12px; -fx-font-weight: bold;");
         } else if (usage > 90) {
-            indicator.setText(
-                    "⚠️ Near capacity: " + studentCount + "/" + capacity + " (" + String.format("%.0f", usage) + "%)");
+            indicator.setText(MessageFormat.format(bundle.getString("validation.capacity.near"), studentCount, capacity,
+                    String.format("%.0f", usage)));
             indicator.setStyle("-fx-text-fill: #D97706; -fx-font-size: 12px;");
         } else {
-            indicator.setText(
-                    "✓ " + studentCount + "/" + capacity + " students (" + String.format("%.0f", usage) + "% used)");
+            indicator.setText(MessageFormat.format(bundle.getString("validation.capacity.ok"), studentCount, capacity,
+                    String.format("%.0f", usage)));
             indicator.setStyle("-fx-text-fill: #059669; -fx-font-size: 12px;");
         }
     }
@@ -3385,7 +3388,7 @@ public class MainController {
         Stage popup = new Stage();
         popup.initModality(javafx.stage.Modality.APPLICATION_MODAL);
         popup.initStyle(javafx.stage.StageStyle.DECORATED);
-        popup.setTitle("Enrolled Students - " + courseCode);
+        popup.setTitle(MessageFormat.format(bundle.getString("enrolled.windowTitle"), courseCode));
         popup.setResizable(false);
 
         VBox root = new VBox(0);
@@ -3402,9 +3405,10 @@ public class MainController {
         titleIcon.setStyle("-fx-font-size: 24px;");
 
         VBox titleBox = new VBox(2);
-        Label title = new Label("Enrolled Students");
+        Label title = new Label(bundle.getString("enrolled.headerTitle"));
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
-        Label subtitle = new Label(courseCode + " • " + students.size() + " students");
+        Label subtitle = new Label(
+                MessageFormat.format(bundle.getString("enrolled.subtitle"), courseCode, students.size()));
         subtitle.setStyle("-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.9);");
         titleBox.getChildren().addAll(title, subtitle);
 
@@ -3419,7 +3423,7 @@ public class MainController {
         searchIcon.setStyle("-fx-font-size: 14px;");
 
         TextField searchField = new TextField();
-        searchField.setPromptText("Search students...");
+        searchField.setPromptText(bundle.getString("enrolled.searchPrompt"));
         searchField.setStyle("-fx-background-color: " + dmBg() + "; -fx-background-radius: 8; -fx-border-color: "
                 + dmBorder() + "; " +
                 "-fx-border-radius: 8; -fx-padding: 8 12; -fx-font-size: 13px; -fx-text-fill: " + dmText() + ";");
@@ -3456,7 +3460,8 @@ public class MainController {
                     VBox infoBox = new VBox(2);
                     Label nameLabel = new Label(item.getName());
                     nameLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: " + dmText() + ";");
-                    Label idLabel = new Label("ID: " + item.getId());
+                    Label idLabel = new Label(
+                            MessageFormat.format(bundle.getString("enrolled.studentId"), item.getId()));
                     idLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + dmTextSecondary() + ";");
                     infoBox.getChildren().addAll(nameLabel, idLabel);
 
@@ -3494,13 +3499,13 @@ public class MainController {
         footer.setAlignment(javafx.geometry.Pos.CENTER);
         footer.setStyle("-fx-padding: 15 20; -fx-background-color: " + dmBgTertiary() + ";");
 
-        Label footerInfo = new Label("Total: " + students.size() + " students enrolled in this exam");
+        Label footerInfo = new Label(MessageFormat.format(bundle.getString("enrolled.footerTotal"), students.size()));
         footerInfo.setStyle("-fx-font-size: 12px; -fx-text-fill: " + dmTextSecondary() + ";");
 
         Region footerSpacer = new Region();
         HBox.setHgrow(footerSpacer, javafx.scene.layout.Priority.ALWAYS);
 
-        Button closeBtn = new Button("Close");
+        Button closeBtn = new Button(bundle.getString("action.close"));
         closeBtn.setStyle("-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-size: 13px; " +
                 "-fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
         closeBtn.setOnMouseEntered(e -> closeBtn.setStyle("-fx-background-color: #7C3AED; -fx-text-fill: white; " +
