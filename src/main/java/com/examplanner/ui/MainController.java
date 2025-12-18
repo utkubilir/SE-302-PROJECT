@@ -489,6 +489,9 @@ public class MainController {
 
         dialog.getDialogPane().setContent(grid);
 
+        // Apply dark mode
+        applyDarkModeToDialog(dialog);
+
         // Convert result
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == generateButtonType) {
@@ -564,6 +567,7 @@ public class MainController {
         alert.setHeaderText("Warning: This action cannot be undone!");
         alert.setContentText(
                 "Are you sure you want to permanently delete ALL courses, students, classrooms, exams, and enrollments?");
+        applyDarkModeToDialog(alert);
 
         if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
             repository.clearAllData();
@@ -781,6 +785,27 @@ public class MainController {
         }
     }
 
+    /**
+     * Applies dark mode styling to any Dialog or Alert.
+     */
+    private void applyDarkModeToDialog(javafx.scene.control.Dialog<?> dialog) {
+        javafx.scene.control.DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        if (isDarkMode) {
+            dialogPane.getStyleClass().add("dark-mode");
+        }
+    }
+
+    /**
+     * Applies dark mode styling to a Scene.
+     */
+    private void applyDarkModeToScene(javafx.scene.Scene scene) {
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        if (isDarkMode) {
+            scene.getRoot().getStyleClass().add("dark-mode");
+        }
+    }
+
     private void applyLanguage() {
         try {
             bundle = ResourceBundle.getBundle("i18n.messages", currentLocale);
@@ -827,7 +852,8 @@ public class MainController {
                 "Filter by Student",
                 studentList,
                 (student, query) -> student.getName().toLowerCase().contains(query)
-                        || student.getId().toLowerCase().contains(query));
+                        || student.getId().toLowerCase().contains(query),
+                isDarkMode);
 
         dialog.showAndWait().ifPresent(student -> {
             showStudentTimetable(student);
@@ -853,7 +879,8 @@ public class MainController {
                 "Filter by Course",
                 courseList,
                 (course, query) -> course.getName().toLowerCase().contains(query)
-                        || course.getCode().toLowerCase().contains(query));
+                        || course.getCode().toLowerCase().contains(query),
+                isDarkMode);
 
         dialog.showAndWait().ifPresent(course -> {
             List<Exam> exams = currentTimetable.getExamsForCourse(course);
@@ -1105,6 +1132,7 @@ public class MainController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        applyDarkModeToDialog(alert);
         alert.showAndWait();
     }
 
@@ -1113,6 +1141,7 @@ public class MainController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        applyDarkModeToDialog(alert);
         alert.showAndWait();
     }
 
@@ -1122,18 +1151,21 @@ public class MainController {
 
         VBox root = new VBox(10);
         root.setPadding(new javafx.geometry.Insets(20));
+        root.getStyleClass().add("modal-content");
 
         Label lblTitle = new Label(title);
-        lblTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        lblTitle.getStyleClass().add("section-title");
 
         ListView<String> list = new ListView<>();
         list.getItems().addAll(lines);
 
         Button close = new Button("Close");
+        close.getStyleClass().add("secondary-button");
         close.setOnAction(e -> dialog.close());
 
         root.getChildren().addAll(lblTitle, list, close);
         Scene scene = new Scene(root, 500, 600);
+        applyDarkModeToScene(scene);
 
         dialog.setScene(scene);
         dialog.showAndWait();
@@ -1175,12 +1207,11 @@ public class MainController {
             emptyContent.getChildren().add(empty);
             scrollPane.setContent(emptyContent);
         } else {
-            // Build Grid Calendar
             javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
             grid.setHgap(5);
             grid.setVgap(0); // No vertical gap - lines will align with rows
             grid.setPadding(new javafx.geometry.Insets(15));
-            grid.setStyle("-fx-background-color: white;");
+            grid.getStyleClass().add("timetable-grid");
 
             // Constants
             double SLOT_HEIGHT = 50.0;
@@ -1345,8 +1376,7 @@ public class MainController {
 
         // Footer
         HBox footer = new HBox();
-        footer.setStyle(
-                "-fx-padding: 15; -fx-alignment: center-right; -fx-background-color: #F3F4F6; -fx-background-radius: 0 0 12 12;");
+        footer.getStyleClass().add("modal-footer");
 
         Button closeBtn = new Button("Close");
         closeBtn.getStyleClass().add("secondary-button");
@@ -1357,7 +1387,7 @@ public class MainController {
 
         Scene scene = new Scene(root);
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        scene.getStylesheets().add(getClass().getResource("/com/examplanner/ui/style.css").toExternalForm());
+        applyDarkModeToScene(scene);
 
         dialog.setScene(scene);
         dialog.showAndWait();
@@ -1592,8 +1622,7 @@ public class MainController {
 
         // Footer (Close Button)
         HBox footer = new HBox();
-        footer.setStyle(
-                "-fx-padding: 15; -fx-alignment: center-right; -fx-background-color: #F3F4F6; -fx-background-radius: 0 0 12 12;");
+        footer.getStyleClass().add("modal-footer");
 
         Button closeBtn = new Button("Close");
         closeBtn.getStyleClass().add("secondary-button");
@@ -1605,7 +1634,7 @@ public class MainController {
         // Scene
         javafx.scene.Scene scene = new javafx.scene.Scene(root);
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-        scene.getStylesheets().add(getClass().getResource("/com/examplanner/ui/style.css").toExternalForm());
+        applyDarkModeToScene(scene);
 
         dialog.setScene(scene);
         dialog.showAndWait();
@@ -1623,6 +1652,7 @@ public class MainController {
         alert.setTitle("Error");
         alert.setHeaderText(header);
         alert.setContentText(content);
+        applyDarkModeToDialog(alert);
         alert.showAndWait();
     }
 }

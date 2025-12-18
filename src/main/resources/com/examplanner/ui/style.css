@@ -272,6 +272,13 @@
     -fx-background-color: white;
 }
 
+.modal-footer {
+    -fx-padding: 15;
+    -fx-alignment: center-right;
+    -fx-background-color: #F3F4F6;
+    -fx-background-radius: 0 0 12 12;
+}
+
 /* Student List */
 .student-list-cell {
     -fx-padding: 8 12;
@@ -852,6 +859,19 @@
 .dark-mode .scroll-bar .increment-arrow,
 .dark-mode .scroll-bar .decrement-arrow {
     -fx-background-color: #6B7280;
+}
+
+/* ===== DARK MODE - MODAL DIALOGS ===== */
+.dark-mode .modal-content {
+    -fx-background-color: #1F2937;
+}
+
+.dark-mode .modal-footer {
+    -fx-background-color: #374151;
+}
+
+.dark-mode .timetable-grid {
+    -fx-background-color: #1F2937;
 }
 
 /* ===== DARK MODE - SEPARATOR ===== */
