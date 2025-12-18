@@ -9,6 +9,7 @@ import com.examplanner.domain.Student;
 import com.examplanner.domain.ExamTimetable;
 import com.examplanner.services.DataImportService;
 import com.examplanner.services.SchedulerService;
+import com.examplanner.services.ScheduleOptions;
 import javafx.concurrent.Task;
 import java.time.LocalTime;
 import java.util.prefs.Preferences;
@@ -855,89 +856,70 @@ public class MainController {
             return;
         }
 
-        // Create date picker dialog
-        Dialog<javafx.util.Pair<LocalDate, LocalDate>> dialog = new Dialog<>();
-        dialog.setTitle("Select Exam Period");
-        dialog.setHeaderText("Choose exam period start and end dates");
+        // Create simple date picker dialog - only ask for start date
+        Dialog<LocalDate> dialog = new Dialog<>();
+        dialog.setTitle("Sınav Başlangıç Tarihi");
+        dialog.setHeaderText("Sınavların başlayacağı tarihi seçin:");
         applyDarkModeToDialogPane(dialog);
 
         // Set button types
-        ButtonType generateButtonType = new ButtonType("Generate", ButtonBar.ButtonData.OK_DONE);
+        ButtonType generateButtonType = new ButtonType("Devam", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(generateButtonType, ButtonType.CANCEL);
 
-        // Create date pickers
-        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
+        // Create date picker
+        VBox content = new VBox(15);
+        content.setPadding(new javafx.geometry.Insets(20));
 
         javafx.scene.control.DatePicker startDatePicker = new javafx.scene.control.DatePicker(
                 LocalDate.now().plusDays(1));
-        javafx.scene.control.DatePicker endDatePicker = new javafx.scene.control.DatePicker(
-                LocalDate.now().plusDays(7));
+        startDatePicker.setPrefWidth(200);
 
-        grid.add(new Label("Start Date:"), 0, 0);
-        grid.add(startDatePicker, 1, 0);
-        grid.add(new Label("End Date:"), 0, 1);
-        grid.add(endDatePicker, 1, 1);
+        Label infoLabel = new Label("Sistem en optimal programı bulacak ve\nsize alternatif seçenekler sunacak.");
+        infoLabel.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12px;");
 
-        dialog.getDialogPane().setContent(grid);
+        content.getChildren().addAll(new Label("Başlangıç Tarihi:"), startDatePicker, infoLabel);
+        dialog.getDialogPane().setContent(content);
 
         // Convert result
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == generateButtonType) {
-                LocalDate start = startDatePicker.getValue();
-                LocalDate end = endDatePicker.getValue();
-                if (start != null && end != null && !end.isBefore(start)) {
-                    return new javafx.util.Pair<>(start, end);
-                }
+                return startDatePicker.getValue();
             }
             return null;
         });
 
-        java.util.Optional<javafx.util.Pair<LocalDate, LocalDate>> result = dialog.showAndWait();
+        java.util.Optional<LocalDate> result = dialog.showAndWait();
 
-        if (!result.isPresent()) {
+        if (!result.isPresent() || result.get() == null) {
             return; // User cancelled
         }
 
-        LocalDate startDate = result.get().getKey();
-        LocalDate endDate = result.get().getValue();
+        LocalDate startDate = result.get();
+        // Use a generous end date for finding options (14 days max)
+        LocalDate endDate = startDate.plusDays(13);
 
-        System.out.println("Selected date range: " + startDate + " to " + endDate);
+        System.out.println("Selected start date: " + startDate);
+        System.out.println("Max search range: " + startDate + " to " + endDate);
 
         setLoadingState(true);
 
-        Task<ExamTimetable> task = new Task<>() {
+        // Use Task to generate schedule options in background
+        Task<ScheduleOptions> task = new Task<>() {
             @Override
-            protected ExamTimetable call() throws Exception {
-                System.out.println("Starting timetable generation...");
+            protected ScheduleOptions call() throws Exception {
+                System.out.println("Starting timetable generation with options...");
                 System.out.println("Start date: " + startDate);
-                System.out.println("End date: " + endDate);
-                System.out.println("Calling scheduler service...");
-                return schedulerService.generateTimetable(courses, classrooms, enrollments, startDate, endDate);
+                return schedulerService.generateTimetableWithOptions(courses, classrooms, enrollments, startDate,
+                        endDate);
             }
         };
 
         task.setOnSucceeded(e -> {
-            try {
-                this.currentTimetable = task.getValue();
-                repository.saveTimetable(currentTimetable);
-                System.out.println("Timetable generated successfully!");
-                System.out.println(
-                        "Number of exams: " + (currentTimetable != null ? currentTimetable.getExams().size() : "null"));
+            setLoadingState(false);
+            ScheduleOptions options = task.getValue();
 
-                refreshTimetable();
-                showTimetable();
-                setLoadingState(false);
-                System.out.println("UI updated successfully!");
-            } catch (Exception ex) {
-                System.err.println("CRITICAL UI ERROR:");
-                ex.printStackTrace();
-                showError(bundle.getString("error.noTimetable"),
-                        bundle.getString("error.generateTimetableFirst") + ex.getMessage());
-                setLoadingState(false);
-            }
+            // Show option selection dialog with start date for display
+            showScheduleOptionsDialog(options, startDate);
         });
 
         task.setOnFailed(e -> {
@@ -950,6 +932,101 @@ public class MainController {
         });
 
         new Thread(task).start();
+    }
+
+    /**
+     * Show a dialog for the user to select from multiple schedule options.
+     * The optimal (minimum days) schedule is marked, but alternatives are
+     * available.
+     * Shows the actual date range for each option.
+     */
+    private void showScheduleOptionsDialog(ScheduleOptions options, LocalDate startDate) {
+        Dialog<ScheduleOptions.ScheduleOption> optionDialog = new Dialog<>();
+        optionDialog.setTitle("Sınav Programı Seçenekleri");
+        optionDialog.setHeaderText(
+                "Optimal program " + options.getOptimalDays() + " gün.\nAlternatif bir program seçebilirsiniz:");
+        applyDarkModeToDialogPane(optionDialog);
+
+        // Date formatter for display
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+
+        // Create list view for options
+        ListView<ScheduleOptions.ScheduleOption> listView = new ListView<>();
+        listView.getItems().addAll(options.getAllOptions());
+        listView.getSelectionModel().selectFirst(); // Select optimal by default
+        listView.setPrefWidth(400);
+        listView.setPrefHeight(220);
+
+        // Custom cell factory for better display with date ranges
+        listView.setCellFactory(lv -> new javafx.scene.control.ListCell<>() {
+            @Override
+            protected void updateItem(ScheduleOptions.ScheduleOption item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    LocalDate endDate = startDate.plusDays(item.getDays() - 1);
+                    String dateRange = startDate.format(dateFormatter) + " - " + endDate.format(dateFormatter);
+
+                    if (item.isOptimal()) {
+                        setText("✓ " + item.getDays() + " gün (Optimal) → " + dateRange);
+                        setStyle("-fx-font-weight: bold; -fx-text-fill: #10B981;");
+                    } else {
+                        setText("  " + item.getDays() + " gün → " + dateRange);
+                        setStyle("");
+                    }
+                }
+            }
+        });
+
+        VBox content = new VBox(10);
+        content.setPadding(new javafx.geometry.Insets(10));
+
+        Label infoLabel = new Label("Daha fazla gün seçerseniz, sınavlar arasında daha fazla boşluk olur.");
+        infoLabel.setWrapText(true);
+        infoLabel.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12px;");
+
+        content.getChildren().addAll(listView, infoLabel);
+        optionDialog.getDialogPane().setContent(content);
+
+        // Button types
+        ButtonType selectButtonType = new ButtonType("Bu Programı Kullan", ButtonBar.ButtonData.OK_DONE);
+        optionDialog.getDialogPane().getButtonTypes().addAll(selectButtonType, ButtonType.CANCEL);
+
+        // Result converter
+        optionDialog.setResultConverter(dialogButton -> {
+            if (dialogButton == selectButtonType) {
+                return listView.getSelectionModel().getSelectedItem();
+            }
+            return null;
+        });
+
+        java.util.Optional<ScheduleOptions.ScheduleOption> selectedOption = optionDialog.showAndWait();
+
+        if (selectedOption.isPresent()) {
+            ScheduleOptions.ScheduleOption selected = selectedOption.get();
+            LocalDate actualEndDate = startDate.plusDays(selected.getDays() - 1);
+
+            System.out.println("User selected " + selected.getDays() + "-day schedule");
+            System.out.println("Date range: " + startDate + " to " + actualEndDate);
+
+            this.currentTimetable = selected.getSchedule();
+            repository.saveTimetable(currentTimetable);
+
+            System.out.println("Timetable saved! Exams: " + currentTimetable.getExams().size());
+
+            refreshTimetable();
+            showTimetable();
+
+            // Show success message with date range
+            showInformation("Program Oluşturuldu",
+                    "Sınav programı oluşturuldu!\n\n" +
+                            "Süre: " + selected.getDays() + " gün\n" +
+                            "Tarih: " + startDate.format(dateFormatter) + " - " + actualEndDate.format(dateFormatter)
+                            + "\n" +
+                            "Toplam: " + currentTimetable.getExams().size() + " sınav");
+        }
     }
 
     @FXML
