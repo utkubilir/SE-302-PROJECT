@@ -10,7 +10,9 @@
     -fx-color-warning: #F59E0B;
     -fx-color-error: #EF4444;
 
-    -fx-font-family: 'System';
+    /* Modern font - Avenir for clean, elegant look */
+    -fx-font-family: "Avenir Next", "Avenir", "Helvetica Neue", sans-serif;
+    -fx-font-size: 13px;
     -fx-background-color: -fx-color-bg;
 }
 
@@ -1262,45 +1264,85 @@
     -fx-text-fill: -fx-color-text;
 }
 
-/* ===== SPLASH SCREEN ===== */
+/* ===== SPLASH SCREEN - MODERN DESIGN ===== */
 .splash-screen {
-    -fx-background-color: linear-gradient(to bottom right, #667eea, #764ba2);
+    -fx-background-color: linear-gradient(to bottom right, #1a1a2e, #16213e, #0f3460);
+}
+
+/* Background decoration circles */
+.splash-bg-circle-1 {
+    -fx-fill: rgba(139, 92, 246, 0.15);
+}
+
+.splash-bg-circle-2 {
+    -fx-fill: rgba(236, 72, 153, 0.12);
+}
+
+.splash-bg-circle-3 {
+    -fx-fill: rgba(59, 130, 246, 0.1);
+}
+
+/* Glassmorphism card */
+.splash-card {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 30, 0, 0, 10);
+}
+
+/* Icon styling */
+.splash-icon {
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.6), 25, 0.3, 0, 0);
 }
 
 .splash-title {
-    -fx-font-size: 36px;
+    -fx-font-size: 38px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 4, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.5), 10, 0, 0, 2);
 }
 
 .splash-subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-weight: normal;
+}
+
+.splash-loading-section {
+    -fx-padding: 15 0 0 0;
+}
+
+.splash-loading-icon {
     -fx-font-size: 14px;
-    -fx-text-fill: rgba(255, 255, 255, 0.85);
 }
 
 .splash-status {
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: rgba(255, 255, 255, 0.7);
 }
 
 .splash-version {
     -fx-font-size: 11px;
-    -fx-text-fill: rgba(255, 255, 255, 0.5);
+    -fx-text-fill: rgba(255, 255, 255, 0.4);
 }
 
+/* Modern progress bar */
 .splash-progress {
-    -fx-pref-height: 8px;
-    -fx-background-radius: 4;
+    -fx-pref-height: 6px;
+    -fx-background-radius: 3;
 }
 
 .splash-progress>.track {
-    -fx-background-color: rgba(255, 255, 255, 0.3);
-    -fx-background-radius: 4;
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-radius: 3;
+    -fx-background-insets: 0;
 }
 
 .splash-progress>.bar {
-    -fx-background-color: white;
-    -fx-background-radius: 4;
+    -fx-background-color: linear-gradient(to right, #8B5CF6, #EC4899, #3B82F6);
+    -fx-background-radius: 3;
     -fx-background-insets: 0;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.5), 8, 0, 0, 0);
 }
