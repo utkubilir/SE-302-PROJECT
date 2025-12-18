@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
@@ -29,7 +30,7 @@
       <VBox fx:id="sidebar" prefWidth="250.0" styleClass="sidebar" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER_LEFT" spacing="10">
-               <Label styleClass="app-title" text="Exam Planner" />
+               <Label fx:id="lblAppTitle" styleClass="app-title" text="Exam Planner" />
             </HBox>
             
             <VBox spacing="5">
@@ -44,8 +45,8 @@
             
             <Region VBox.vgrow="ALWAYS" />
             
-            <Button fx:id="btnSettings" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSettings" styleClass="nav-button" text="⚙ Settings" />
-            <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleExit" styleClass="nav-button" text="Exit" />
+            <Button fx:id="btnSettings" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSettings" styleClass="nav-button" text="⚙️ Settings" />
+            <Button fx:id="btnExit" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleExit" styleClass="nav-button" text="Exit" />
          </children>
       </VBox>
    </left>
@@ -58,8 +59,8 @@
          <VBox fx:id="viewDataImport" spacing="20.0">
             <children>
                <VBox>
-                  <Label styleClass="section-title" text="Data Import" />
-                  <Label styleClass="section-subtitle" text="Import required data files to begin" />
+                  <Label fx:id="lblDataImportTitle" styleClass="section-title" text="Data Import" />
+                  <Label fx:id="lblDataImportSubtitle" styleClass="section-subtitle" text="Import required data files to begin" />
                </VBox>
 
                <VBox spacing="15">
@@ -67,7 +68,7 @@
                   <HBox styleClass="card" onMouseClicked="#handleLoadCourses" alignment="CENTER_LEFT" spacing="15">
                      <Label text="📄" style="-fx-font-size: 24px;"/>
                      <VBox>
-                        <Label styleClass="card-title" text="Courses" />
+                        <Label fx:id="lblCoursesTitle" styleClass="card-title" text="Courses" />
                         <Label fx:id="lblCoursesStatus" styleClass="card-subtitle" text="courses.csv • Not loaded" />
                      </VBox>
                   </HBox>
@@ -76,7 +77,7 @@
                   <HBox styleClass="card" onMouseClicked="#handleLoadStudents" alignment="CENTER_LEFT" spacing="15">
                      <Label text="🎓" style="-fx-font-size: 24px;"/>
                      <VBox>
-                        <Label styleClass="card-title" text="Students" />
+                        <Label fx:id="lblStudentsTitle" styleClass="card-title" text="Students" />
                         <Label fx:id="lblStudentsStatus" styleClass="card-subtitle" text="students.csv • Not loaded" />
                      </VBox>
                   </HBox>
@@ -85,7 +86,7 @@
                   <HBox styleClass="card" onMouseClicked="#handleLoadClassrooms" alignment="CENTER_LEFT" spacing="15">
                      <Label text="🏢" style="-fx-font-size: 24px;"/>
                      <VBox>
-                        <Label styleClass="card-title" text="Classrooms" />
+                        <Label fx:id="lblClassroomsTitle" styleClass="card-title" text="Classrooms" />
                         <Label fx:id="lblClassroomsStatus" styleClass="card-subtitle" text="rooms.csv • Not loaded" />
                      </VBox>
                   </HBox>
@@ -94,7 +95,7 @@
                   <HBox styleClass="card" onMouseClicked="#handleLoadAttendance" alignment="CENTER_LEFT" spacing="15">
                      <Label text="👥" style="-fx-font-size: 24px;"/>
                      <VBox>
-                        <Label styleClass="card-title" text="Attendance" />
+                        <Label fx:id="lblAttendanceTitle" styleClass="card-title" text="Attendance" />
                         <Label fx:id="lblAttendanceStatus" styleClass="card-subtitle" text="attendance.csv • Not loaded" />
                      </VBox>
                   </HBox>
@@ -124,14 +125,27 @@
                    <Button text="← Back" onAction="#showDataImport" styleClass="secondary-button" />
                   <VBox>
                      <Label styleClass="section-title" text="Exam Schedule" />
-                     <Label styleClass="section-subtitle" text="December 2024 - Final Exams" />
+                     <Label fx:id="lblTimetableSubtitle" styleClass="section-subtitle" text="December 2025 - Final Exams" />
                   </VBox>
                   <Region HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="txtCourseSearch" promptText="Search by Course Code..." prefWidth="200" />
+                  
+                  <!-- Advanced Search Bar -->
+                  <ComboBox fx:id="cmbSearchType" prefWidth="120" styleClass="secondary-button" />
+                  <TextField fx:id="txtCourseSearch" promptText="Search..." prefWidth="150" styleClass="search-field" />
+                  <Button fx:id="btnClearSearch" text="×" styleClass="secondary-button" style="-fx-min-width: 30;" onAction="#handleClearSearch" />
+                  
+                  <Button fx:id="btnHistory" mnemonicParsing="false" onAction="#showEditHistory" styleClass="secondary-button" text="📜 History" />
+                  <Button fx:id="btnValidateAll" mnemonicParsing="false" onAction="#handleValidateAll" styleClass="secondary-button" text="✓ Validate All" />
                   <Button fx:id="btnConflicts" mnemonicParsing="false" onAction="#handleConflicts" styleClass="secondary-button" text="Conflicts" />
                   <Button fx:id="btnExport" mnemonicParsing="false" onAction="#handleExport" styleClass="secondary-button" text="Export CSV" />
                   <Button fx:id="btnExportPdf" mnemonicParsing="false" onAction="#handleExportPdf" styleClass="secondary-button" text="Export PDF" />
                   <Button fx:id="btnGenerateTimetable" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate Timetable" />
+               </HBox>
+               
+               <!-- Edit Help Text -->
+               <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #F0FDF4; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #86EFAC; -fx-border-radius: 8;">
+                  <Label text="💡" style="-fx-font-size: 16px; -fx-text-fill: #F59E0B;" />
+                  <Label fx:id="lblTimetableTip" text="Tip: Double-click a row to edit, or right-click for quick actions. All changes are validated in real-time." style="-fx-text-fill: #166534; -fx-font-size: 12px;" />
                </HBox>
 
                <TableView fx:id="examTableView" styleClass="exam-table" VBox.vgrow="ALWAYS">
@@ -157,12 +171,12 @@
                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
              </padding>
              <children>
-                 <Label styleClass="section-title" text="Analytics Dashboard" />
-                 <Label styleClass="section-subtitle" text="Schedule Insights" />
+                 <Label fx:id="lblDashboardTitle" styleClass="section-title" text="Analytics Dashboard" />
+                 <Label fx:id="lblDashboardSubtitle" styleClass="section-subtitle" text="Schedule Insights" />
                  
                  <HBox spacing="20" VBox.vgrow="ALWAYS">
                      <VBox styleClass="card" HBox.hgrow="ALWAYS">
-                         <Label styleClass="card-title" text="Exams Per Day" />
+                         <Label fx:id="lblExamsPerDay" styleClass="card-title" text="Exams Per Day" />
                          <BarChart fx:id="chartExamsPerDay">
                              <xAxis>
                                  <CategoryAxis label="Date" />
@@ -174,242 +188,22 @@
                      </VBox>
                      
                      <VBox styleClass="card" HBox.hgrow="ALWAYS">
-                         <Label styleClass="card-title" text="Room Utilization" />
+                         <Label fx:id="lblRoomUtilization" styleClass="card-title" text="Room Utilization" />
                          <PieChart fx:id="chartRoomUsage" />
                      </VBox>
                  </HBox>
              </children>
          </VBox>
+         <!-- user manuel View -->
 
-          <!-- User Manual View -->
-          <VBox fx:id="viewUserManual" spacing="20.0" visible="false">
-              <padding>
-                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-              </padding>
-              <children>
-                  <HBox alignment="CENTER_LEFT" spacing="20">
-                      <Button text="← Back" onAction="#showDataImport" styleClass="secondary-button" />
-                      <VBox>
-                          <Label styleClass="section-title" text="📖 User Manual" />
-                          <Label styleClass="section-subtitle" text="Exam Planner Kullanım Kılavuzu" />
-                      </VBox>
-                  </HBox>
-                  
-                  <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                      <content>
-                          <VBox spacing="10" styleClass="manual-container">
-                              
-                              <!-- 1. Getting Started -->
-                              <TitledPane styleClass="manual-section" expanded="true">
-                                  <text>🚀 1. Başlarken (Getting Started)</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          <Label wrapText="true" styleClass="manual-text" text="Exam Planner, üniversite sınav programlarını otomatik olarak oluşturmak için tasarlanmış güçlü bir araçtır." />
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="📋 Sistem Gereksinimleri:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• Java 21 veya üzeri&#10;• JavaFX 21&#10;• Minimum 4GB RAM&#10;• 100MB boş disk alanı" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="🎯 Temel İş Akışı:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="1. CSV dosyalarını içe aktarın (Dersler, Öğrenciler, Sınıflar, Katılım)&#10;2. 'Generate Timetable' butonuna tıklayın&#10;3. Oluşturulan programı görüntüleyin ve dışa aktarın" />
-                                          </VBox>
-                                          
-                                          <HBox styleClass="manual-tip" spacing="10">
-                                              <Label text="💡" style="-fx-font-size: 18px;" />
-                                              <Label wrapText="true" styleClass="manual-tip-text" text="İpucu: Tüm veri dosyalarını yüklemeden önce örnek CSV formatlarını inceleyin." />
-                                          </HBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                              <!-- 2. Data Import -->
-                              <TitledPane styleClass="manual-section">
-                                  <text>📄 2. Veri İçe Aktarma (Data Import)</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          <Label wrapText="true" styleClass="manual-text" text="Sınav programı oluşturmak için 4 farklı CSV dosyası gereklidir:" />
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="📚 Courses.csv (Dersler):" />
-                                              <Label wrapText="true" styleClass="manual-code" text="Format: CourseCode;CourseName;Duration&#10;Örnek: CS101;Introduction to Programming;120" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• CourseCode: Benzersiz ders kodu&#10;• CourseName: Ders adı&#10;• Duration: Sınav süresi (dakika)" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="🎓 Students.csv (Öğrenciler):" />
-                                              <Label wrapText="true" styleClass="manual-code" text="Format: StudentID;FirstName;LastName&#10;Örnek: 2021001;Ali;Yılmaz" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="🏢 Classrooms.csv (Sınıflar):" />
-                                              <Label wrapText="true" styleClass="manual-code" text="Format: RoomCode;Capacity&#10;Örnek: A101;50" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="👥 Attendance.csv (Kayıtlar):" />
-                                              <Label wrapText="true" styleClass="manual-code" text="Format: CourseCode;StudentID&#10;Örnek: CS101;2021001" />
-                                              <Label wrapText="true" styleClass="manual-text" text="Her öğrenci-ders eşleşmesi için bir satır." />
-                                          </VBox>
-                                          
-                                          <HBox styleClass="manual-warning" spacing="10">
-                                              <Label text="⚠️" style="-fx-font-size: 18px;" />
-                                              <Label wrapText="true" styleClass="manual-warning-text" text="Uyarı: CSV dosyalarında noktalı virgül (;) veya virgül (,) ayırıcı kullanabilirsiniz." />
-                                          </HBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                              <!-- 3. Timetable Generation -->
-                              <TitledPane styleClass="manual-section">
-                                  <text>📅 3. Zaman Çizelgesi Oluşturma</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          <Label wrapText="true" styleClass="manual-text" text="Sistem, çakışmasız bir sınav programı oluşturmak için gelişmiş bir algoritma kullanır." />
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="⚙️ Algoritma Özellikleri:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• Binary Search ile optimal gün sayısı bulma&#10;• Öğrenci çakışma kontrolü&#10;• Sınıf kapasitesi kontrolü&#10;• Minimum 3 saat ara kısıtlaması&#10;• Günde maksimum 2 sınav kısıtlaması" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="🔄 Oluşturma Adımları:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="1. 'Generate Timetable' butonuna tıklayın&#10;2. İlerleme çubuğunu takip edin&#10;3. Program otomatik olarak Timetable görünümüne geçer" />
-                                          </VBox>
-                                          
-                                          <HBox styleClass="manual-tip" spacing="10">
-                                              <Label text="💡" style="-fx-font-size: 18px;" />
-                                              <Label wrapText="true" styleClass="manual-tip-text" text="İpucu: Büyük veri setleri için işlem birkaç dakika sürebilir. Lütfen sabırla bekleyin." />
-                                          </HBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                              <!-- 4. Filtering & Search -->
-                              <TitledPane styleClass="manual-section">
-                                  <text>🔍 4. Filtreleme ve Arama</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          <Label wrapText="true" styleClass="manual-text" text="Oluşturulan programda kolayca arama yapabilirsiniz." />
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="👤 Öğrenci Bazlı Filtreleme:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="1. 'Filter / Search' butonuna tıklayın&#10;2. 'Filter by Student' seçin&#10;3. Öğrenci adını arayın veya listeden seçin&#10;4. Sadece o öğrencinin sınavları görüntülenir" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="📚 Ders Bazlı Filtreleme:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="1. 'Filter / Search' butonuna tıklayın&#10;2. 'Filter by Course' seçin&#10;3. Ders kodunu veya adını arayın&#10;4. İlgili sınav detayları görüntülenir" />
-                                          </VBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                              <!-- 5. Export -->
-                              <TitledPane styleClass="manual-section">
-                                  <text>📤 5. Dışa Aktarma (Export)</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          <Label wrapText="true" styleClass="manual-text" text="Oluşturulan sınav programını farklı formatlarda dışa aktarabilirsiniz." />
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="📊 CSV Dışa Aktarma:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• 'Export CSV' butonuna tıklayın&#10;• Kayıt konumunu seçin&#10;• Program Excel veya diğer tablolama yazılımlarında açılabilir" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="📑 PDF Dışa Aktarma:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• 'Export PDF' butonuna tıklayın&#10;• Profesyonel formatlı bir PDF oluşturulur&#10;• Yazdırma ve dağıtım için ideal" />
-                                          </VBox>
-                                          
-                                          <HBox styleClass="manual-tip" spacing="10">
-                                              <Label text="💡" style="-fx-font-size: 18px;" />
-                                              <Label wrapText="true" styleClass="manual-tip-text" text="İpucu: PDF formatı resmi duyurular için tercih edilmelidir." />
-                                          </HBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                              <!-- 6. Dashboard -->
-                              <TitledPane styleClass="manual-section">
-                                  <text>📊 6. Dashboard Analytics</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          <Label wrapText="true" styleClass="manual-text" text="Dashboard, sınav programının görsel analizini sunar." />
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="📈 Günlük Sınav Grafiği:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• Bar chart olarak her gün kaç sınav olduğunu gösterir&#10;• Yoğun günleri kolayca tespit edin" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="🎯 Sınıf Kullanım Grafiği:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• Pie chart olarak sınıf kullanım oranlarını gösterir&#10;• Hangi sınıfların daha fazla kullanıldığını görün" />
-                                          </VBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                              <!-- 7. Student Portal -->
-                              <TitledPane styleClass="manual-section">
-                                  <text>🎓 7. Öğrenci Portalı</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          <Label wrapText="true" styleClass="manual-text" text="Öğrenciler kendi sınav programlarını görüntüleyebilir." />
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="🔐 Giriş Yapma:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="1. 'Student Portal' butonuna tıklayın&#10;2. Öğrenci numaranızı girin&#10;3. Kişisel sınav programınız görüntülenir" />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="📋 Görüntüleme:" />
-                                              <Label wrapText="true" styleClass="manual-text" text="• Sadece kendi sınavlarınızı görürsünüz&#10;• Tarih, saat ve sınıf bilgileri listelenir&#10;• Kronolojik sırada düzenlenir" />
-                                          </VBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                              <!-- 8. FAQ -->
-                              <TitledPane styleClass="manual-section">
-                                  <text>❓ 8. Sık Sorulan Sorular (FAQ)</text>
-                                  <content>
-                                      <VBox spacing="15" styleClass="manual-content">
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="S: CSV dosyam yüklenmiyor, ne yapmalıyım?" />
-                                              <Label wrapText="true" styleClass="manual-text" text="C: Dosya formatını kontrol edin. UTF-8 encoding kullandığınızdan ve sütun ayırıcıların doğru olduğundan emin olun." />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="S: Program oluşturma çok uzun sürüyor?" />
-                                              <Label wrapText="true" styleClass="manual-text" text="C: Büyük veri setleri (10,000+ öğrenci) için işlem 1-2 dakika sürebilir. Bu normaldir." />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="S: Çakışma uyarısı alıyorum, ne anlama geliyor?" />
-                                              <Label wrapText="true" styleClass="manual-text" text="C: Bazı öğrencilerin aynı zaman diliminde birden fazla sınavı var. 'Conflicts' butonuyla detayları görüntüleyin." />
-                                          </VBox>
-                                          
-                                          <VBox styleClass="manual-subsection">
-                                              <Label styleClass="manual-subtitle" text="S: Verileri nasıl silerim?" />
-                                              <Label wrapText="true" styleClass="manual-text" text="C: Data Import sayfasındaki 'Delete All Data' butonunu kullanın. Bu işlem geri alınamaz!" />
-                                          </VBox>
-                                          
-                                          <HBox styleClass="manual-warning" spacing="10">
-                                              <Label text="⚠️" style="-fx-font-size: 18px;" />
-                                              <Label wrapText="true" styleClass="manual-warning-text" text="Önemli: Veri silme işlemi geri alınamaz. Silmeden önce yedek aldığınızdan emin olun." />
-                                          </HBox>
-                                      </VBox>
-                                  </content>
-                              </TitledPane>
-                              
-                          </VBox>
-                      </content>
-                  </ScrollPane>
-              </children>
-          </VBox>
+   <!-- User Manual View -->
+   <VBox fx:id="viewUserManual" spacing="20.0" visible="false">
+      <padding>
+         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+      </padding>
+      <!-- Content injected dynamically by MainController.buildUserManual() -->
+   </VBox>
+
 
       </StackPane>
    </center>

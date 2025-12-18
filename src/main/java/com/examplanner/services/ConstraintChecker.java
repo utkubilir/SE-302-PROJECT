@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.util.ResourceBundle;
+import java.text.MessageFormat;
+
 public class ConstraintChecker {
 
     private static final LocalTime MIN_START_TIME = LocalTime.of(9, 0);
@@ -61,10 +64,11 @@ public class ConstraintChecker {
      * Validates a manual move from the UI.
      * Returns a string error message if invalid, or null if valid.
      */
-    public String checkManualMove(Exam newExam, List<Exam> allExams, List<Enrollment> enrollments) {
+    public String checkManualMove(Exam newExam, List<Exam> allExams, List<Enrollment> enrollments,
+            ResourceBundle bundle) {
         // 1. Time Window
         if (!isWithinTimeWindow(newExam.getSlot())) {
-            return "Exam is outside valid time window (09:00 - 18:30).";
+            return bundle.getString("validation.error.timeWindow");
         }
 
         // 2. Classroom Conflict (exclude the exam itself from the check if it's already
@@ -79,8 +83,8 @@ public class ConstraintChecker {
 
             if (other.getClassroom().getId().equals(newExam.getClassroom().getId())) {
                 if (other.getSlot().overlaps(newExam.getSlot())) {
-                    return "Classroom " + newExam.getClassroom().getName() + " is occupied by "
-                            + other.getCourse().getCode();
+                    return MessageFormat.format(bundle.getString("validation.error.occupied"),
+                            newExam.getClassroom().getName(), other.getCourse().getCode());
                 }
             }
         }
@@ -94,8 +98,8 @@ public class ConstraintChecker {
 
         // Capacity
         if (students.size() > newExam.getClassroom().getCapacity()) {
-            return "Classroom capacity exceeded (" + students.size() + " > " + newExam.getClassroom().getCapacity()
-                    + ")";
+            return MessageFormat.format(bundle.getString("validation.error.capacity"),
+                    students.size(), newExam.getClassroom().getCapacity());
         }
 
         // Build a temporary lookup for students for the target date
@@ -118,8 +122,8 @@ public class ConstraintChecker {
 
             // Check Max Exams
             if (studentExamsOnDay.size() >= maxExamsPerDay) {
-                return "Student " + s.getName() + " already has " + studentExamsOnDay.size() + " exams on "
-                        + targetDate;
+                return MessageFormat.format(bundle.getString("validation.error.studentLimit"),
+                        s.getName(), studentExamsOnDay.size(), targetDate);
             }
 
             // Check Gap
@@ -133,18 +137,19 @@ public class ConstraintChecker {
                 // Duration.between(A, B) is positive if A < B.
 
                 if (existing.getSlot().overlaps(newExam.getSlot())) {
-                    return "Time conflict for student " + s.getName() + " with " + existing.getCourse().getCode();
+                    return MessageFormat.format(bundle.getString("validation.error.conflict"),
+                            s.getName(), existing.getCourse().getCode());
                 }
 
                 // if existing ends Before new starts: gap1 > 0
                 if (gap1 >= 0 && gap1 < minGapMinutes) {
-                    return "Insufficient gap (" + gap1 + "m) for student " + s.getName() + " after "
-                            + existing.getCourse().getCode();
+                    return MessageFormat.format(bundle.getString("validation.error.gapAfter"),
+                            gap1, s.getName(), existing.getCourse().getCode());
                 }
                 // if existing starts After new ends: gap2 > 0
                 if (gap2 >= 0 && gap2 < minGapMinutes) {
-                    return "Insufficient gap (" + gap2 + "m) for student " + s.getName() + " before "
-                            + existing.getCourse().getCode();
+                    return MessageFormat.format(bundle.getString("validation.error.gapBefore"),
+                            gap2, s.getName(), existing.getCourse().getCode());
                 }
             }
         }
@@ -186,6 +191,11 @@ public class ConstraintChecker {
         List<Exam> dayExams = state.getExamsForStudentDate(student.getId(), slot.getDate());
 
         for (Exam existing : dayExams) {
+            // First check for overlap - if slots overlap, it's an immediate conflict
+            if (existing.getSlot().overlaps(slot)) {
+                return false;
+            }
+
             long gap1 = Duration.between(existing.getSlot().getEndTime(), slot.getStartTime()).toMinutes();
             long gap2 = Duration.between(slot.getEndTime(), existing.getSlot().getStartTime()).toMinutes();
 

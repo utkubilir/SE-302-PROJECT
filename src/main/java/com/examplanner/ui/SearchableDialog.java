@@ -13,11 +13,6 @@ public class SearchableDialog<T> extends Dialog<T> {
     private final FilteredList<T> filteredList;
 
     public SearchableDialog(String title, String headerText, List<T> items, BiPredicate<T, String> filterLogic) {
-        this(title, headerText, items, filterLogic, false);
-    }
-
-    public SearchableDialog(String title, String headerText, List<T> items, BiPredicate<T, String> filterLogic,
-            boolean isDarkMode) {
         setTitle(title);
         setHeaderText(headerText);
 
@@ -50,12 +45,6 @@ public class SearchableDialog<T> extends Dialog<T> {
         ButtonType okButtonType = new ButtonType("Select", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
-        // Apply dark mode
-        getDialogPane().getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-        if (isDarkMode) {
-            getDialogPane().getStyleClass().add("dark-mode");
-        }
-
         // Result Converter
         setResultConverter(dialogButton -> {
             if (dialogButton == okButtonType) {
@@ -63,5 +52,8 @@ public class SearchableDialog<T> extends Dialog<T> {
             }
             return null;
         });
+
+        // Auto-select first item on enter in textfield if strictly one match?
+        // Or just let user pick. Keep it simple.
     }
 }

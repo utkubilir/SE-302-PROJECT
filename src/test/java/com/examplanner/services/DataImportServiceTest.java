@@ -62,7 +62,7 @@ class DataImportServiceTest {
             List<Course> courses = dataImportService.loadCourses(coursesFile);
 
             assertEquals(1, courses.size());
-            assertEquals(60, courses.get(0).getExamDurationMinutes());
+            assertEquals(120, courses.get(0).getExamDurationMinutes());
         }
 
         @Test
@@ -118,7 +118,7 @@ class DataImportServiceTest {
             assertEquals(3, courses.size());
             assertEquals("CS101", courses.get(0).getCode());
             assertEquals("CS101", courses.get(0).getName()); // Name defaults to code
-            assertEquals(60, courses.get(0).getExamDurationMinutes()); // Default duration
+            assertEquals(120, courses.get(0).getExamDurationMinutes()); // Default duration
         }
 
         @Test
@@ -131,7 +131,7 @@ class DataImportServiceTest {
             List<Course> courses = dataImportService.loadCourses(coursesFile);
 
             assertEquals(1, courses.size());
-            assertEquals(60, courses.get(0).getExamDurationMinutes()); // Default used
+            assertEquals(120, courses.get(0).getExamDurationMinutes()); // Default used
         }
     }
 

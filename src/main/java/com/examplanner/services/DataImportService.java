@@ -16,7 +16,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.ResourceBundle;
+import java.text.MessageFormat;
+
 public class DataImportService {
+    private ResourceBundle bundle;
+
+    public void setBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+    }
+
+    private String getString(String key, Object... args) {
+        if (bundle == null)
+            return key + (args.length > 0 ? " " + java.util.Arrays.toString(args) : "");
+        try {
+            String pattern = bundle.getString(key);
+            return MessageFormat.format(pattern, args);
+        } catch (Exception e) {
+            return key;
+        }
+    }
+
+    private static final char BOM = '\uFEFF';
+
+    private static String stripBom(String s) {
+        if (s != null && !s.isEmpty() && s.charAt(0) == BOM) {
+            return s.substring(1);
+        }
+        return s;
+    }
 
     private enum CsvKind {
         COURSES,
@@ -140,8 +168,7 @@ public class DataImportService {
     private void ensureKind(File file, CsvKind expected) throws IOException {
         CsvKind detected = detectCsvKind(file);
         if (detected != CsvKind.UNKNOWN && detected != expected) {
-            throw new IllegalArgumentException(
-                    "Wrong CSV selected. Expected " + expected + " file, but it looks like " + detected + ".");
+            throw new IllegalArgumentException(getString("import.error.wrongCsv", expected, detected));
         }
     }
 
@@ -158,6 +185,8 @@ public class DataImportService {
             while ((line = br.readLine()) != null) {
                 lineNumber++;
                 line = line.trim();
+                // Strip BOM from the first line if present
+                line = stripBom(line.trim());
                 // Skip empty lines or headers
                 if (line.isEmpty() || line.startsWith("ALL OF THE"))
                     continue;
@@ -178,15 +207,14 @@ public class DataImportService {
 
                     // Skip empty codes
                     if (code.isEmpty()) {
-                        System.err.println("Warning: Skipping line " + lineNumber + " - empty course code");
+                        System.err.println(getString("import.warning.skipping", lineNumber, "empty course code"));
                         skippedLines++;
                         continue;
                     }
 
                     // Check for duplicates
                     if (codeToLine.containsKey(code)) {
-                        System.err.println("Warning: Duplicate course code '" + code + "' at line " + lineNumber +
-                                " (first seen at line " + codeToLine.get(code) + ")");
+                        System.err.println(getString("import.warning.duplicate", "course code", code, lineNumber));
                         skippedLines++;
                         continue;
                     }
@@ -197,8 +225,7 @@ public class DataImportService {
                         try {
                             duration = Integer.parseInt(parts[2].trim());
                             if (duration <= 0) {
-                                System.err.println(
-                                        "Warning: Invalid duration at line " + lineNumber + ", using default 120");
+                                System.err.println(getString("import.warning.invalidDuration", lineNumber));
                                 duration = 120;
                             }
                         } catch (NumberFormatException ignored) {
@@ -221,7 +248,7 @@ public class DataImportService {
 
                 // Check for duplicates
                 if (codeToLine.containsKey(code)) {
-                    System.err.println("Warning: Duplicate course code '" + code + "' at line " + lineNumber);
+                    System.err.println(getString("import.warning.duplicate", "course code", code, lineNumber));
                     skippedLines++;
                     continue;
                 }
@@ -232,7 +259,7 @@ public class DataImportService {
         }
 
         if (courses.isEmpty()) {
-            throw new IllegalArgumentException("No valid courses found in file. Check file format.");
+            throw new IllegalArgumentException(getString("import.error.noValidCourses"));
         }
 
         if (skippedLines > 0) {
@@ -273,13 +300,13 @@ public class DataImportService {
                         continue;
 
                     if (roomId.isEmpty()) {
-                        System.err.println("Warning: Skipping line " + lineNumber + " - empty room ID");
+                        System.err.println(getString("import.warning.skipping", lineNumber, "empty room ID"));
                         skippedLines++;
                         continue;
                     }
 
                     if (idToLine.containsKey(roomId)) {
-                        System.err.println("Warning: Duplicate room ID '" + roomId + "' at line " + lineNumber);
+                        System.err.println(getString("import.warning.duplicate", "room ID", roomId, lineNumber));
                         skippedLines++;
                         continue;
                     }
@@ -295,9 +322,10 @@ public class DataImportService {
                         idToLine.put(roomId, lineNumber);
                         classrooms.add(new Classroom(roomId, roomName.isEmpty() ? roomId : roomName, capacity));
                     } catch (NumberFormatException e) {
-                        System.err.println("Warning: Invalid capacity format at line " + lineNumber);
+                        System.err.println(getString("import.warning.invalidCapacity", lineNumber));
                         skippedLines++;
                     }
+
                     continue;
                 }
 
@@ -312,7 +340,7 @@ public class DataImportService {
                     }
 
                     if (idToLine.containsKey(name)) {
-                        System.err.println("Warning: Duplicate room '" + name + "' at line " + lineNumber);
+                        System.err.println(getString("import.warning.duplicate", "room", name, lineNumber));
                         skippedLines++;
                         continue;
                     }
@@ -327,15 +355,17 @@ public class DataImportService {
                         idToLine.put(name, lineNumber);
                         classrooms.add(new Classroom(name, name, capacity));
                     } catch (NumberFormatException e) {
-                        System.err.println("Warning: Invalid capacity format at line " + lineNumber);
+                        System.err.println(getString("import.warning.invalidCapacity", lineNumber));
                         skippedLines++;
                     }
                 }
             }
         }
 
-        if (classrooms.isEmpty()) {
-            throw new IllegalArgumentException("No valid classrooms found in file. Check file format.");
+        if (classrooms.isEmpty())
+
+        {
+            throw new IllegalArgumentException(getString("import.error.noValidClassrooms"));
         }
 
         if (skippedLines > 0) {
@@ -376,13 +406,13 @@ public class DataImportService {
                         continue;
 
                     if (id.isEmpty()) {
-                        System.err.println("Warning: Skipping line " + lineNumber + " - empty student ID");
+                        System.err.println(getString("import.warning.skipping", lineNumber, "empty student ID"));
                         skippedLines++;
                         continue;
                     }
 
                     if (idToLine.containsKey(id)) {
-                        System.err.println("Warning: Duplicate student ID '" + id + "' at line " + lineNumber);
+                        System.err.println(getString("import.warning.duplicate", "student ID", id, lineNumber));
                         skippedLines++;
                         continue;
                     }
@@ -402,7 +432,7 @@ public class DataImportService {
                 }
 
                 if (idToLine.containsKey(id)) {
-                    System.err.println("Warning: Duplicate student ID '" + id + "' at line " + lineNumber);
+                    System.err.println(getString("import.warning.duplicate", "student ID", id, lineNumber));
                     skippedLines++;
                     continue;
                 }
@@ -413,7 +443,7 @@ public class DataImportService {
         }
 
         if (students.isEmpty()) {
-            throw new IllegalArgumentException("No valid students found in file. Check file format.");
+            throw new IllegalArgumentException(getString("import.error.noValidStudents"));
         }
 
         if (skippedLines > 0) {
@@ -478,6 +508,8 @@ public class DataImportService {
 
                     if (!line.startsWith("[")) {
                         currentCourseCode = line;
+                        // Strip BOM from the first line's course code
+                        currentCourseCode = stripBom(line);
                     } else {
                         if (currentCourseCode == null)
                             continue;
@@ -495,8 +527,20 @@ public class DataImportService {
                         String[] studentIds = content.split(",");
                         for (String rawId : studentIds) {
                             String sId = rawId.trim();
-                            if (sId.startsWith("'") && sId.endsWith("'")) {
+
+                            // Remove surrounding quotes (single or double)
+                            if (sId.startsWith("'") && sId.endsWith("'") && sId.length() > 2) {
                                 sId = sId.substring(1, sId.length() - 1);
+                            } else if (sId.startsWith("\"") && sId.endsWith("\"") && sId.length() > 2) {
+                                sId = sId.substring(1, sId.length() - 1);
+                            }
+
+                            // Remove any remaining brackets that might have been included
+                            sId = sId.replace("[", "").replace("]", "").trim();
+
+                            // Skip empty IDs
+                            if (sId.isEmpty()) {
+                                continue;
                             }
 
                             Student student = studentMap.get(sId);

@@ -11,7 +11,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import javafx.scene.image.Image;
 
 public class MainApp extends Application {
 
@@ -36,7 +35,6 @@ public class MainApp extends Application {
             splashStage = new Stage();
             splashStage.initStyle(StageStyle.UNDECORATED);
             splashStage.setScene(splashScene);
-            splashStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
             splashStage.show();
 
             // Get progress bar and status label
@@ -101,7 +99,6 @@ public class MainApp extends Application {
             scene = new Scene(fxmlLoader.load(), 1200, 800);
             mainStage.setScene(scene);
             mainStage.setTitle("Exam Timetable Planner");
-            mainStage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon.png")));
 
             // Fade in main window
             scene.getRoot().setOpacity(0);
