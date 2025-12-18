@@ -595,6 +595,31 @@ public class MainController {
                 enrollments = dataImportService.loadAttendance(file, courses, students);
                 repository.saveEnrollments(enrollments);
 
+                
+                java.util.Set<String> existingStudentIds = students.stream()
+                        .map(Student::getId)
+                        .collect(Collectors.toSet());
+
+                List<Student> newStudents = new ArrayList<>();
+                for (Enrollment e : enrollments) {
+                    Student s = e.getStudent();
+                    if (!existingStudentIds.contains(s.getId())) {
+                        existingStudentIds.add(s.getId());
+                        newStudents.add(s);
+                        students.add(s);
+                    }
+                }
+
+                // Save any new students to database
+                if (!newStudents.isEmpty()) {
+                    repository.saveStudents(newStudents);
+                    System.out.println("Auto-created " + newStudents.size() + " students from attendance data");
+                    // Update students status label
+                    lblStudentsStatus.setText("Auto-imported (" + students.size() + " total)");
+                    lblStudentsStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
+                    lblStudentsStatus.getStyleClass().add("text-success");
+                }
+
                 if (enrollments.isEmpty()) {
                     lblAttendanceStatus.setText("No enrollments found in file");
                     lblAttendanceStatus.getStyleClass().add("text-warning");

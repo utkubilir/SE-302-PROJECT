@@ -18,6 +18,16 @@ import java.util.Map;
 
 public class DataImportService {
 
+    private static final char BOM = '\uFEFF';
+
+
+    private static String stripBom(String s) {
+        if (s != null && !s.isEmpty() && s.charAt(0) == BOM) {
+            return s.substring(1);
+        }
+        return s;
+    }
+
     private enum CsvKind {
         COURSES,
         STUDENTS,
@@ -157,7 +167,8 @@ public class DataImportService {
             boolean headerCsv = false;
             while ((line = br.readLine()) != null) {
                 lineNumber++;
-                line = line.trim();
+                // Strip BOM from the first line if present
+                line = stripBom(line.trim());
                 // Skip empty lines or headers
                 if (line.isEmpty() || line.startsWith("ALL OF THE"))
                     continue;
@@ -477,7 +488,8 @@ public class DataImportService {
                         continue;
 
                     if (!line.startsWith("[")) {
-                        currentCourseCode = line;
+                        // Strip BOM from the first line's course code
+                        currentCourseCode = stripBom(line);
                     } else {
                         if (currentCourseCode == null)
                             continue;
@@ -495,17 +507,17 @@ public class DataImportService {
                         String[] studentIds = content.split(",");
                         for (String rawId : studentIds) {
                             String sId = rawId.trim();
-                            
+
                             // Remove surrounding quotes (single or double)
                             if (sId.startsWith("'") && sId.endsWith("'") && sId.length() > 2) {
                                 sId = sId.substring(1, sId.length() - 1);
                             } else if (sId.startsWith("\"") && sId.endsWith("\"") && sId.length() > 2) {
                                 sId = sId.substring(1, sId.length() - 1);
                             }
-                            
+
                             // Remove any remaining brackets that might have been included
                             sId = sId.replace("[", "").replace("]", "").trim();
-                            
+
                             // Skip empty IDs
                             if (sId.isEmpty()) {
                                 continue;
