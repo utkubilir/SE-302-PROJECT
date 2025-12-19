@@ -7,9 +7,16 @@ import java.sql.Statement;
 
 public class DatabaseManager {
 
-    private static final String DB_URL = "jdbc:sqlite:examplanner.db";
+    private static final String APP_DIR = System.getProperty("user.home") + java.io.File.separator + ".examplanner";
+    private static final String DB_URL = "jdbc:sqlite:" + APP_DIR + java.io.File.separator + "examplanner.db";
 
     public static void initializeDatabase() {
+        // Ensure application directory exists
+        java.io.File dir = new java.io.File(APP_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
             if (conn != null) {
                 createTables(conn);

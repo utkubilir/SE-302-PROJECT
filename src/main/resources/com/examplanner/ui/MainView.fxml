@@ -4,6 +4,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableView?>
@@ -201,12 +203,17 @@
                   <Button fx:id="btnConflicts" mnemonicParsing="false" onAction="#handleConflicts" styleClass="secondary-button" text="Conflicts">
                      <graphic><FontIcon iconLiteral="fas-exclamation-triangle" iconSize="14" styleClass="btn-icon-warning"/></graphic>
                   </Button>
-                  <Button fx:id="btnExport" mnemonicParsing="false" onAction="#handleExport" styleClass="secondary-button" text="Export CSV">
-                     <graphic><FontIcon iconLiteral="fas-file-export" iconSize="14" styleClass="btn-icon"/></graphic>
-                  </Button>
-                  <Button fx:id="btnExportPdf" mnemonicParsing="false" onAction="#handleExportPdf" styleClass="secondary-button" text="Export PDF">
-                     <graphic><FontIcon iconLiteral="fas-file-pdf" iconSize="14" styleClass="btn-icon-error"/></graphic>
-                  </Button>
+                  <MenuButton styleClass="secondary-button" text="Export">
+                     <graphic><FontIcon iconLiteral="fas-download" iconSize="14" styleClass="btn-icon"/></graphic>
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportCsv" text="Export to CSV">
+                           <graphic><FontIcon iconLiteral="fas-file-csv" iconSize="14" styleClass="btn-icon"/></graphic>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#handleExportPdf" text="Export PDF">
+                           <graphic><FontIcon iconLiteral="fas-file-pdf" iconSize="14" styleClass="btn-icon-error"/></graphic>
+                        </MenuItem>
+                     </items>
+                  </MenuButton>
                   <Button fx:id="btnGenerateTimetable" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate">
                      <graphic><FontIcon iconLiteral="fas-magic" iconSize="14" style="-fx-icon-color: white;"/></graphic>
                   </Button>

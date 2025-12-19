@@ -594,117 +594,6 @@ public class MainController {
         }
     }
 
-    /**
-     * Sets a loading state on a button by replacing its icon with a spinner.
-     * 
-     * @param btn     The button to modify
-     * @param loading True to show loading spinner, false to restore original
-     */
-    private void setButtonLoading(Button btn, boolean loading) {
-        if (btn == null)
-            return;
-
-        if (loading) {
-            btn.setDisable(true);
-            // Store original graphic if not already stored (to avoid overwriting with
-            // spinner)
-            if (!(btn.getGraphic() instanceof FontIcon
-                    && ((FontIcon) btn.getGraphic()).getIconLiteral().equals("fas-spinner"))) {
-                btn.setUserData(btn.getGraphic());
-            }
-
-            FontIcon spinner = IconHelper.spinner();
-            spinner.getStyleClass().add("spinner-icon");
-
-            // Add simple rotation animation
-            javafx.animation.RotateTransition rt = new javafx.animation.RotateTransition(
-                    javafx.util.Duration.millis(1000), spinner);
-            rt.setByAngle(360);
-            rt.setCycleCount(javafx.animation.Animation.INDEFINITE);
-            rt.setInterpolator(javafx.animation.Interpolator.LINEAR);
-            rt.play();
-
-            btn.setGraphic(spinner);
-        } else {
-            btn.setDisable(false);
-            if (btn.getUserData() instanceof javafx.scene.Node) {
-                btn.setGraphic((javafx.scene.Node) btn.getUserData());
-            }
-        }
-    }
-
-    /**
-     * Updates a badge count on a button.
-     * 
-     * @param btn   The button to modify
-     * @param count The number to display in the badge. 0 hides the badge.
-     */
-    private void setButtonBadge(Button btn, int count) {
-        if (btn == null)
-            return;
-
-        if (count > 0) {
-            // We need to wrap the icon and badge in a StackPane
-            // First, retrieve the base icon
-            javafx.scene.Node baseIcon = btn.getGraphic();
-
-            // If already a StackPane, reuse it or extract icon
-            if (baseIcon instanceof StackPane) {
-                if (((StackPane) baseIcon).getChildren().size() > 0) {
-                    baseIcon = ((StackPane) baseIcon).getChildren().get(0);
-                }
-            }
-
-            Label badge = new Label(count > 99 ? "99+" : String.valueOf(count));
-            badge.getStyleClass().add("badge");
-            StackPane.setAlignment(badge, Pos.TOP_RIGHT);
-
-            // Adjust margin to position badge nicely over the icon
-            StackPane.setMargin(badge, new javafx.geometry.Insets(-5, -5, 0, 0));
-
-            StackPane stack = new StackPane(baseIcon, badge);
-            stack.getStyleClass().add("icon-container"); // Helper class if needed
-            stack.setAlignment(Pos.CENTER);
-            btn.getStyleClass().add("nav-button-with-badge");
-        } else {
-            // Remove badge - restore original icon if it was wrapped
-            javafx.scene.Node currentGraphic = btn.getGraphic();
-            if (currentGraphic instanceof StackPane) {
-                StackPane stack = (StackPane) currentGraphic;
-                if (stack.getChildren().size() > 0) {
-                    btn.setGraphic(stack.getChildren().get(0));
-                }
-            }
-            btn.getStyleClass().remove("nav-button-with-badge");
-        }
-    }
-
-    /**
-     * Sets the active button in the sidebar and updates the floating indicator.
-     */
-    private void setActiveButton(Button btn) {
-        if (btn == null)
-            return;
-
-        // Remove active class from all buttons in navContainer
-        if (navContainer != null) {
-            for (javafx.scene.Node node : navContainer.getChildren()) {
-                if (node instanceof Button) {
-                    node.getStyleClass().remove("active");
-                }
-            }
-        }
-        // Also check settings button? It's in footer usually.
-        if (btnSettings != null)
-            btnSettings.getStyleClass().remove("active");
-
-        // Add active class to target
-        btn.getStyleClass().add("active");
-
-        // Update indicator animation
-        updateActiveIndicator(btn);
-    }
-
     private void updateActiveIndicator(Button btn) {
         if (activeIndicator == null || btn == null)
             return;
@@ -1007,11 +896,6 @@ public class MainController {
         examTableView.setItems(FXCollections.observableArrayList(filteredExams));
     }
 
-    private void filterTableByCourseCode(String searchText) {
-        // Deprecated - now using applyAdvancedFilter
-        applyAdvancedFilter(searchText);
-    }
-
     @FXML
     private void showDataImport() {
         viewDataImport.setVisible(true);
@@ -1096,11 +980,6 @@ public class MainController {
 
         // Update floating indicator
         updateActiveIndicator(btn);
-    }
-
-    private void setInactive(Button btn) {
-        // No longer needed as setActive handles clearing,
-        // kept empty for compatibility if called elsewhere
     }
 
     @FXML
@@ -1580,8 +1459,7 @@ public class MainController {
 
     private void loadLanguage(String lang) {
         currentLanguage = lang;
-        Locale locale = new Locale(lang);
-        this.bundle = ResourceBundle.getBundle("com.examplanner.ui.messages", locale);
+        bundle = ResourceBundle.getBundle("com.examplanner.ui.messages", Locale.of(lang));
 
         // Pass bundle to services
         if (dataImportService != null) {
@@ -1731,7 +1609,7 @@ public class MainController {
     }
 
     private DateTimeFormatter getLocalizedDateFormatter(String pattern) {
-        return DateTimeFormatter.ofPattern(pattern, new Locale(currentLanguage));
+        return DateTimeFormatter.ofPattern(pattern, Locale.of(currentLanguage));
     }
 
     @FXML
@@ -2105,25 +1983,8 @@ public class MainController {
         showFilteredExams(MessageFormat.format(bundle.getString("search.timetableFor"), student.getName()), exams);
     }
 
-    private void filterByCourse() {
-        List<Course> courseList = new ArrayList<>(courses);
-        courseList.sort(Comparator.comparing(Course::getName));
-
-        SearchableDialog<Course> dialog = new SearchableDialog<>(
-                "Select Course",
-                "Filter by Course",
-                courseList,
-                (course, query) -> course.getName().toLowerCase().contains(query)
-                        || course.getCode().toLowerCase().contains(query));
-
-        dialog.showAndWait().ifPresent(course -> {
-            List<Exam> exams = currentTimetable.getExamsForCourse(course);
-            showFilteredExams("Exams for " + course.getName(), exams);
-        });
-    }
-
     @FXML
-    private void handleExport() {
+    private void handleExportCsv() {
         if (currentTimetable == null || currentTimetable.getExams().isEmpty()) {
             showError(bundle.getString("error.noTimetable"), bundle.getString("error.nothingToExport"));
             return;
@@ -2702,14 +2563,6 @@ public class MainController {
         dialog.showAndWait();
     }
 
-    // Helper for separator
-    private void parentSeparator(VBox container) {
-        javafx.scene.shape.Line line = new javafx.scene.shape.Line(0, 0, 380, 0);
-        line.setStroke(javafx.scene.paint.Color.web("#E5E7EB"));
-        line.setStrokeWidth(1);
-        container.getChildren().add(line);
-    }
-
     private void refreshTimetable() {
         try {
             if (currentTimetable == null || currentTimetable.getExams().isEmpty()) {
@@ -2738,7 +2591,7 @@ public class MainController {
 
     private void setupTableColumns() {
         // Sütunların tablonun tüm genişliğini kaplaması için
-        examTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        examTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
