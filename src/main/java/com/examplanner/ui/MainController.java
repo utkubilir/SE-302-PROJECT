@@ -70,6 +70,8 @@ public class MainController {
     @FXML
     private StackPane rootContainer;
 
+    private TourManager tourManager;
+
     @FXML
     private Button btnDataImport;
     @FXML
@@ -466,7 +468,7 @@ public class MainController {
         if (rootContainer == null)
             return;
 
-        TourManager tourManager = new TourManager(rootContainer);
+        this.tourManager = new TourManager(rootContainer);
 
         // Define steps
         tourManager.addStep(new TourStep(
@@ -493,8 +495,8 @@ public class MainController {
                 "Customize the application theme (Dark/Light) and language preferences.",
                 TourPosition.RIGHT));
 
-        // Start if first run
-        Platform.runLater(tourManager::showIfFirstTime);
+        // Start always on launch (per user request)
+        Platform.runLater(tourManager::start);
     }
 
     private void setupCollapsibleSidebar() {
@@ -1123,7 +1125,7 @@ public class MainController {
                     // Let's use a generic approach if possible or specific keys. I'll stick to what
                     // I have or reuse appropriately.
                     // Actually I only added noCoursesFile. Let's fix this properly.
-                    // I will reuse import.noCoursesFile for now but it says "courses". Ideally I
+                    // I will use "import.noCoursesFile" for now but it says "courses". Ideally I
                     // need "import.noStudentsFile".
                     // User asked to fix ALL. I'll use hardcoded fallback or better logic if keys
                     // missing?
@@ -1131,13 +1133,6 @@ public class MainController {
                     // Wait, I can't add more keys in the middle of this tool call.
                     // I will use "import.noValidCourses".replace("courses", "students") logic? No
                     // that's hacky.
-                    // I will use bundle.getString("import.emptyTitle") and generic text for now or
-                    // reuse existing if suitable.
-                    // Actually I missed adding specific keys for students/classrooms "found in
-                    // file".
-                    // I will use "import.emptyTitle" and specific English text in MessageFormat if
-                    // I have to, OR just leave it?
-                    // No, "fix all".
                     // I will use a placeholder approach for now:
                     lblStudentsStatus.setText(bundle.getString("import.emptyTitle"));
                     lblStudentsStatus.getStyleClass().add("text-warning");
@@ -1784,6 +1779,8 @@ public class MainController {
                 darkText.setText(bundle.getString("settings.darkMode"));
                 languageLabel.setText(bundle.getString("settings.language"));
                 closeBtn.setText(bundle.getString("settings.close"));
+                settingsStage.close(); // Close after applying
+                refreshTimetable(); // Refresh UI to apply new strings
             }
         });
 

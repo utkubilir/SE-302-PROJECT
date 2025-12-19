@@ -27,6 +27,9 @@ public class TourOverlay extends Pane {
     private Label lblTitle;
     private Label lblDescription;
     private Shape spotlightMask;
+    private javafx.scene.shape.Polygon arrow;
+
+    private TourStep currentStep; // Track current step for resize/interaction
 
     public TourOverlay(Runnable onNext, Runnable onSkip) {
         this.onNext = onNext;
@@ -34,8 +37,27 @@ public class TourOverlay extends Pane {
 
         initializeUI();
 
-        // Ensure overlay captures clicks to prevent interaction with app
-        this.setOnMouseClicked(e -> e.consume());
+        // Handle window resize
+        widthProperty().addListener((obs, oldVal, newVal) -> refreshLayout());
+        heightProperty().addListener((obs, oldVal, newVal) -> refreshLayout());
+
+        // Handle interactions
+        this.setOnMouseClicked(e -> {
+            // Check if click is inside the target hole (click-through)
+            if (currentStep != null && isClickOnTarget(e.getX(), e.getY())) {
+                e.consume();
+                // Trigger the target action if it's a button
+                Node target = currentStep.targetNode();
+                if (target instanceof Button) {
+                    ((Button) target).fire();
+                }
+                // Advance tour
+                onNext.run();
+            } else {
+                // Consume other clicks to block app interaction
+                e.consume();
+            }
+        });
     }
 
     private void initializeUI() {
@@ -44,6 +66,11 @@ public class TourOverlay extends Pane {
         messageBubble.setPadding(new Insets(15));
         messageBubble.setMaxWidth(300);
         messageBubble.getStyleClass().add("tour-bubble");
+
+        // Arrow pointer
+        arrow = new javafx.scene.shape.Polygon();
+        arrow.getStyleClass().add("tour-arrow");
+        arrow.setFill(Color.web("#ffffff")); // Default match bubble bg (updated in CSS)
 
         // Title
         lblTitle = new Label();
@@ -70,13 +97,14 @@ public class TourOverlay extends Pane {
         buttonBox.getChildren().addAll(btnSkip, btnNext);
 
         messageBubble.getChildren().addAll(lblTitle, lblDescription, buttonBox);
-        getChildren().add(messageBubble);
+        getChildren().addAll(maskGroup(), arrow, messageBubble); // Order matters
 
         // Initial visibility
         setVisible(false);
     }
 
     public void showStep(TourStep step) {
+        this.currentStep = step;
         if (step == null)
             return;
 
@@ -84,22 +112,35 @@ public class TourOverlay extends Pane {
         lblTitle.setText(step.title());
         lblDescription.setText(step.description());
 
-        // Calculate layout
-        Node target = step.targetNode();
-        if (target != null && target.getScene() != null) {
-            updateSpotlight(target);
-            updateBubblePosition(target, step.position());
-        } else {
-            // Fallback for center message without spotlight (e.g. welcome)
-            removeSpotlight();
-            centerBubble();
-        }
+        refreshLayout();
 
         FadeTransition ft = new FadeTransition(Duration.millis(300), this);
         ft.setFromValue(0);
         ft.setToValue(1);
         setVisible(true);
         ft.play();
+
+        // Accessibility focus
+        messageBubble.requestFocus();
+    }
+
+    private void refreshLayout() {
+        if (currentStep == null)
+            return;
+
+        Node target = currentStep.targetNode();
+        if (target != null && target.getScene() != null) {
+            updateSpotlight(target);
+            updateBubblePosition(target, currentStep.position());
+        } else {
+            removeSpotlight();
+            centerBubble();
+            arrow.setVisible(false);
+        }
+    }
+
+    private javafx.scene.Group maskGroup() {
+        return new javafx.scene.Group(); // Placeholder if needed, but we add Shape directly
     }
 
     private void updateSpotlight(Node target) {
@@ -190,6 +231,60 @@ public class TourOverlay extends Pane {
 
         messageBubble.setLayoutX(x);
         messageBubble.setLayoutY(y);
+
+        updateArrow(x, y, bubbleWidth, bubbleHeight, bounds, position);
+    }
+
+    private void updateArrow(double bx, double by, double bw, double bh, Bounds targetBounds,
+            TourStep.TourPosition pos) {
+        arrow.setVisible(true);
+        arrow.getPoints().clear();
+
+        double arrowSize = 10;
+
+        // Points depend on position relative to bubble
+        switch (pos) {
+            case RIGHT: // Bubble is to the Right of target -> Arrow points LEFT
+                arrow.getPoints().addAll(
+                        bx, by + 20,
+                        bx - arrowSize, by + 20 + (arrowSize / 2),
+                        bx, by + 20 + arrowSize);
+                break;
+            case LEFT: // Bubble is Left -> Arrow points RIGHT
+                arrow.getPoints().addAll(
+                        bx + bw, by + 20,
+                        bx + bw + arrowSize, by + 20 + (arrowSize / 2),
+                        bx + bw, by + 20 + arrowSize);
+                break;
+            case BOTTOM: // Bubble is Bottom -> Arrow points UP
+                arrow.getPoints().addAll(
+                        bx + (bw / 2) - (arrowSize / 2), by,
+                        bx + (bw / 2), by - arrowSize,
+                        bx + (bw / 2) + (arrowSize / 2), by);
+                break;
+            case TOP: // Bubble is Top -> Arrow points DOWN
+                arrow.getPoints().addAll(
+                        bx + (bw / 2) - (arrowSize / 2), by + bh,
+                        bx + (bw / 2), by + bh + arrowSize,
+                        bx + (bw / 2) + (arrowSize / 2), by + bh);
+                break;
+            default:
+                arrow.setVisible(false);
+        }
+
+        // Ensure arrow fill matches bubble (could be dynamic based on theme)
+        // For now hardcoded to match style.css assumption, or better: bind to bubble
+        // background
+        // arrow.fillProperty().bind(messageBubble.backgroundProperty()...); // Complex
+        // due to CSS lookup
+    }
+
+    private boolean isClickOnTarget(double x, double y) {
+        if (currentStep == null || currentStep.targetNode() == null)
+            return false;
+        Node target = currentStep.targetNode();
+        Bounds bounds = target.localToScene(target.getBoundsInLocal());
+        return bounds.contains(x, y);
     }
 
     private void centerBubble() {

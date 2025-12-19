@@ -33,6 +33,10 @@ public class TourManager {
         }
     }
 
+    public void forceStart() {
+        start();
+    }
+
     public void start() {
         if (steps.isEmpty())
             return;
