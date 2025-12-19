@@ -1,11 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Project Documentation</title>
+    <title>Exam Timetable Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+            max-width: 900px;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
-    <h1>Documentation</h1>
-    <p>This page contains the project documentation.</p>
+
+<h1>Exam Timetable Planner</h1>
+<p>
+    Exam Timetable Planner is a standalone Windows desktop application that automatically
+    generates optimized exam schedules for educational institutions. The system processes
+    courses, classrooms, student enrollments, and predefined business constraints to produce
+    a conflict-free and efficient exam timetable.
+</p>
+
+<h2>Target Users</h2>
+<p>
+    The primary users of this application are Student Affairs personnel responsible for creating
+    and maintaining examination schedules.
+</p>
+
+<h2>Key Features</h2>
+<ul>
+    <li>Import course, classroom, and enrollment data from CSV files</li>
+    <li>Automatically generate an optimized exam timetable</li>
+    <li>View the master exam schedule in a structured table format</li>
+    <li>Search schedules by student ID or course code</li>
+    <li>Manually modify exam times and classrooms</li>
+    <li>Instant validation of all manual changes against scheduling constraints</li>
+    <li>Export the final timetable for external use</li>
+</ul>
+
+<h2>Scheduling Constraints</h2>
+<ul>
+    <li>Exams are scheduled between 09:00 and 18:30</li>
+    <li>A student cannot have more than two exams on the same day</li>
+    <li>A minimum 3-hour gap is enforced between exams on the same day</li>
+    <li>A classroom cannot be assigned to multiple exams at the same time</li>
+    <li>Classroom capacity must be sufficient for the number of students</li>
+</ul>
+
+<h2>System Architecture</h2>
+<p>
+    The application follows a layered architecture to ensure modularity, maintainability,
+    and separation of concerns.
+</p>
+
+<ul>
+    <li><strong>Domain Layer</strong> – Core data models such as Course, Student, Classroom, and Exam</li>
+    <li><strong>Services Layer</strong> – Scheduling, constraint checking, and optimization logic</li>
+    <li><strong>Persistence Layer</strong> – CSV data loading and SQLite database management</li>
+    <li><strong>Presentation Layer</strong> – JavaFX user interface and controllers</li>
+</ul>
+
+<h2>Project Structure</h2>
+<pre>
+src/main/java/com/examplanner/
+ ├── domain
+ ├── services
+ ├── persistence
+ └── ui
+</pre>
+
+<h2>Technologies Used</h2>
+<ul>
+    <li>Java</li>
+    <li>JavaFX</li>
+    <li>SQLite</li>
+    <li>CSV File Processing</li>
+    <li>Git & GitHub</li>
+</ul>
+
+<h2>How to Run the Project</h2>
+<ol>
+    <li>Clone the GitHub repository</li>
+    <li>Open the project in a Java IDE (IntelliJ IDEA or Eclipse)</li>
+    <li>Ensure Java and JavaFX are properly configured</li>
+    <li>Run the <code>MainApp</code> class</li>
+    <li>Load input CSV files and start timetable generation</li>
+</ol>
+
+<h2>Project Team</h2>
+<ul>
+    <li>Doğan Mert İlhan</li>
+    <li>Utku Bilir</li>
+    <li>Deniz Yıldırım</li>
+    <li>Arda Barut</li>
+    <li>Furkan Galip</li>
+    <li>Mert Barmanbek</li>
+</ul>
+
+<h2>Source Code</h2>
+<p>
+    The complete source code is available on GitHub:
+    <br>
+    <a href="https://github.com/kullaniciadi/repo_adi">
+        https://github.com/kullaniciadi/repo_adi
+    </a>
+</p>
+
+<footer>
+    <p>
+        Exam Timetable Planner – Software Engineering Project Documentation
+    </p>
+</footer>
+
 </body>
 </html>
