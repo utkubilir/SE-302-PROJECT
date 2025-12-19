@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Locale;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 public class MainController {
 
@@ -245,7 +246,8 @@ public class MainController {
         HBox header = new HBox(20);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Button backBtn = new Button("← " + bundle.getString("manual.back"));
+        Button backBtn = new Button(bundle.getString("manual.back"));
+        backBtn.setGraphic(IconHelper.back());
         backBtn.getStyleClass().add("secondary-button");
         backBtn.setOnAction(e -> showDataImport());
 
@@ -342,8 +344,7 @@ public class MainController {
         HBox box = new HBox(10);
         box.getStyleClass().add("manual-tip");
 
-        Label icon = new Label("💡");
-        icon.setStyle("-fx-font-size: 18px; -fx-text-fill: #e8c710ff;");
+        FontIcon icon = IconHelper.tip();
 
         Label lblText = new Label("Tip: " + text);
         lblText.setWrapText(true);
@@ -1551,7 +1552,8 @@ public class MainController {
         javafx.scene.control.ContextMenu searchMenu = new javafx.scene.control.ContextMenu();
 
         // 1. DERS FİLTRESİ
-        javafx.scene.control.MenuItem courseItem = new javafx.scene.control.MenuItem(bundle.getString("dataImport.courses"));
+        javafx.scene.control.MenuItem courseItem = new javafx.scene.control.MenuItem(
+                bundle.getString("dataImport.courses"));
         courseItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("dataImport.courses"));
             // Filtreyi anında çalıştırıyoruz
@@ -1559,21 +1561,24 @@ public class MainController {
         });
 
         // 2. TARİH FİLTRESİ
-        javafx.scene.control.MenuItem dateItem = new javafx.scene.control.MenuItem(bundle.getString("examDetails.date"));
+        javafx.scene.control.MenuItem dateItem = new javafx.scene.control.MenuItem(
+                bundle.getString("examDetails.date"));
         dateItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("examDetails.date"));
             applyAdvancedFilter(txtCourseSearch.getText());
         });
 
         // 3. SAAT FİLTRESİ
-        javafx.scene.control.MenuItem timeItem = new javafx.scene.control.MenuItem(bundle.getString("examDetails.time"));
+        javafx.scene.control.MenuItem timeItem = new javafx.scene.control.MenuItem(
+                bundle.getString("examDetails.time"));
         timeItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("examDetails.time"));
             applyAdvancedFilter(txtCourseSearch.getText());
         });
 
         // 4. SINIF FİLTRESİ
-        javafx.scene.control.MenuItem roomItem = new javafx.scene.control.MenuItem(bundle.getString("dataImport.classrooms"));
+        javafx.scene.control.MenuItem roomItem = new javafx.scene.control.MenuItem(
+                bundle.getString("dataImport.classrooms"));
         roomItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("dataImport.classrooms"));
             applyAdvancedFilter(txtCourseSearch.getText());
@@ -1838,7 +1843,7 @@ public class MainController {
             Student s = entry.getKey();
             for (Map.Entry<LocalDate, List<Exam>> dayEntry : entry.getValue().entrySet()) {
                 if (dayEntry.getValue().size() > 1) {
-                    reportLines.add("🔴 " + s.getName() + " has " + dayEntry.getValue().size() + " exams on "
+                    reportLines.add("[!] " + s.getName() + " has " + dayEntry.getValue().size() + " exams on "
                             + dayEntry.getKey());
                     // Maybe list the exams?
                     reportLines.add("   " + dayEntry.getValue().stream().map(e -> e.getCourse().getCode())
@@ -3506,8 +3511,8 @@ public class MainController {
         header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         header.setStyle("-fx-padding: 20; -fx-background-color: linear-gradient(to right, #8B5CF6, #6366F1);");
 
-        Label titleIcon = new Label("👥");
-        titleIcon.setStyle("-fx-font-size: 24px;");
+        FontIcon titleIcon = IconHelper.attendance();
+        titleIcon.setIconSize(24);
 
         VBox titleBox = new VBox(2);
         Label title = new Label(bundle.getString("enrolled.headerTitle"));
@@ -3524,8 +3529,8 @@ public class MainController {
         searchBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         searchBox.setStyle("-fx-padding: 15 20; -fx-background-color: " + dmBgSecondary() + ";");
 
-        Label searchIcon = new Label("🔍");
-        searchIcon.setStyle("-fx-font-size: 14px;");
+        FontIcon searchIcon = IconHelper.search();
+        searchIcon.setStyle("-fx-icon-color: " + dmTextSecondary() + ";");
 
         TextField searchField = new TextField();
         searchField.setPromptText(bundle.getString("enrolled.searchPrompt"));
@@ -3558,8 +3563,10 @@ public class MainController {
                     cellBox.setStyle(
                             "-fx-padding: 10 15; -fx-background-color: " + dmBgCard() + "; -fx-background-radius: 8;");
 
-                    Label avatar = new Label("👤");
-                    avatar.setStyle("-fx-font-size: 16px; -fx-background-color: #E0E7FF; " +
+                    FontIcon avatar = IconHelper.user();
+                    avatar.setIconSize(18);
+                    HBox avatarBox = new HBox(avatar);
+                    avatarBox.setStyle("-fx-background-color: #E0E7FF; " +
                             "-fx-background-radius: 50; -fx-padding: 8; -fx-min-width: 36; -fx-alignment: center;");
 
                     VBox infoBox = new VBox(2);
@@ -3570,7 +3577,7 @@ public class MainController {
                     idLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + dmTextSecondary() + ";");
                     infoBox.getChildren().addAll(nameLabel, idLabel);
 
-                    cellBox.getChildren().addAll(avatar, infoBox);
+                    cellBox.getChildren().addAll(avatarBox, infoBox);
                     setGraphic(cellBox);
                     setText(null);
                     setStyle("-fx-background-color: transparent; -fx-padding: 3 5;");

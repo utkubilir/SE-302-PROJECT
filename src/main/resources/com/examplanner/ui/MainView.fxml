@@ -23,6 +23,7 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.shape.SVGPath?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane prefHeight="800.0" prefWidth="1200.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.examplanner.ui.MainController">
    
@@ -35,19 +36,35 @@
             </HBox>
             
             <VBox spacing="5">
-               <Button fx:id="btnDataImport" maxWidth="Infinity" mnemonicParsing="false" onAction="#showDataImport" styleClass="nav-button, active" text="Data Import" />
-                <Button fx:id="btnDashboard" maxWidth="Infinity" mnemonicParsing="false" onAction="#showDashboard" styleClass="nav-button" text="Dashboard" />
-               <Button fx:id="btnTimetable" maxWidth="Infinity" mnemonicParsing="false" onAction="#showTimetable" styleClass="nav-button" text="Timetable" />
-               <Button fx:id="btnStudentFilter" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSidebarStudentSearch" styleClass="nav-button" text="Student Search" />
-                <Button fx:id="btnUserManual" maxWidth="Infinity" mnemonicParsing="false" onAction="#showUserManual" styleClass="nav-button" text="📖 User Manual" />
-                <Separator />
-                <Button fx:id="btnStudentPortal" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleStudentPortal" styleClass="nav-button" text="Student Portal (Login)" />
+               <Button fx:id="btnDataImport" maxWidth="Infinity" mnemonicParsing="false" onAction="#showDataImport" styleClass="nav-button, active" text="Data Import">
+                  <graphic><FontIcon iconLiteral="fas-file-import" iconSize="16" styleClass="nav-icon"/></graphic>
+               </Button>
+               <Button fx:id="btnDashboard" maxWidth="Infinity" mnemonicParsing="false" onAction="#showDashboard" styleClass="nav-button" text="Dashboard">
+                  <graphic><FontIcon iconLiteral="fas-chart-bar" iconSize="16" styleClass="nav-icon"/></graphic>
+               </Button>
+               <Button fx:id="btnTimetable" maxWidth="Infinity" mnemonicParsing="false" onAction="#showTimetable" styleClass="nav-button" text="Timetable">
+                  <graphic><FontIcon iconLiteral="fas-calendar-alt" iconSize="16" styleClass="nav-icon"/></graphic>
+               </Button>
+               <Button fx:id="btnStudentFilter" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSidebarStudentSearch" styleClass="nav-button" text="Student Search">
+                  <graphic><FontIcon iconLiteral="fas-user-graduate" iconSize="16" styleClass="nav-icon"/></graphic>
+               </Button>
+               <Button fx:id="btnUserManual" maxWidth="Infinity" mnemonicParsing="false" onAction="#showUserManual" styleClass="nav-button" text="User Manual">
+                  <graphic><FontIcon iconLiteral="fas-book-open" iconSize="16" styleClass="nav-icon"/></graphic>
+               </Button>
+               <Separator />
+               <Button fx:id="btnStudentPortal" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleStudentPortal" styleClass="nav-button" text="Student Portal">
+                  <graphic><FontIcon iconLiteral="fas-door-open" iconSize="16" styleClass="nav-icon"/></graphic>
+               </Button>
             </VBox>
             
             <Region VBox.vgrow="ALWAYS" />
             
-            <Button fx:id="btnSettings" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSettings" styleClass="nav-button" text="⚙️ Settings" />
-            <Button fx:id="btnExit" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleExit" styleClass="nav-button" text="Exit" />
+            <Button fx:id="btnSettings" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSettings" styleClass="nav-button" text="Settings">
+               <graphic><FontIcon iconLiteral="fas-cog" iconSize="16" styleClass="nav-icon"/></graphic>
+            </Button>
+            <Button fx:id="btnExit" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleExit" styleClass="nav-button" text="Exit">
+               <graphic><FontIcon iconLiteral="fas-sign-out-alt" iconSize="16" styleClass="nav-icon"/></graphic>
+            </Button>
          </children>
       </VBox>
    </left>
@@ -67,7 +84,7 @@
                <VBox spacing="15">
                   <!-- Courses Card -->
                   <HBox styleClass="card" onMouseClicked="#handleLoadCourses" alignment="CENTER_LEFT" spacing="15">
-                     <Label text="📄" style="-fx-font-size: 24px;"/>
+                     <FontIcon iconLiteral="fas-file-alt" iconSize="28" styleClass="card-icon"/>
                      <VBox>
                         <Label fx:id="lblCoursesTitle" styleClass="card-title" text="Courses" />
                         <Label fx:id="lblCoursesStatus" styleClass="card-subtitle" text="courses.csv • Not loaded" />
@@ -76,7 +93,7 @@
 
                   <!-- Students Card -->
                   <HBox styleClass="card" onMouseClicked="#handleLoadStudents" alignment="CENTER_LEFT" spacing="15">
-                     <Label text="🎓" style="-fx-font-size: 24px;"/>
+                     <FontIcon iconLiteral="fas-graduation-cap" iconSize="28" styleClass="card-icon"/>
                      <VBox>
                         <Label fx:id="lblStudentsTitle" styleClass="card-title" text="Students" />
                         <Label fx:id="lblStudentsStatus" styleClass="card-subtitle" text="students.csv • Not loaded" />
@@ -85,7 +102,7 @@
 
                   <!-- Classrooms Card -->
                   <HBox styleClass="card" onMouseClicked="#handleLoadClassrooms" alignment="CENTER_LEFT" spacing="15">
-                     <Label text="🏢" style="-fx-font-size: 24px;"/>
+                     <FontIcon iconLiteral="fas-building" iconSize="28" styleClass="card-icon"/>
                      <VBox>
                         <Label fx:id="lblClassroomsTitle" styleClass="card-title" text="Classrooms" />
                         <Label fx:id="lblClassroomsStatus" styleClass="card-subtitle" text="rooms.csv • Not loaded" />
@@ -94,7 +111,7 @@
 
                   <!-- Attendance Card -->
                   <HBox styleClass="card" onMouseClicked="#handleLoadAttendance" alignment="CENTER_LEFT" spacing="15">
-                     <Label text="👥" style="-fx-font-size: 24px;"/>
+                     <FontIcon iconLiteral="fas-users" iconSize="28" styleClass="card-icon"/>
                      <VBox>
                         <Label fx:id="lblAttendanceTitle" styleClass="card-title" text="Attendance" />
                         <Label fx:id="lblAttendanceStatus" styleClass="card-subtitle" text="attendance.csv • Not loaded" />
@@ -123,7 +140,9 @@
          <VBox fx:id="viewTimetable" spacing="20.0" visible="false">
             <children>
                <HBox alignment="CENTER_LEFT" spacing="20">
-                   <Button text="← Back" onAction="#showDataImport" styleClass="secondary-button" />
+                   <Button onAction="#showDataImport" styleClass="secondary-button" text="Back">
+                      <graphic><FontIcon iconLiteral="fas-arrow-left" iconSize="14" styleClass="btn-icon"/></graphic>
+                   </Button>
                   <VBox>
                      <Label styleClass="section-title" text="Exam Schedule" />
                      <Label fx:id="lblTimetableSubtitle" styleClass="section-subtitle" text="December 2025 - Final Exams" />
@@ -135,31 +154,43 @@
                   <!-- Advanced Search Bar -->
                   <HBox alignment="CENTER_LEFT" spacing="0" styleClass="modern-search-bar" prefWidth="350.0">
                      <children>
-                        <Label text="🔍" style="-fx-text-fill: #9CA3AF; -fx-padding: 0 0 0 12;" />
+                        <FontIcon iconLiteral="fas-search" iconSize="14" style="-fx-icon-color: #9CA3AF; -fx-padding: 0 0 0 12;"/>
 
                         <TextField fx:id="txtCourseSearch" promptText="Sınav veya ders ara..."
                                    HBox.hgrow="ALWAYS" styleClass="modern-search-field" />
 
                         <Button fx:id="btnSearchFilter" onAction="#handleFilter" styleClass="modern-filter-btn" mnemonicParsing="false">
                            <graphic>
-                              <SVGPath content="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" fill="#4b5563" />
+                              <FontIcon iconLiteral="fas-filter" iconSize="14" style="-fx-icon-color: #4b5563;"/>
                            </graphic>
                         </Button>
                      </children>
                   </HBox>
                   
-                  <Button fx:id="btnHistory" mnemonicParsing="false" onAction="#showEditHistory" styleClass="secondary-button" text="📜 History" />
-                  <Button fx:id="btnValidateAll" mnemonicParsing="false" onAction="#handleValidateAll" styleClass="secondary-button" text="✓ Validate All" />
-                  <Button fx:id="btnConflicts" mnemonicParsing="false" onAction="#handleConflicts" styleClass="secondary-button" text="Conflicts" />
-                  <Button fx:id="btnExport" mnemonicParsing="false" onAction="#handleExport" styleClass="secondary-button" text="Export CSV" />
-                  <Button fx:id="btnExportPdf" mnemonicParsing="false" onAction="#handleExportPdf" styleClass="secondary-button" text="Export PDF" />
-                  <Button fx:id="btnGenerateTimetable" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate Timetable" />
+                  <Button fx:id="btnHistory" mnemonicParsing="false" onAction="#showEditHistory" styleClass="secondary-button" text="History">
+                     <graphic><FontIcon iconLiteral="fas-history" iconSize="14" styleClass="btn-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="btnValidateAll" mnemonicParsing="false" onAction="#handleValidateAll" styleClass="secondary-button" text="Validate All">
+                     <graphic><FontIcon iconLiteral="fas-check-circle" iconSize="14" styleClass="btn-icon-success"/></graphic>
+                  </Button>
+                  <Button fx:id="btnConflicts" mnemonicParsing="false" onAction="#handleConflicts" styleClass="secondary-button" text="Conflicts">
+                     <graphic><FontIcon iconLiteral="fas-exclamation-triangle" iconSize="14" styleClass="btn-icon-warning"/></graphic>
+                  </Button>
+                  <Button fx:id="btnExport" mnemonicParsing="false" onAction="#handleExport" styleClass="secondary-button" text="Export CSV">
+                     <graphic><FontIcon iconLiteral="fas-file-export" iconSize="14" styleClass="btn-icon"/></graphic>
+                  </Button>
+                  <Button fx:id="btnExportPdf" mnemonicParsing="false" onAction="#handleExportPdf" styleClass="secondary-button" text="Export PDF">
+                     <graphic><FontIcon iconLiteral="fas-file-pdf" iconSize="14" styleClass="btn-icon-error"/></graphic>
+                  </Button>
+                  <Button fx:id="btnGenerateTimetable" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate">
+                     <graphic><FontIcon iconLiteral="fas-magic" iconSize="14" style="-fx-icon-color: white;"/></graphic>
+                  </Button>
                </HBox>
                
                <!-- Edit Help Text -->
-               <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #F0FDF4; -fx-padding: 10 15; -fx-background-radius: 8; -fx-border-color: #86EFAC; -fx-border-radius: 8;">
-                  <Label text="💡" style="-fx-font-size: 16px; -fx-text-fill: #F59E0B;" />
-                  <Label fx:id="lblTimetableTip" text="Tip: Double-click a row to edit, or right-click for quick actions. All changes are validated in real-time." style="-fx-text-fill: #166534; -fx-font-size: 12px;" />
+               <HBox fx:id="tipBox" alignment="CENTER_LEFT" spacing="15" styleClass="tip-box">
+                  <FontIcon iconLiteral="fas-lightbulb" iconSize="18" styleClass="tip-icon"/>
+                  <Label fx:id="lblTimetableTip" text="Tip: Double-click a row to edit, or right-click for quick actions. All changes are validated in real-time." styleClass="tip-text"/>
                </HBox>
 
                <TableView fx:id="examTableView" styleClass="exam-table" VBox.vgrow="ALWAYS">

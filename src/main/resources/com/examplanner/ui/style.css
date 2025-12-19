@@ -14,6 +14,120 @@
     -fx-background-color: -fx-color-bg;
 }
 
+/* ===== ICON STYLES ===== */
+.icon {
+    -fx-icon-color: #6B7280;
+}
+
+.icon-primary {
+    -fx-icon-color: #8B5CF6;
+}
+
+.icon-success {
+    -fx-icon-color: #10B981;
+}
+
+.icon-warning {
+    -fx-icon-color: #F59E0B;
+}
+
+.icon-error {
+    -fx-icon-color: #EF4444;
+}
+
+/* Navigation Icons */
+.nav-icon {
+    -fx-icon-color: #6B7280;
+}
+
+.nav-button:hover .nav-icon,
+.nav-button.active .nav-icon {
+    -fx-icon-color: #8B5CF6;
+}
+
+/* Card Icons */
+.card-icon {
+    -fx-icon-color: #8B5CF6;
+}
+
+.card:hover .card-icon {
+    -fx-icon-color: #7C3AED;
+}
+
+/* Button Icons */
+.btn-icon {
+    -fx-icon-color: #6B7280;
+}
+
+.btn-icon-success {
+    -fx-icon-color: #10B981;
+}
+
+.btn-icon-warning {
+    -fx-icon-color: #F59E0B;
+}
+
+.btn-icon-error {
+    -fx-icon-color: #EF4444;
+}
+
+.secondary-button:hover .btn-icon {
+    -fx-icon-color: #4B5563;
+}
+
+/* Tip Box */
+.tip-box {
+    -fx-background-color: #F0FDF4;
+    -fx-padding: 10 15;
+    -fx-background-radius: 8;
+    -fx-border-color: #86EFAC;
+    -fx-border-radius: 8;
+}
+
+.tip-icon {
+    -fx-icon-color: #F59E0B;
+}
+
+.tip-text {
+    -fx-text-fill: #166534;
+    -fx-font-size: 12px;
+}
+
+/* Dark Mode Icon Overrides */
+.dark-mode .nav-icon {
+    -fx-icon-color: #9CA3AF;
+}
+
+.dark-mode .nav-button:hover .nav-icon,
+.dark-mode .nav-button.active .nav-icon {
+    -fx-icon-color: #A78BFA;
+}
+
+.dark-mode .card-icon {
+    -fx-icon-color: #A78BFA;
+}
+
+.dark-mode .btn-icon {
+    -fx-icon-color: #9CA3AF;
+}
+
+.dark-mode .secondary-button:hover .btn-icon {
+    -fx-icon-color: #D1D5DB;
+}
+
+.dark-mode .tip-box {
+    -fx-background-color: #064E3B;
+    -fx-border-color: #34D399;
+}
+
+.dark-mode .tip-icon {
+    -fx-icon-color: #FBBF24;
+}
+
+.dark-mode .tip-text {
+    -fx-text-fill: #A7F3D0;
+}
+
 /* Sidebar */
 .sidebar {
     -fx-background-color: white;
