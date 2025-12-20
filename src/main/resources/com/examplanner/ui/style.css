@@ -10,8 +10,17 @@
     -fx-color-warning: #F59E0B;
     -fx-color-error: #EF4444;
 
-    -fx-font-family: 'System';
     -fx-background-color: -fx-color-bg;
+}
+
+/* Apply System font to text controls only */
+.label,
+.button,
+.text-field,
+.text-area,
+.combo-box,
+.tab {
+    -fx-font-family: 'System';
 }
 
 /* ===== ICON STYLES ===== */
@@ -1683,9 +1692,11 @@
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }
+
 /* Active Navigation State & Floating Indicator */
 .nav-button.active {
-    -fx-background-color: derive(-fx-color-primary, 90%); /* Light background */
+    -fx-background-color: derive(-fx-color-primary, 90%);
+    /* Light background */
     -fx-text-fill: -fx-color-primary;
     -fx-font-weight: bold;
 }
@@ -1697,7 +1708,8 @@
 
 .dark-mode .nav-button.active {
     -fx-background-color: derive(-fx-color-primary, -60%);
-    -fx-text-fill: #A78BFA; /* Light purple */
+    -fx-text-fill: #A78BFA;
+    /* Light purple */
 }
 
 /* Floating Active Indicator */
@@ -1722,7 +1734,7 @@
 .tour-bubble {
     -fx-background-color: -fx-color-bg;
     -fx-background-radius: 8px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 4);
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 4);
     -fx-border-color: -fx-color-border;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
@@ -1767,5 +1779,213 @@
 
 /* Dark mode adjustments for tour bubble specific overrides if needed */
 .dark-mode .tour-bubble {
-    -fx-background-color: #1F2937; /* Dark bubbles */
+    -fx-background-color: #1F2937;
+    /* Dark bubbles */
+}
+
+/* Modern Search Bar */
+.modern-search-bar {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: -fx-color-border;
+    -fx-padding: 0;
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 5, 0, 0, 2);
+}
+
+.modern-search-bar:focused-within {
+    -fx-border-color: -fx-color-primary;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.2), 8, 0, 0, 0);
+}
+
+/* SVG Shapes for fallback - Bypass Font Engine */
+.icon-sun {
+    -fx-shape: "M256 160c-52.9 0-96 43.1-96 96s43.1 96 96 96 96-43.1 96-96-43.1-96-96-96zm246.4 80.5l-94.7-47.3 33.5-100.4c4.5-13.6-8.4-26.5-21.9-21.9l-100.4 33.5-47.4-94.8c-6.4-12.8-24.6-12.8-31 0l-47.3 94.7L92.7 70.8c-13.6-4.5-26.5 8.4-21.9 21.9l33.5 100.4-94.7 47.4c-12.8 6.4-12.8 24.6 0 31l94.7 47.3-33.5 100.5c-4.5 13.6 8.4 26.5 21.9 21.9l100.4-33.5 47.3 94.7c6.4 12.8 24.6 12.8 31 0l47.3-94.7 100.4 33.5c13.6 4.5 26.5-8.4 21.9-21.9l-33.5-100.4 94.7-47.3c13-6.5 13-24.7.2-31.1zm-155.9 106c-49.9 49.9-131.1 49.9-181 0-49.9-49.9-49.9-131.1 0-181 49.9-49.9 131.1-49.9 181 0 49.9 49.9 49.9 131.1 0 181z";
+    -fx-background-color: #F59E0B;
+    -fx-min-width: 18px;
+    -fx-min-height: 18px;
+    -fx-max-width: 18px;
+    -fx-max-height: 18px;
+}
+
+.icon-moon {
+    -fx-shape: "M223.5 32C100 32 0 132.3 0 256S100 480 223.6 480c60.6 0 115.5-24.2 155.8-63.4 5-4.9 6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6-96.9 0-175.5-78.8-175.5-176 0-65.8 36-123.1 89.3-153.3 6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z";
+    -fx-background-color: #6B7280;
+    -fx-min-width: 16px;
+    -fx-min-height: 16px;
+    -fx-max-width: 16px;
+    -fx-max-height: 16px;
+}
+
+.icon-globe {
+    -fx-shape: "M379.2 256h-246.4C140.4 130 190.8 32 256 32s115.6 98 123.2 224zM256 480c-65.2 0-115.6-98-123.2-224h246.4c-7.6 126-58 224-123.2 224zM128 256h-94.4c8.4-86.8 54-159.4 119.6-203.4-23.6 62-38 131-38 203.4h12.8zm12.8 32c0 72.4 14.4 141.4 38 203.4-65.6-44-111.2-116.6-119.6-203.4h94.4zm230.4 203.4c65.6-44 111.2-116.6 119.6-203.4h-94.4c-8.4 86.8-54 159.4-119.6 203.4 23.6-62 38-131 38-203.4h-12.8zm12.8-235.4h94.4c-8.4-86.8-54-159.4-119.6-203.4 23.6 62 38 131 38 203.4h-12.8z";
+    -fx-min-width: 18px;
+    -fx-min-height: 18px;
+    -fx-max-width: 18px;
+    -fx-max-height: 18px;
+}
+
+.icon-globe-us {
+    -fx-background-color: #3B82F6;
+}
+
+.icon-globe-tr {
+    -fx-background-color: #EF4444;
+}
+
+.modern-search-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 8 10;
+    -fx-text-fill: -fx-color-text;
+    -fx-prompt-text-fill: -fx-color-text-secondary;
+    -fx-font-size: 13px;
+}
+
+.modern-search-field:focused {
+    -fx-background-color: transparent;
+}
+
+.modern-filter-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 8 12;
+    -fx-background-radius: 0 20 20 0;
+    -fx-border-color: transparent transparent transparent -fx-color-border;
+}
+
+.modern-filter-btn:hover {
+    -fx-background-color: -fx-color-primary-light;
+}
+
+.modern-filter-btn:hover .ikonli-font-icon {
+    -fx-icon-color: -fx-color-primary;
+}
+
+/* Dark Mode Overrides for Search */
+.dark-mode .modern-search-bar {
+    -fx-background-color: #1F2937;
+    /* Dark secondary bg */
+    -fx-border-color: #374151;
+}
+
+.dark-mode .modern-search-field {
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #9CA3AF;
+}
+
+.dark-mode .modern-filter-btn {
+    -fx-border-color: transparent transparent transparent #374151;
+}
+
+.dark-mode .modern-filter-btn:hover {
+    -fx-background-color: rgba(139, 92, 246, 0.2);
+}
+
+/* Search and Filter Icons */
+.search-icon {
+    -fx-icon-color: #9CA3AF;
+    -fx-padding: 0 0 0 12;
+}
+
+.filter-icon {
+    -fx-icon-color: #4B5563;
+}
+
+.modern-filter-btn:hover .filter-icon {
+    -fx-icon-color: -fx-color-primary;
+}
+
+/* Dark Mode Search Icons */
+.dark-mode .search-icon {
+    -fx-icon-color: #9CA3AF;
+    /* or lighter: #D1D5DB */
+}
+
+.dark-mode .filter-icon {
+    -fx-icon-color: #D1D5DB;
+}
+
+.dark-mode .modern-filter-btn:hover .filter-icon {
+    -fx-icon-color: #A78BFA;
+}
+
+/* =========================================
+   USER REQUESTED STYLING: PURPLE SEARCH BAR
+   ========================================= */
+.modern-search-bar {
+    -fx-border-color: #8B5CF6;
+    /* Purple border */
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.dark-mode .modern-search-bar {
+    -fx-border-color: #8B5CF6;
+    /* Purple border */
+    -fx-background-color: #2E1065;
+    /* Deep purple background for dark mode */
+}
+
+/* =========================================
+   USER REQUESTED STYLING: FILTER MENU ICONS
+   ========================================= */
+.menu-icon {
+    -fx-min-width: 14px;
+    -fx-min-height: 14px;
+    -fx-max-width: 14px;
+    -fx-max-height: 14px;
+}
+
+/* Book Icon (Courses) */
+.icon-book {
+    -fx-shape: "M448 360V24c0-13.3-10.7-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13.3 0 24-10.7 24-24v-16c0-7.5-3.5-14.3-8.9-18.7-4.2-15.4-4.2-59.3 0-74.7 5.4-4.3 8.9-11.1 8.9-18.6zM128 134c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm0 64c0-3.3 2.7-6 6-6h212c3.3 0 6 2.7 6 6v20c0 3.3-2.7 6-6 6H134c-3.3 0-6-2.7-6-6v-20zm253.4 250H96c-17.7 0-32-14.3-32-32 0-17.6 14.4-32 32-32h285.4c-1.9 17.1-1.9 46.9 0 64z";
+    -fx-background-color: #4B5563;
+}
+
+/* Calendar Icon (Date) */
+.icon-calendar-day {
+    -fx-shape: "M0 464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V192H0v272zm320-196c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM192 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-40zM64 268c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zm0 128c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM400 64h-48V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H160V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48H48C21.5 64 0 85.5 0 112v48h448v-48c0-26.5-21.5-48-48-48z";
+    -fx-background-color: #4B5563;
+}
+
+/* Clock Icon (Time) */
+.icon-clock {
+    -fx-shape: "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm50.7 290.7c-4.7 4.7-12.3 4.7-17 0l-57-57c-2.3-2.3-3.6-5.4-3.6-8.7V176c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v61.7l51.6 51.6c4.7 4.7 4.7 12.3 0 17z";
+    -fx-background-color: #4B5563;
+}
+
+/* Classroom Icon (Building) */
+.icon-chalkboard {
+    -fx-shape: "M192 0c-17.7 0-32 14.3-32 32V64H0V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V64H288V32c0-17.7-14.3-32-32-32H192zM64 432c-8.8 0-16-7.2-16-16V112H160V432H64zm128 0V96h64v64H224c-17.7 0-32 14.3-32 32s14.3 32 32 32h32v64H224c-17.7 0-32 14.3-32 32s14.3 32 32 32h32v80H192zM416 416c0 8.8-7.2 16-16 16H288V112h96V416h32z";
+    -fx-background-color: #4B5563;
+}
+
+/* Dark Mode Overrides for Icons */
+.dark-mode .icon-book,
+.dark-mode .icon-calendar-day,
+.dark-mode .icon-clock,
+.dark-mode .icon-chalkboard,
+.dark-mode .icon-calendar-check {
+    -fx-background-color: #E5E7EB;
+}
+
+/* Calendar Check Icon (Generate) */
+.icon-calendar-check {
+    -fx-shape: "M320 32c0-17.7-14.3-32-32-32H160c-17.7 0-32 14.3-32 32V64H64c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H320V32zM128 368c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16v-32c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v32zm221.7-86.6l-84.9 84.9c-4.7 4.7-12.3 4.7-17 0l-42.4-42.4c-4.7-4.7-4.7-12.3 0-17l11.3-11.3c4.7-4.7 12.3-4.7 17 0l22.6 22.6 65.1-65.1c4.7-4.7 12.3-4.7 17 0l11.3 11.3c4.7 4.7 4.7 12.3 0 17z";
+    -fx-background-color: #E5E7EB;
+    /* White/Light by default for primary button text contrast? */
+    -fx-min-width: 14px;
+    -fx-min-height: 14px;
+    -fx-pref-width: 14px;
+    -fx-pref-height: 14px;
+    -fx-max-width: 14px;
+    -fx-max-height: 14px;
+}
+
+/* Ensure icon color matches button text usually white on primary */
+.primary-button .icon-calendar-check {
+    -fx-background-color: white;
 }

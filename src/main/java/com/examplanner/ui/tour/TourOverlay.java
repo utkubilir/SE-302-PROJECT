@@ -26,6 +26,8 @@ public class TourOverlay extends Pane {
     private VBox messageBubble;
     private Label lblTitle;
     private Label lblDescription;
+    private Button btnSkip;
+    private Button btnNext;
     private Shape spotlightMask;
     private javafx.scene.shape.Polygon arrow;
 
@@ -86,11 +88,11 @@ public class TourOverlay extends Pane {
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
-        Button btnSkip = new Button("Skip");
+        btnSkip = new Button("Skip");
         btnSkip.getStyleClass().add("tour-btn-skip");
         btnSkip.setOnAction(e -> onSkip.run());
 
-        Button btnNext = new Button("Next");
+        btnNext = new Button("Next");
         btnNext.getStyleClass().add("tour-btn-next");
         btnNext.setOnAction(e -> onNext.run());
 
@@ -101,6 +103,15 @@ public class TourOverlay extends Pane {
 
         // Initial visibility
         setVisible(false);
+        // Initial visibility
+        setVisible(false);
+    }
+
+    public void setButtonLabels(String skipText, String nextText) {
+        if (btnSkip != null)
+            btnSkip.setText(skipText);
+        if (btnNext != null)
+            btnNext.setText(nextText);
     }
 
     public void showStep(TourStep step) {

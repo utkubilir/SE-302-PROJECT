@@ -62,10 +62,7 @@
                         <Button fx:id="btnStudentSearch" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSidebarStudentSearch" styleClass="nav-button" text="Student Search">
                            <graphic><FontIcon iconLiteral="fas-user-graduate" iconSize="16" styleClass="nav-icon"/></graphic>
                         </Button>
-                        <Separator styleClass="nav-separator"/>
-                        <Button fx:id="btnStudentPortal" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleStudentPortal" styleClass="nav-button" text="Student Portal">
-                           <graphic><FontIcon iconLiteral="fas-door-open" iconSize="16" styleClass="nav-icon"/></graphic>
-                        </Button>
+
                      </VBox>
                   </StackPane>
                </content>
@@ -169,11 +166,11 @@
          <VBox fx:id="viewTimetable" spacing="20.0" visible="false">
             <children>
                <HBox alignment="CENTER_LEFT" spacing="20">
-                   <Button onAction="#showDataImport" styleClass="secondary-button" text="Back">
+                   <Button fx:id="btnTimetableBack" onAction="#showDataImport" styleClass="secondary-button" text="Back">
                       <graphic><FontIcon iconLiteral="fas-arrow-left" iconSize="14" styleClass="btn-icon"/></graphic>
                    </Button>
                   <VBox>
-                     <Label styleClass="section-title" text="Exam Schedule" />
+                     <Label fx:id="lblTimetableTitle" styleClass="section-title" text="Exam Schedule" />
                      <Label fx:id="lblTimetableSubtitle" styleClass="section-subtitle" text="December 2025 - Final Exams" />
                   </VBox>
                   <Region HBox.hgrow="ALWAYS" />
@@ -183,14 +180,14 @@
                   <!-- Advanced Search Bar -->
                   <HBox alignment="CENTER_LEFT" spacing="0" styleClass="modern-search-bar" prefWidth="350.0">
                      <children>
-                        <FontIcon iconLiteral="fas-search" iconSize="14" style="-fx-icon-color: #9CA3AF; -fx-padding: 0 0 0 12;"/>
+                        <FontIcon iconLiteral="fas-search" iconSize="14" styleClass="search-icon"/>
 
-                        <TextField fx:id="txtCourseSearch" promptText="Sınav veya ders ara..."
+                        <TextField fx:id="txtCourseSearch" promptText="Search exams or courses..."
                                    HBox.hgrow="ALWAYS" styleClass="modern-search-field" />
 
                         <Button fx:id="btnSearchFilter" onAction="#handleFilter" styleClass="modern-filter-btn" mnemonicParsing="false">
                            <graphic>
-                              <FontIcon iconLiteral="fas-filter" iconSize="14" style="-fx-icon-color: #4b5563;"/>
+                              <FontIcon iconLiteral="fas-filter" iconSize="14" styleClass="filter-icon"/>
                            </graphic>
                         </Button>
                      </children>
@@ -205,19 +202,19 @@
                   <Button fx:id="btnConflicts" mnemonicParsing="false" onAction="#handleConflicts" styleClass="secondary-button" text="Conflicts">
                      <graphic><FontIcon iconLiteral="fas-exclamation-triangle" iconSize="14" styleClass="btn-icon-warning"/></graphic>
                   </Button>
-                  <MenuButton styleClass="secondary-button" text="Export">
+                  <MenuButton fx:id="mbExport" styleClass="secondary-button" text="Export">
                      <graphic><FontIcon iconLiteral="fas-download" iconSize="14" styleClass="btn-icon"/></graphic>
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleExportCsv" text="Export to CSV">
+                        <MenuItem fx:id="miExportCsv" mnemonicParsing="false" onAction="#handleExportCsv" text="Export to CSV">
                            <graphic><FontIcon iconLiteral="fas-file-csv" iconSize="14" styleClass="btn-icon"/></graphic>
                         </MenuItem>
-                        <MenuItem mnemonicParsing="false" onAction="#handleExportPdf" text="Export PDF">
+                        <MenuItem fx:id="miExportPdf" mnemonicParsing="false" onAction="#handleExportPdf" text="Export PDF">
                            <graphic><FontIcon iconLiteral="fas-file-pdf" iconSize="14" styleClass="btn-icon-error"/></graphic>
                         </MenuItem>
                      </items>
                   </MenuButton>
                   <Button fx:id="btnGenerateTimetable" mnemonicParsing="false" onAction="#handleGenerateTimetable" styleClass="primary-button" text="Generate">
-                     <graphic><FontIcon iconLiteral="fas-magic" iconSize="14" style="-fx-icon-color: white;"/></graphic>
+                     <graphic><FontIcon iconLiteral="fas-calendar-check" iconSize="14" style="-fx-icon-color: white;"/></graphic>
                   </Button>
                </HBox>
                

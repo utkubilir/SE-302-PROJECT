@@ -15,29 +15,16 @@ import java.time.LocalTime;
 import java.util.prefs.Preferences;
 import java.text.MessageFormat;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableCell;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
-import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -84,8 +71,7 @@ public class MainController {
     private Button btnDashboard;
     @FXML
     private Button btnStudentSearch;
-    @FXML
-    private Button btnStudentPortal;
+
     @FXML
     private Button btnSettings;
 
@@ -95,8 +81,6 @@ public class MainController {
     private Button btnGenerateTimetable;
     @FXML
     private Button btnDeleteData;
-    @FXML
-    private Button btnValidateAll;
 
     @FXML
     private VBox viewDataImport;
@@ -137,6 +121,24 @@ public class MainController {
 
     @FXML
     private Button btnSearchFilter; // FXML'de verdiğimiz yeni ID
+    @FXML
+    private Button btnHistory;
+    @FXML
+    private Button btnValidateAll;
+    @FXML
+    private Button btnConflicts;
+
+    @FXML
+    private Button btnTimetableBack;
+    @FXML
+    private Label lblTimetableTitle;
+    @FXML
+    private MenuButton mbExport;
+    @FXML
+    private MenuItem miExportCsv;
+    @FXML
+    private MenuItem miExportPdf;
+
     @FXML
     private Label lblCoursesStatus;
     @FXML
@@ -401,8 +403,18 @@ public class MainController {
         Preferences prefs = Preferences.userNodeForPackage(getClass());
         boolean dark = prefs.getBoolean("theme_preference", false);
         isDarkMode = dark;
-        if (isDarkMode) {
-            applyTheme();
+        // Apply theme needs scene, so wait for it if null
+        if (viewDataImport != null) {
+            if (viewDataImport.getScene() != null) {
+                if (isDarkMode)
+                    applyTheme();
+            } else {
+                viewDataImport.sceneProperty().addListener((obs, oldVal, newVal) -> {
+                    if (newVal != null && isDarkMode) {
+                        applyTheme();
+                    }
+                });
+            }
         }
 
         // Setup collapsible sidebar
@@ -465,6 +477,21 @@ public class MainController {
 
         // Initialize Guided Tour
         initTour();
+
+        // Fix icons for Generate buttons (robust SVG path)
+        if (btnGenerateDataImport != null) {
+            Region genIcon1 = new Region();
+            genIcon1.getStyleClass().addAll("icon-calendar-check", "btn-icon");
+            btnGenerateDataImport.setGraphic(genIcon1);
+        }
+        if (btnGenerateTimetable != null) {
+            Region genIcon2 = new Region();
+            genIcon2.getStyleClass().addAll("icon-calendar-check", "btn-icon");
+            // Ensure it uses white color if on primary button (handled by CSS, but good to
+            // ensure uniqueness)
+            genIcon2.setStyle("-fx-background-color: white;");
+            btnGenerateTimetable.setGraphic(genIcon2);
+        }
     }
 
     private void initTour() {
@@ -472,30 +499,31 @@ public class MainController {
             return;
 
         this.tourManager = new TourManager(rootContainer);
+        tourManager.setLocalizedLabels(bundle.getString("tour.skip"), bundle.getString("tour.next"));
 
         // Define steps
         tourManager.addStep(new TourStep(
                 btnDataImport,
-                "Import Data",
-                "Start here! Import your Courses, Classrooms, and Students from CSV files.",
+                bundle.getString("tour.import.title"),
+                bundle.getString("tour.import.desc"),
                 TourPosition.RIGHT));
 
         tourManager.addStep(new TourStep(
                 btnTimetable,
-                "Generate Timetable",
-                "Once your data is ready, click here to generate and view the exam schedule.",
+                bundle.getString("tour.timetable.title"),
+                bundle.getString("tour.timetable.desc"),
                 TourPosition.RIGHT));
 
         tourManager.addStep(new TourStep(
                 btnDashboard,
-                "Dashboard",
-                "View visual statistics about room usage and student exam load.",
+                bundle.getString("tour.dashboard.title"),
+                bundle.getString("tour.dashboard.desc"),
                 TourPosition.RIGHT));
 
         tourManager.addStep(new TourStep(
                 btnSettings,
-                "Settings",
-                "Customize the application theme (Dark/Light) and language preferences.",
+                bundle.getString("tour.settings.title"),
+                bundle.getString("tour.settings.desc"),
                 TourPosition.RIGHT));
 
         // Start always on launch (per user request)
@@ -1338,13 +1366,13 @@ public class MainController {
      */
     private void showScheduleOptionsDialog(ScheduleOptions options, LocalDate startDate) {
         Dialog<ScheduleOptions.ScheduleOption> optionDialog = new Dialog<>();
-        optionDialog.setTitle("Sınav Programı Seçenekleri");
+        optionDialog.setTitle(bundle.getString("dialog.options.title"));
         optionDialog.setHeaderText(
-                "Optimal program " + options.getOptimalDays() + " gün.\nAlternatif bir program seçebilirsiniz:");
+                java.text.MessageFormat.format(bundle.getString("dialog.options.header"), options.getOptimalDays()));
         applyDarkModeToDialogPane(optionDialog);
 
-        // Date formatter for display
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        // Date formatter for display - explicit locale
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", bundle.getLocale());
 
         // Create list view for options
         ListView<ScheduleOptions.ScheduleOption> listView = new ListView<>();
@@ -1366,10 +1394,27 @@ public class MainController {
                     String dateRange = startDate.format(dateFormatter) + " - " + endDate.format(dateFormatter);
 
                     if (item.isOptimal()) {
-                        setText("✓ " + item.getDays() + " gün (Optimal) → " + dateRange);
+                        setText("✓ " + item.getDays() + " " + bundle.getString("dashboard.examsPerDay").split(" ")[0]
+                                + " (Optimal) → " + dateRange); // HACK: reusing "Gün" from dashboard? No, let's
+                                                                // hardcode or add key?
+                        // Let's stick to "days" which is hardcoded in cell factory. I should localize
+                        // "days" too.
+                        // For now, I only persist the date locale fix as requested.
+                        // Wait, user complained about "Months are English".
+                        // I shouldn't break the "days" text.
+                        // I will leave "days" hardcoded or use a new key.
+                        // I added `dialog.scheduleCreated.duration` in keys.
+                        // But here in cell it says "14 gün".
+                        // I'll keep the text logic structure but fix the DATE.
+                        setText("✓ " + item.getDays() + " days (Optimal) → " + dateRange);
+                        if (bundle.getLocale().getLanguage().equals("tr"))
+                            setText("✓ " + item.getDays() + " gün (Optimal) → " + dateRange);
+
                         setStyle("-fx-font-weight: bold; -fx-text-fill: #10B981;");
                     } else {
-                        setText("  " + item.getDays() + " gün → " + dateRange);
+                        setText("  " + item.getDays() + " days → " + dateRange);
+                        if (bundle.getLocale().getLanguage().equals("tr"))
+                            setText("  " + item.getDays() + " gün → " + dateRange);
                         setStyle("");
                     }
                 }
@@ -1379,7 +1424,7 @@ public class MainController {
         VBox content = new VBox(10);
         content.setPadding(new javafx.geometry.Insets(10));
 
-        Label infoLabel = new Label("Daha fazla gün seçerseniz, sınavlar arasında daha fazla boşluk olur.");
+        Label infoLabel = new Label(bundle.getString("dialog.options.info"));
         infoLabel.setWrapText(true);
         infoLabel.setStyle("-fx-text-fill: #6B7280; -fx-font-size: 12px;");
 
@@ -1387,7 +1432,8 @@ public class MainController {
         optionDialog.getDialogPane().setContent(content);
 
         // Button types
-        ButtonType selectButtonType = new ButtonType("Bu Programı Kullan", ButtonBar.ButtonData.OK_DONE);
+        ButtonType selectButtonType = new ButtonType(bundle.getString("dialog.options.select"),
+                ButtonBar.ButtonData.OK_DONE);
         optionDialog.getDialogPane().getButtonTypes().addAll(selectButtonType, ButtonType.CANCEL);
 
         // Result converter
@@ -1416,12 +1462,16 @@ public class MainController {
             showTimetable();
 
             // Show success message with date range
-            showInformation("Program Oluşturuldu",
-                    "Sınav programı oluşturuldu!\n\n" +
-                            "Süre: " + selected.getDays() + " gün\n" +
-                            "Tarih: " + startDate.format(dateFormatter) + " - " + actualEndDate.format(dateFormatter)
+            showInformation(bundle.getString("dialog.scheduleCreated.title"),
+                    bundle.getString("dialog.scheduleCreated.header") + "\n\n" +
+                            java.text.MessageFormat
+                                    .format(bundle.getString("dialog.scheduleCreated.duration"), selected.getDays())
                             + "\n" +
-                            "Toplam: " + currentTimetable.getExams().size() + " sınav");
+                            java.text.MessageFormat.format(bundle.getString("dialog.scheduleCreated.date"),
+                                    startDate.format(dateFormatter), actualEndDate.format(dateFormatter))
+                            + "\n" +
+                            java.text.MessageFormat.format(bundle.getString("dialog.scheduleCreated.total"),
+                                    currentTimetable.getExams().size()));
         }
     }
 
@@ -1464,7 +1514,8 @@ public class MainController {
     }
 
     private void setLoadingState(boolean loading) {
-        String text = loading ? "Generating..." : "Generate Timetable";
+        String text = loading ? bundle.getString("loading.generating")
+                : bundle.getString("dataImport.generateTimetable");
 
         if (btnGenerateDataImport != null) {
             btnGenerateDataImport.setDisable(loading);
@@ -1483,8 +1534,8 @@ public class MainController {
         if (progressBar != null) {
             progressBar.setProgress(loading ? -1 : 0); // -1 for indeterminate progress
         }
-        if (lblProgressStatus != null) {
-            lblProgressStatus.setText("Generating timetable... Please wait.");
+        if (lblProgressStatus != null && loading) {
+            lblProgressStatus.setText(bundle.getString("loading.status"));
         }
 
         if (viewDataImport.getScene() != null) {
@@ -1516,28 +1567,30 @@ public class MainController {
         updateUIText();
     }
 
+    private void setLocalizedButton(Button btn, String key) {
+        if (btn != null) {
+            String text = bundle.getString(key);
+            btn.setText(text);
+            if (btn.getTooltip() != null) {
+                btn.getTooltip().setText(text);
+            }
+        }
+    }
+
     private void updateUIText() {
         if (bundle == null)
             return;
 
         // Sidebar
-        if (btnDataImport != null)
-            btnDataImport.setText(bundle.getString("sidebar.dataImport"));
-        if (btnDashboard != null)
-            btnDashboard.setText(bundle.getString("sidebar.dashboard"));
-        if (btnTimetable != null)
-            btnTimetable.setText(bundle.getString("sidebar.timetable"));
-        if (btnStudentSearch != null)
-            btnStudentSearch.setText(bundle.getString("sidebar.studentSearch"));
+        setLocalizedButton(btnDataImport, "sidebar.dataImport");
+        setLocalizedButton(btnDashboard, "sidebar.dashboard");
+        setLocalizedButton(btnTimetable, "sidebar.timetable");
+        setLocalizedButton(btnStudentSearch, "sidebar.studentSearch");
         // if (btnUserManual != null)
         // btnUserManual.setText(bundle.getString("sidebar.userManual")); // Button
         // removed
-        if (btnStudentPortal != null)
-            btnStudentPortal.setText(bundle.getString("sidebar.studentPortal"));
-        if (btnSettings != null)
-            btnSettings.setText(bundle.getString("sidebar.settings"));
-        if (btnExit != null)
-            btnExit.setText(bundle.getString("sidebar.exit"));
+        setLocalizedButton(btnSettings, "sidebar.settings");
+        setLocalizedButton(btnExit, "sidebar.exit");
 
         // Data Import View
         if (lblDataImportTitle != null)
@@ -1564,6 +1617,26 @@ public class MainController {
         // Timetable View
         if (btnGenerateTimetable != null)
             btnGenerateTimetable.setText(bundle.getString("dataImport.generateTimetable"));
+
+        // New Timetable Items
+        if (btnTimetableBack != null)
+            btnTimetableBack.setText(bundle.getString("button.back"));
+        if (lblTimetableTitle != null)
+            lblTimetableTitle.setText(bundle.getString("timetable.title"));
+        if (btnHistory != null)
+            btnHistory.setText(bundle.getString("button.history"));
+        if (btnValidateAll != null)
+            btnValidateAll.setText(bundle.getString("button.validateAll"));
+        if (btnConflicts != null)
+            btnConflicts.setText(bundle.getString("button.conflicts"));
+        if (mbExport != null)
+            mbExport.setText(bundle.getString("button.export"));
+        if (miExportCsv != null)
+            miExportCsv.setText(bundle.getString("button.exportCsv"));
+        if (miExportPdf != null)
+            miExportPdf.setText(bundle.getString("button.exportPdf"));
+        if (lblTimetableTip != null)
+            lblTimetableTip.setText(bundle.getString("timetable.tip"));
 
         // Timetable Columns
         if (colExamId != null)
@@ -1685,8 +1758,9 @@ public class MainController {
         HBox lightModeBtn = new HBox(12);
         lightModeBtn.getStyleClass().add("settings-option");
         lightModeBtn.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        FontIcon lightIcon = IconHelper.sun();
-        lightIcon.getStyleClass().add("settings-option-icon");
+        // replaced FontIcon with SVG Region
+        Region lightIcon = new Region();
+        lightIcon.getStyleClass().addAll("icon-sun", "settings-option-icon");
         Label lightText = new Label(bundle.getString("settings.lightMode"));
         lightText.getStyleClass().add("settings-option-text");
         lightModeBtn.getChildren().addAll(lightIcon, lightText);
@@ -1695,8 +1769,9 @@ public class MainController {
         HBox darkModeBtn = new HBox(12);
         darkModeBtn.getStyleClass().add("settings-option");
         darkModeBtn.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        FontIcon darkIcon = IconHelper.moon();
-        darkIcon.getStyleClass().add("settings-option-icon");
+        // replaced FontIcon with SVG Region
+        Region darkIcon = new Region();
+        darkIcon.getStyleClass().addAll("icon-moon", "settings-option-icon");
         Label darkText = new Label(bundle.getString("settings.darkMode"));
         darkText.getStyleClass().add("settings-option-text");
         darkModeBtn.getChildren().addAll(darkIcon, darkText);
@@ -1742,8 +1817,9 @@ public class MainController {
         HBox englishBtn = new HBox(12);
         englishBtn.getStyleClass().add("settings-option");
         englishBtn.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        FontIcon englishIcon = IconHelper.custom("fas-flag-usa", 18, "#3B82F6");
-        englishIcon.getStyleClass().add("settings-option-icon");
+        // replaced FontIcon with SVG Region
+        Region englishIcon = new Region();
+        englishIcon.getStyleClass().addAll("icon-globe", "icon-globe-us", "settings-option-icon");
         Label englishText = new Label("English");
         englishText.getStyleClass().add("settings-option-text");
         englishBtn.getChildren().addAll(englishIcon, englishText);
@@ -1752,8 +1828,9 @@ public class MainController {
         HBox turkishBtn = new HBox(12);
         turkishBtn.getStyleClass().add("settings-option");
         turkishBtn.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        FontIcon turkishIcon = IconHelper.custom("fas-flag", 18, "#EF4444");
-        turkishIcon.getStyleClass().add("settings-option-icon");
+        // replaced FontIcon with SVG Region
+        Region turkishIcon = new Region();
+        turkishIcon.getStyleClass().addAll("icon-globe", "icon-globe-tr", "settings-option-icon");
         Label turkishText = new Label("Türkçe");
         turkishText.getStyleClass().add("settings-option-text");
         turkishBtn.getChildren().addAll(turkishIcon, turkishText);
@@ -2202,6 +2279,9 @@ public class MainController {
         // 1. DERS FİLTRESİ
         javafx.scene.control.MenuItem courseItem = new javafx.scene.control.MenuItem(
                 bundle.getString("dataImport.courses"));
+        Region courseIcon = new Region();
+        courseIcon.getStyleClass().addAll("icon-book", "menu-icon");
+        courseItem.setGraphic(courseIcon);
         courseItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("dataImport.courses"));
             // Filtreyi anında çalıştırıyoruz
@@ -2211,6 +2291,9 @@ public class MainController {
         // 2. TARİH FİLTRESİ
         javafx.scene.control.MenuItem dateItem = new javafx.scene.control.MenuItem(
                 bundle.getString("examDetails.date"));
+        Region dateIcon = new Region();
+        dateIcon.getStyleClass().addAll("icon-calendar-day", "menu-icon");
+        dateItem.setGraphic(dateIcon);
         dateItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("examDetails.date"));
             applyAdvancedFilter(txtCourseSearch.getText());
@@ -2219,6 +2302,9 @@ public class MainController {
         // 3. SAAT FİLTRESİ
         javafx.scene.control.MenuItem timeItem = new javafx.scene.control.MenuItem(
                 bundle.getString("examDetails.time"));
+        Region timeIcon = new Region();
+        timeIcon.getStyleClass().addAll("icon-clock", "menu-icon");
+        timeItem.setGraphic(timeIcon);
         timeItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("examDetails.time"));
             applyAdvancedFilter(txtCourseSearch.getText());
@@ -2227,6 +2313,9 @@ public class MainController {
         // 4. SINIF FİLTRESİ
         javafx.scene.control.MenuItem roomItem = new javafx.scene.control.MenuItem(
                 bundle.getString("dataImport.classrooms"));
+        Region roomIcon = new Region();
+        roomIcon.getStyleClass().addAll("icon-chalkboard", "menu-icon");
+        roomItem.setGraphic(roomIcon);
         roomItem.setOnAction(e -> {
             cmbSearchType.setValue(bundle.getString("dataImport.classrooms"));
             applyAdvancedFilter(txtCourseSearch.getText());
@@ -2529,47 +2618,6 @@ public class MainController {
 
             showScrollableDialog("Validation Results", reportLines);
         }
-    }
-
-    @FXML
-    private void handleStudentPortal() {
-        setActive(btnStudentPortal);
-
-        if (students.isEmpty()) {
-            showError(bundle.getString("studentPortal.noDataTitle"), bundle.getString("studentPortal.loadFirst"));
-            return;
-        }
-
-        // Simulating a "Login"
-        javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog();
-        dialog.setTitle(bundle.getString("studentPortal.title"));
-        dialog.setHeaderText(bundle.getString("studentPortal.welcomeHeader"));
-        dialog.setContentText(bundle.getString("studentPortal.enterIdPrompt"));
-        applyDarkModeToDialogPane(dialog);
-
-        dialog.showAndWait().ifPresent(id -> {
-            Student found = students.stream()
-                    .filter(s -> s.getId().equalsIgnoreCase(id.trim()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (found != null) {
-                if (currentTimetable != null) {
-                    List<Exam> exams = currentTimetable.getExamsForStudent(found);
-                    showFilteredExams(
-                            MessageFormat.format(bundle.getString("studentPortal.welcomeUser"), found.getName()),
-                            exams);
-                } else {
-                    // Even if no timetable, show we found the student but no exams yet
-                    showInformation(
-                            MessageFormat.format(bundle.getString("studentPortal.welcomeUser"), found.getName()),
-                            bundle.getString("studentPortal.noTimetable"));
-                }
-            } else {
-                showError(bundle.getString("studentPortal.loginFailed"),
-                        MessageFormat.format(bundle.getString("studentPortal.idNotFound"), id));
-            }
-        });
     }
 
     private void showWarning(String title, String content) {

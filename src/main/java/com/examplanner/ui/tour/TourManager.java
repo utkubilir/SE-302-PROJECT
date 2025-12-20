@@ -20,6 +20,10 @@ public class TourManager {
         this.overlay = new TourOverlay(this::next, this::end);
     }
 
+    public void setLocalizedLabels(String skipText, String nextText) {
+        overlay.setButtonLabels(skipText, nextText);
+    }
+
     public void addStep(TourStep step) {
         steps.add(step);
     }

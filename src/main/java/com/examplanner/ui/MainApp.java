@@ -41,21 +41,27 @@ public class MainApp extends Application {
             ProgressBar progressBar = (ProgressBar) splashRoot.lookup("#progressBar");
             Label lblStatus = (Label) splashRoot.lookup("#lblStatus");
 
+            // Load preferences for language
+            java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(MainApp.class);
+            String lang = prefs.get("language_preference", "en");
+            java.util.Locale locale = new java.util.Locale(lang);
+            java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com.examplanner.ui.messages", locale);
+
             // Animate progress bar
             Task<Void> loadingTask = new Task<>() {
                 @Override
                 protected Void call() throws Exception {
                     // Initialize database
-                    updateMessage("Veritabanı başlatılıyor...");
+                    updateMessage(bundle.getString("splash.initDatabase"));
                     updateProgress(0.2, 1.0);
                     com.examplanner.persistence.DatabaseManager.initializeDatabase();
                     Thread.sleep(500);
 
-                    updateMessage("Arayüz yükleniyor...");
+                    updateMessage(bundle.getString("splash.loadingUI"));
                     updateProgress(0.6, 1.0);
                     Thread.sleep(500);
 
-                    updateMessage("Hazırlanıyor...");
+                    updateMessage(bundle.getString("splash.preparing"));
                     updateProgress(1.0, 1.0);
                     Thread.sleep(300);
 

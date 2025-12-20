@@ -145,7 +145,8 @@ public class IconHelper {
     private static FontIcon createIcon(String iconCode, int size) {
         FontIcon icon = new FontIcon(iconCode);
         icon.setIconSize(size);
-        icon.getStyleClass().add("icon");
+        // icon.getStyleClass().add("icon"); // Removed to prevent conflicts, we set
+        // specific classes
         return icon;
     }
 
