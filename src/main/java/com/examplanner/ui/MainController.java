@@ -682,48 +682,54 @@ public class MainController {
         setupAdvancedSearch();
 
         // Load data from DB
-        List<Course> loadedCourses = repository.loadCourses();
-        if (!loadedCourses.isEmpty()) {
-            this.courses = loadedCourses;
-            lblCoursesStatus.setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), courses.size()));
-            lblCoursesStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
-            lblCoursesStatus.getStyleClass().add("text-success");
-        }
+        try {
+            List<Course> loadedCourses = repository.loadCourses();
+            if (!loadedCourses.isEmpty()) {
+                this.courses = loadedCourses;
+                lblCoursesStatus.setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), courses.size()));
+                lblCoursesStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
+                lblCoursesStatus.getStyleClass().add("text-success");
+            }
 
-        List<Classroom> loadedClassrooms = repository.loadClassrooms();
-        if (!loadedClassrooms.isEmpty()) {
-            this.classrooms = loadedClassrooms;
-            lblClassroomsStatus
-                    .setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), classrooms.size()));
-            lblClassroomsStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
-            lblClassroomsStatus.getStyleClass().add("text-success");
-        }
+            List<Classroom> loadedClassrooms = repository.loadClassrooms();
+            if (!loadedClassrooms.isEmpty()) {
+                this.classrooms = loadedClassrooms;
+                lblClassroomsStatus
+                        .setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), classrooms.size()));
+                lblClassroomsStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
+                lblClassroomsStatus.getStyleClass().add("text-success");
+            }
 
-        List<Student> loadedStudents = repository.loadStudents();
-        if (!loadedStudents.isEmpty()) {
-            this.students = loadedStudents;
-            lblStudentsStatus.setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), students.size()));
-            lblStudentsStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
-            lblStudentsStatus.getStyleClass().add("text-success");
-        }
+            List<Student> loadedStudents = repository.loadStudents();
+            if (!loadedStudents.isEmpty()) {
+                this.students = loadedStudents;
+                lblStudentsStatus
+                        .setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), students.size()));
+                lblStudentsStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
+                lblStudentsStatus.getStyleClass().add("text-success");
+            }
 
-        // Enrollments depend on students and courses
-        if (!students.isEmpty() && !courses.isEmpty()) {
-            List<Enrollment> loadedEnrollments = repository.loadEnrollments(students, courses);
-            if (!loadedEnrollments.isEmpty()) {
-                this.enrollments = loadedEnrollments;
-                lblAttendanceStatus
-                        .setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), enrollments.size()));
-                lblAttendanceStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
-                lblAttendanceStatus.getStyleClass().add("text-success");
+            // Enrollments depend on students and courses
+            if (!students.isEmpty() && !courses.isEmpty()) {
+                List<Enrollment> loadedEnrollments = repository.loadEnrollments(students, courses);
+                if (!loadedEnrollments.isEmpty()) {
+                    this.enrollments = loadedEnrollments;
+                    lblAttendanceStatus
+                            .setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), enrollments.size()));
+                    lblAttendanceStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
+                    lblAttendanceStatus.getStyleClass().add("text-success");
 
-                // Load Timetable if everything else is present
-                ExamTimetable loadedTimetable = repository.loadTimetable(courses, classrooms, enrollments);
-                if (loadedTimetable != null) {
-                    this.currentTimetable = loadedTimetable;
-                    refreshTimetable();
+                    // Load Timetable if everything else is present
+                    ExamTimetable loadedTimetable = repository.loadTimetable(courses, classrooms, enrollments);
+                    if (loadedTimetable != null) {
+                        this.currentTimetable = loadedTimetable;
+                        refreshTimetable();
+                    }
                 }
             }
+        } catch (com.examplanner.persistence.DataAccessException e) {
+            showError("Database Error", "Failed to load data from database:\n" + e.getMessage());
+            e.printStackTrace();
         }
 
         // Initialize Guided Tour
@@ -1757,9 +1763,13 @@ public class MainController {
             }
 
             this.currentTimetable = selected.getSchedule();
-            repository.saveTimetable(currentTimetable);
-
-            System.out.println("Timetable saved! Exams: " + currentTimetable.getExams().size());
+            try {
+                repository.saveTimetable(currentTimetable);
+                System.out.println("Timetable saved! Exams: " + currentTimetable.getExams().size());
+            } catch (com.examplanner.persistence.DataAccessException e) {
+                showError("Database Error", "Failed to save timetable:\n" + e.getMessage());
+                e.printStackTrace();
+            }
 
             // Update the schedule selector ComboBox
             updateScheduleSelector();
@@ -1879,7 +1889,12 @@ public class MainController {
         applyDarkModeToAlert(alert);
 
         if (alert.showAndWait().get() == javafx.scene.control.ButtonType.OK) {
-            repository.clearAllData();
+            try {
+                repository.clearAllData();
+            } catch (com.examplanner.persistence.DataAccessException e) {
+                showError("Database Error", "Failed to delete data:\n" + e.getMessage());
+                return;
+            }
 
             courses.clear();
             classrooms.clear();

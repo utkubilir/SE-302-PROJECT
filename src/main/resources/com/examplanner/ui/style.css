@@ -9,6 +9,7 @@
     -fx-color-success: #10B981;
     -fx-color-warning: #F59E0B;
     -fx-color-error: #EF4444;
+    -fx-color-accent: #8B5CF6; /* Added missing accent color */
 
     -fx-background-color: -fx-color-bg;
 }

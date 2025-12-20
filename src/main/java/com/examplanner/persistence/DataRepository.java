@@ -147,7 +147,7 @@ public class DataRepository {
                 try {
                     conn.rollback();
                 } catch (SQLException ex) {
-                    }
+                }
             }
             throw new DataAccessException("Failed to save students: " + e.getMessage(), e);
         } finally {
@@ -155,7 +155,7 @@ public class DataRepository {
                 try {
                     conn.close();
                 } catch (SQLException ex) {
-                    }
+                }
             }
         }
     }
@@ -231,7 +231,7 @@ public class DataRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Failed to load enrollments: " + e.getMessage(), e);
         }
         return list;
     }
@@ -263,7 +263,7 @@ public class DataRepository {
             }
             conn.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Failed to save timetable: " + e.getMessage(), e);
         }
     }
 
@@ -291,7 +291,7 @@ public class DataRepository {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Failed to load timetable: " + e.getMessage(), e);
         }
 
         if (exams.isEmpty()) {
@@ -311,7 +311,7 @@ public class DataRepository {
             }
             conn.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Failed to clear all data: " + e.getMessage(), e);
         }
     }
 }
