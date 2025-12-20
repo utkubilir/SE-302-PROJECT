@@ -40,9 +40,7 @@ public class IconHelper {
         return createIcon("fas-chart-bar", 16);
     }
 
-    public static FontIcon timetable() {
-        return createIcon("fas-calendar-alt", 16);
-    }
+    public static FontIcon timetable() { return createIcon("fas-calendar-alt", 16,"icon-primary");}
 
     public static FontIcon dataImport() {
         return createIcon("fas-file-import", 16);
@@ -168,33 +166,27 @@ public class IconHelper {
     // ============== Settings Icons ==============
 
     public static FontIcon sun() {
-        FontIcon icon = createIcon("fas-sun", 18);
-        icon.setStyle("-fx-icon-color: #F59E0B;");
-        return icon;
+        // Rengi CSS'deki .icon-warning (sarı) sınıfından alır
+        return createIcon("fas-sun", 18, "icon-warning");
     }
 
     public static FontIcon moon() {
-        FontIcon icon = createIcon("fas-moon", 18);
-        icon.setStyle("-fx-icon-color: #6366F1;");
-        return icon;
+        // Rengi CSS'deki .icon-primary (mor) sınıfından alır
+        return createIcon("fas-moon", 18, "icon-primary");
     }
 
     public static FontIcon globe() {
-        return createIcon("fas-globe", 18);
+        return createIcon("fas-globe", 18, "icon-primary");
     }
 
     // ============== Edit Dialog Icons ==============
 
     public static FontIcon calendar() {
-        FontIcon icon = createIcon("fas-calendar-day", 14);
-        icon.setStyle("-fx-icon-color: #6366F1;");
-        return icon;
+        return createIcon("fas-calendar-day", 14,"icon-primary");
     }
 
     public static FontIcon clock() {
-        FontIcon icon = createIcon("fas-clock", 14);
-        icon.setStyle("-fx-icon-color: #8B5CF6;");
-        return icon;
+        return createIcon("fas-clock", 14, "icon-primary");
     }
 
     public static FontIcon location() {

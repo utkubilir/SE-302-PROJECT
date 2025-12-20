@@ -101,12 +101,19 @@ public class MainApp extends Application {
 
     private void showMainWindow() {
         try {
+            // 1. Dil dosyasını (ResourceBundle) yüklüyoruz.
+            // Dosyalarının "com.examplanner.ui" paketi içinde olduğundan emin ol.
+            java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("com.examplanner.ui.messages", java.util.Locale.of("tr"));
+
             FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("MainView.fxml"));
+
+            // 2. FXML'deki % işaretlerini çözmesi için bundle'ı loader'a tanıtıyoruz.
+            fxmlLoader.setResources(bundle);
+
             scene = new Scene(fxmlLoader.load(), 1200, 800);
             mainStage.setScene(scene);
             mainStage.setTitle("Exam Timetable Planner");
 
-            // Fade in main window
             scene.getRoot().setOpacity(0);
             mainStage.show();
 
