@@ -410,8 +410,8 @@ public class MainController {
 
         // Load language preference (default English)
         String lang = prefs.get("language_preference", "en");
-        loadLanguage(lang); // Load default language (English)
-        loadLanguage("en");
+        loadLanguage(lang); // Load user preference
+
         constraintChecker.setMinGapMinutes(180); // Default to requirements
         showDataImport();
 
@@ -422,8 +422,7 @@ public class MainController {
         List<Course> loadedCourses = repository.loadCourses();
         if (!loadedCourses.isEmpty()) {
             this.courses = loadedCourses;
-            lblCoursesStatus.setText("Loaded from DB (" + courses.size() + ")");
-            lblCoursesStatus.setText("Loaded from DB (" + courses.size() + ")");
+            lblCoursesStatus.setText(MessageFormat.format(bundle.getString("status.loadedFromDB"), courses.size()));
             lblCoursesStatus.getStyleClass().removeAll("text-success", "text-warning", "text-error");
             lblCoursesStatus.getStyleClass().add("text-success");
         }
