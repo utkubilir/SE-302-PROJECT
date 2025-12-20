@@ -1,813 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Exam Timetable Planner - SE-302 Software Engineering 
-Project Report">
+    <meta name="description" content="Exam Timetable Planner - SE-302 Software Engineering Project Report">
+    <meta property="og:title" content="Exam Timetable Planner | Project Report">
+    <meta property="og:description" content="Automated Exam Scheduling System for Educational Institutions">
+    <meta property="og:type" content="website">
+
     <title>Exam Timetable Planner | Project Report</title>
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 
-100'><text y='.9em' font-size='90'>
-📅</text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?
-family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --accent: #7c3aed;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --dark: #111827;
-            --gray-900: #1f2937;
-            --gray-700: #374151;
-            --gray-600: #4b5563;
-            --gray-500: #6b7280;
-            --gray-400: #9ca3af;
-            --gray-200: #e5e7eb;
-            --gray-100: #f3f4f6;
-            --white: #ffffff;
-            --bg: #f9fafb;
-        }
-        * {
-        }
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--gray-700);
-            line-height: 1.8;
-            font-size: 16px;
-        }
-        /* Sidebar Navigation */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: var(--white);
-            border-right: 1px solid var(--gray-200);
-            padding: 2rem 0;
-            overflow-y: auto;
-            z-index: 100;
-        }
-        .sidebar-header {
-            padding: 0 1.5rem 1.5rem;
-            border-bottom: 1px solid var(--gray-200);
-            margin-bottom: 1rem;
-        }
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-        .sidebar-logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1rem;
-        }
-        .sidebar-subtitle {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            margin-top: 0.25rem;
-        }
-        .nav-section {
-            padding: 0.5rem 1rem;
-        }
-        .nav-section-title {
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--gray-400);
-            padding: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        .nav-link {
-            display: block;
-            padding: 0.6rem 1rem;
-            color: var(--gray-600);
-            text-decoration: none;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .nav-link:hover {
-            background: var(--gray-100);
-            color: var(--primary);
-        }
-        .nav-link.active {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-            font-weight: 500;
-        }
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            padding: 3rem 4rem;
-            max-width: 1000px;
-        }
-        /* Header */
-        .report-header {
-            text-align: center;
-            padding: 3rem 0 4rem;
-            border-bottom: 2px solid var(--gray-200);
-            margin-bottom: 3rem;
-        }
-        .report-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            color: white;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-        .report-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--dark);
-            line-height: 1.2;
-            margin-bottom: 1rem;
-        }
-        .report-subtitle {
-            font-size: 1.1rem;
-            color: var(--gray-500);
-            margin-bottom: 2rem;
-        }
-        .report-meta {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-f
-lex-wrap: wrap;
-        }
-        .meta-item {
-            text-align: center;
-        }
-        .meta-label {
-            font-size: 0.75rem;
-            color: var(--gray-400);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .meta-value {
-            font-size: 0.95rem;
-            color: var(--gray-700);
-            font-weight: 500;
-        }
-        /* Sections */
-        .section {
-            margin-bottom: 4rem;
-            scroll-margin-top: 2rem;
-        }
-        .section-number {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 32px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-right: 0.75rem;
-        }
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid var(--gray-200);
-            display: flex;
-            align-items: center;
-        }
-        .subsection-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin: 2rem 0 1rem;
-        }
-        p {
-            margin-bottom: 1rem;
-            text-align: justify;
-        }
-        /* Lists */
-        ul,
-        ol {
-            margin: 1rem 0 1.5rem 1.5rem;
-        }
-        li {
-        }
-            margin-bottom: 0.5rem;
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-            margin: 1.5rem 0;
-            border-radius: 8px;
-            border: 1px solid var(--gray-200);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-        th {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            font-weight: 600;
-            text-align: left;
-            padding: 0.875rem 1rem;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        tr:hover {
-            background: var(--gray-100);
-        }
-        /* Code Blocks */
-        pre {
-            background: var(--gray-900);
-            color: #e5e7eb;
-            padding: 1.25rem;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 1.5rem 0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
-        code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85em;
-            background: var(--gray-100);
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            color: var(--accent);
-        }
-        pre code {
-            background: none;
-            padding: 0;
-            color: inherit;
-        }
-        /* Info Boxes */
-        .info-box {
-            padding: 1.25rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            border-left: 4px solid;
-        }
-        .info-box.note {
-            background: rgba(37, 99, 235, 0.08);
-            border-color: var(--primary);
-        }
-        .info-box.success {
-            background: rgba(16, 185, 129, 0.08);
-            border-color: var(--success);
-        }
-        .info-box.warning {
-            background: rgba(245, 158, 11, 0.08);
-            border-color: var(--warning);
-        }
-        .info-box-title {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-        }
-        /* Cards Grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.25rem;
-            margin: 1.5rem 0;
-        }
-        .card {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 1.25rem;
-            transition: all 0.2s;
-        }
-        .card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        .card-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .card h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-        }
-        .card p {
-            font-size: 0.9rem;
-            color: var(--gray-600);
-            margin: 0;
-            text-align: left;
-        }
-        /* Team Grid */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        .team-member {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 1.25rem;
-            text-align: center;
-        }
-        .team-avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: white;
-            margin: 0 auto 0.75rem;
-        }
-        .team-member h4 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.25rem;
-        }
-        .team-member p {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-            margin: 0;
-            text-align: center;
-        }
-        /* Architecture Diagram */
-        .architecture {
-            display: flex;
-f
-lex-direction: column;
-            gap: 0.5rem;
-            margin: 1.5rem 0;
-        }
-        .arch-layer {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .arch-layer-name {
-            font-weight: 600;
-            color: var(--dark);
-            min-width: 140px;
-        }
-        .arch-layer-desc {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-        }
-        .arch-layer-badge {
-            background: var(--primary);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-left: auto;
-        }
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        .stat-box {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 1.25rem;
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-            margin-top: 0.25rem;
-        }
-        /* Footer */
-        .footer {
-            margin-top: 4rem;
-            padding: 2rem 0;
-            border-top: 1px solid var(--gray-200);
-            text-align: center;
-            color: var(--gray-500);
-            font-size: 0.9rem;
-        }
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 2rem;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (max-width: 600px) {
-            .report-title {
-                font-size: 1.75rem;
-            }
-            .report-meta {
-f
-lex-direction: column;
-                gap: 1rem;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        /* Print Styles */
-        @media print {
-            .sidebar {
-                display: none;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
-            }
-            .section {
-                page-break-inside: avoid;
-            }
-        }
-        /* Dark Mode */
-        body.dark-mode {
-            --bg: #0f172a;
-            --white: #1e293b;
-            --dark: #f8fafc;
-            --gray-900: #f1f5f9;
-            --gray-700: #e2e8f0;
-            --gray-600: #cbd5e1;
-            --gray-500: #94a3b8;
-            --gray-400: #64748b;
-            --gray-200: #334155;
-            --gray-100: #1e293b;
-        }
-        body.dark-mode .sidebar {
-            background: #1e293b;
-            border-color: #334155;
-        }
-        body.dark-mode pre {
-            background: #0f172a;
-        }
-        /* Theme Toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 80px;
-            right: 24px;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
-        /* Back to Top */
-        .back-to-top {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--gray-700);
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s;
-            opacity: 0;
-            visibility: hidden;
-            z-index: 1000;
-        }
-        .back-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .back-to-top:hover {
-            transform: translateY(-3px);
-            background: var(--primary);
-        }
-        /* Progress Bar */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            z-index: 9999;
-            transition: width 0.1s;
-        }
-        /* Mobile Hamburger */
-        .mobile-header {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: var(--white);
-            border-bottom: 1px solid var(--gray-200);
-            z-index: 200;
-            padding: 0 1rem;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .hamburger {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            display: flex;
-f
-lex-direction: column;
-            justify-content: center;
-            gap: 5px;
-        }
-        .hamburger span {
-            display: block;
-            width: 24px;
-            height: 2px;
-            background: var(--dark);
-            transition: all 0.3s;
-        }
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 150;
-        }
-        @media (max-width: 1024px) {
-            .mobile-header {
-                display: flex;
-            }
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-                z-index: 200;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-                display: block;
-            }
-            .sidebar-overlay.open {
-                display: block;
-            }
-            .main-content {
-                padding-top: 80px;
-            }
-        }
-        /* Copy Button */
-        .code-wrapper {
-            position: relative;
-        }
-        .copy-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: #94a3b8;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        .copy-btn.copied {
-            background: var(--success);
-            color: white;
-        }
-        /* Search Modal */
-        .search-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 2000;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 15vh;
-        }
-        .search-modal.open {
-            display: flex;
-        }
-        .search-box {
-            background: var(--white);
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-        .search-input {
-            width: 100%;
-            padding: 1.25rem;
-            border: none;
-            font-size: 1.1rem;
-            background: transparent;
-            color: var(--dark);
-            outline: none;
-        }
-        .search-results {
-            max-height: 400px;
-            overflow-y: auto;
-            border-top: 1px solid var(--gray-200);
-        }
-        .search-result-item {
-            padding: 1rem 1.25rem;
-            cursor: pointer;
-            border-bottom: 1px solid var(--gray-200);
-            transition: background 0.2s;
-        }
-        .search-result-item:hover {
-            background: var(--gray-100);
-        }
-        .search-hint {
-            padding: 0.75rem 1.25rem;
-            color: var(--gray-500);
-            font-size: 0.85rem;
-        }
-        /* Mermaid Diagram */
-        .mermaid-container {
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 1.5rem 0;
-            overflow-x: auto;
-        }
-        /* Screenshot placeholder */
-        .screenshot-placeholder {
-            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
-            border: 2px dashed var(--gray-300);
-            border-radius: 12px;
-            padding: 3rem;
-            text-align: center;
-            color: var(--gray-500);
-            margin: 1.5rem 0;
-        }
-        .screenshot-placeholder .icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
-            margin: 1.5rem 0;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--gray-200);
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 1.5rem;
-        }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -2rem;
-            top: 0;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--primary);
-            border: 2px solid var(--white);
-        }
-        .timeline-item h4 {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.25rem;
-        }
-        .timeline-item .date {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-            margin-bottom: 0.5rem;
-        }
-    </style>
 </head>
+
 <body>
     <!-- Progress Bar -->
     <div class="progress-bar" id="progressBar"></div>
+
     <!-- Mobile Header -->
     <header class="mobile-header">
         <button class="hamburger" id="hamburger" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
         <span style="font-weight: 600;">ExamPlanner</span>
-        <button onclick="openSearch()" style="background:none;border:none;font
-�
-�</button>
-size:1.25rem;cursor:pointer;">
+        <button onclick="openSearch()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;">
+            🔍
+        </button>
     </header>
+
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Search Modal -->
     <div class="search-modal" id="searchModal">
         <div class="search-box">
-            <input type="text" class="search-input" id="searchInput" placeholder="Search 
-documentation..."
+            <input type="text" class="search-input" id="searchInput" placeholder="Search documentation..."
                 onkeyup="performSearch()">
             <div class="search-results" id="searchResults">
                 <div class="search-hint">Press ESC to close</div>
             </div>
         </div>
     </div>
+
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="#" class="sidebar-logo">
-                <div class="sidebar-logo-icon">
-📅</div>
+                <div class="sidebar-logo-icon">📅</div>
                 <div>
                     <div>ExamPlanner</div>
                     <div class="sidebar-subtitle">Project Report</div>
@@ -816,23 +65,22 @@ documentation..."
         </div>
         <nav class="nav-section">
             <button onclick="openSearch()"
-                style="width:100%;padding:0.6rem 1rem;background:var(--gray-100);border:1px solid 
-var(--gray-200);border-radius:6px;text-align:left;color:var(--gray-500);cursor:pointer;margin
-bottom:1rem;font-size:0.9rem;">
-🔍
-                Search... <kbd
-                    style="float:right;background:var(--gray-200);padding:2px 6px;border
-radius:4px;font-size:0.75rem;">⌘K</kbd></button>
+                style="width:100%;padding:0.6rem 1rem;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:6px;text-align:left;color:var(--gray-500);cursor:pointer;margin-bottom:1rem;font-size:0.9rem;">
+                🔍 Search... <kbd
+                    style="float:right;background:var(--gray-200);padding:2px 6px;border-radius:4px;font-size:0.75rem;">⌘K</kbd>
+            </button>
             <div class="nav-section-title">Overview</div>
             <a href="#introduction" class="nav-link">1. Introduction</a>
             <a href="#objectives" class="nav-link">2. Project Objectives</a>
             <a href="#features" class="nav-link">3. Key Features</a>
             <a href="#screenshots" class="nav-link">4. Screenshots</a>
+
             <div class="nav-section-title">Technical Details</div>
             <a href="#constraints" class="nav-link">5. Scheduling Constraints</a>
             <a href="#algorithm" class="nav-link">6. Algorithm</a>
             <a href="#architecture" class="nav-link">7. System Architecture</a>
             <a href="#technologies" class="nav-link">8. Technologies Used</a>
+
             <div class="nav-section-title">Project Info</div>
             <a href="#structure" class="nav-link">9. Project Structure</a>
             <a href="#api" class="nav-link">10. API Documentation</a>
@@ -844,14 +92,15 @@ radius:4px;font-size:0.75rem;">⌘K</kbd></button>
             <a href="#references" class="nav-link">16. References</a>
         </nav>
     </aside>
+
     <!-- Main Content -->
     <main class="main-content">
         <!-- Report Header -->
         <header class="report-header">
             <span class="report-badge">SE-302 Software Engineering</span>
             <h1 class="report-title">Exam Timetable Planner</h1>
-            <p class="report-subtitle">Automated Exam Scheduling System for Educational 
-Institutions</p>
+            <p class="report-subtitle">Automated Exam Scheduling System for Educational Institutions</p>
+
             <div class="report-meta">
                 <div class="meta-item">
                     <div class="meta-label">Course</div>
@@ -871,6 +120,7 @@ Institutions</p>
                 </div>
             </div>
         </header>
+
         <!-- Section 1: Introduction -->
         <section id="introduction" class="section">
             <h2 class="section-title">
@@ -878,29 +128,23 @@ Institutions</p>
                 Introduction
             </h2>
             <p>
-                Exam Timetable Planner is a standalone desktop application designed to automatically 
-generate
-                optimized exam schedules for educational institutions. The system processes courses, 
-classrooms,
-                student enrollments, and predefined business constraints to produce a conflict-free and 
-efficient
+                Exam Timetable Planner is a standalone desktop application designed to automatically generate
+                optimized exam schedules for educational institutions. The system processes courses, classrooms,
+                student enrollments, and predefined business constraints to produce a conflict-free and efficient
                 exam timetable.
             </p>
             <p>
-                The primary users of this application are Student Affairs personnel responsible for 
-creating
-                and maintaining examination schedules. The application aims to reduce manual 
-scheduling effort
+                The primary users of this application are Student Affairs personnel responsible for creating
+                and maintaining examination schedules. The application aims to reduce manual scheduling effort
                 and eliminate human errors in the complex process of exam timetabling.
             </p>
             <div class="info-box note">
-                <div class="info-box-title">
-📌 Target Platform</div>
-                <p>This application is developed as a cross-platform desktop solution compatible with 
-Windows, macOS,
+                <div class="info-box-title">📌 Target Platform</div>
+                <p>This application is developed as a cross-platform desktop solution compatible with Windows, macOS,
                     and Linux operating systems.</p>
             </div>
         </section>
+
         <!-- Section 2: Project Objectives -->
         <section id="objectives" class="section">
             <h2 class="section-title">
@@ -909,23 +153,18 @@ Windows, macOS,
             </h2>
             <p>The main objectives of this project are:</p>
             <ul>
-                <li><strong>Automation:</strong> Eliminate manual exam scheduling by implementing 
-an intelligent
+                <li><strong>Automation:</strong> Eliminate manual exam scheduling by implementing an intelligent
                     algorithm</li>
-                <li><strong>Constraint Satisfaction:</strong> Ensure all scheduling rules and 
-institutional policies are
+                <li><strong>Constraint Satisfaction:</strong> Ensure all scheduling rules and institutional policies are
                     respected</li>
-                <li><strong>User-Friendly Interface:</strong> Provide an intuitive GUI for data import, 
-visualization,
+                <li><strong>User-Friendly Interface:</strong> Provide an intuitive GUI for data import, visualization,
                     and manual adjustments</li>
-                <li><strong>Flexibility:</strong> Allow manual overrides with real-time constraint 
-validation</li>
-                <li><strong>Scalability:</strong> Support large-scale institutions with 10,000+ 
-students</li>
-                <li><strong>Data Export:</strong> Enable exporting of finalized timetables for external 
-use</li>
+                <li><strong>Flexibility:</strong> Allow manual overrides with real-time constraint validation</li>
+                <li><strong>Scalability:</strong> Support large-scale institutions with 10,000+ students</li>
+                <li><strong>Data Export:</strong> Enable exporting of finalized timetables for external use</li>
             </ul>
         </section>
+
         <!-- Section 3: Key Features -->
         <section id="features" class="section">
             <h2 class="section-title">
@@ -934,51 +173,40 @@ use</li>
             </h2>
             <div class="cards-grid">
                 <div class="card">
-                    <div class="card-icon">
-📁</div>
+                    <div class="card-icon">📁</div>
                     <h4>CSV Data Import</h4>
-                    <p>Import course, student, classroom, and attendance data from standard CSV files 
-with flexible
+                    <p>Import course, student, classroom, and attendance data from standard CSV files with flexible
                         format support.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-🧠</div>
+                    <div class="card-icon">🧠</div>
                     <h4>Smart Scheduling</h4>
-                    <p>Advanced algorithm automatically generates optimal exam timetables while 
-respecting all defined
+                    <p>Advanced algorithm automatically generates optimal exam timetables while respecting all defined
                         constraints.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-📊</div>
+                    <div class="card-icon">📊</div>
                     <h4>Visual Timetable</h4>
-                    <p>View the master exam schedule in a clean, structured table format with intuitive 
-navigation.</p>
+                    <p>View the master exam schedule in a clean, structured table format with intuitive navigation.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-🔍</div>
+                    <div class="card-icon">🔍</div>
                     <h4>Advanced Search</h4>
-                    <p>Quickly search schedules by student ID or course code with real-time filtering 
-capabilities.</p>
+                    <p>Quickly search schedules by student ID or course code with real-time filtering capabilities.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-✏</div>
+                    <div class="card-icon">✏</div>
                     <h4>Manual Override</h4>
-                    <p>Manually modify exam times and classrooms with instant constraint validation 
-feedback.</p>
+                    <p>Manually modify exam times and classrooms with instant constraint validation feedback.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-📤</div>
+                    <div class="card-icon">📤</div>
                     <h4>Export Options</h4>
-                    <p>Export final timetables for external use in various formats for sharing and 
-printing.</p>
+                    <p>Export final timetables for external use in various formats for sharing and printing.</p>
                 </div>
             </div>
         </section>
+
         <!-- Section 4: Screenshots -->
         <section id="screenshots" class="section">
             <h2 class="section-title">
@@ -986,44 +214,35 @@ printing.</p>
                 Screenshots & Demo
             </h2>
             <p>Visual demonstration of the application's key screens and functionality.</p>
+
             <h3 class="subsection-title">Main Dashboard</h3>
             <div class="screenshot-placeholder">
-                <div class="icon">
-🖥</div>
-                <p>Main application dashboard showing the timetable view with<br>filtering options 
-and exam schedule
+                <div class="icon">🖥</div>
+                <p>Main application dashboard showing the timetable view with<br>filtering options and exam schedule
                     grid.</p>
-                <small style="color:var(--gray-400);">Screenshot will be added after deployment</
-small>
+                <small style="color:var(--gray-400);">Screenshot will be added after deployment</small>
             </div>
+
             <h3 class="subsection-title">Data Import</h3>
             <div class="screenshot-placeholder">
-                <div class="icon">
-📁</div>
-                <p>CSV file import interface with drag-and-drop support<br>and data validation 
-feedback.</p>
-                <small style="color:var(--gray-400);">Screenshot will be added after deployment</
-small>
+                <div class="icon">📁</div>
+                <p>CSV file import interface with drag-and-drop support<br>and data validation feedback.</p>
+                <small style="color:var(--gray-400);">Screenshot will be added after deployment</small>
             </div>
+
             <h3 class="subsection-title">Application Flow</h3>
             <div class="mermaid-container">
                 <pre class="mermaid">
-f
-lowchart LR
-    A[
-📁 Import Data] --> B[
-🔄 Validate]
-    B --> C[
-🧠 Generate Schedule]
-    C --> D[
-📊 View Timetable]
-    D --> E[
-✏ Manual Adjustments]
-    E --> F[
-📤 Export]
+flowchart LR
+    A[📁 Import Data] --> B[🔄 Validate]
+    B --> C[🧠 Generate Schedule]
+    C --> D[📊 View Timetable]
+    D --> E[✏ Manual Adjustments]
+    E --> F[📤 Export]
                 </pre>
             </div>
         </section>
+
         <!-- Section 5: Scheduling Constraints -->
         <section id="constraints" class="section">
             <h2 class="section-title">
@@ -1031,8 +250,7 @@ lowchart LR
                 Scheduling Constraints
             </h2>
             <p>
-                The scheduling algorithm enforces the following business rules to ensure fair and 
-practical exam
+                The scheduling algorithm enforces the following business rules to ensure fair and practical exam
                 schedules:
             </p>
             <div class="table-container">
@@ -1080,11 +298,11 @@ practical exam
             </div>
             <div class="info-box success">
                 <div class="info-box-title">✅ Validation</div>
-                <p>All manual changes are validated against these constraints in real-time, providing 
-instant feedback
+                <p>All manual changes are validated against these constraints in real-time, providing instant feedback
                     to users.</p>
             </div>
         </section>
+
         <!-- Section 6: Algorithm -->
         <section id="algorithm" class="section">
             <h2 class="section-title">
@@ -1092,18 +310,15 @@ instant feedback
                 Scheduling Algorithm
             </h2>
             <p>
-                The exam scheduling algorithm uses a constraint satisfaction approach with 
-backtracking
-                to 
-f
-ind valid exam placements. The algorithm prioritizes courses with higher enrollment
+                The exam scheduling algorithm uses a constraint satisfaction approach with backtracking
+                to find valid exam placements. The algorithm prioritizes courses with higher enrollment
                 and more constraints.
             </p>
+
             <h3 class="subsection-title">Algorithm Flow</h3>
             <div class="mermaid-container">
                 <pre class="mermaid">
-f
-lowchart TD
+flowchart TD
     A[Start] --> B[Sort courses by enrollment]
     B --> C[Get next course]
     C --> D{Slots available?}
@@ -1119,11 +334,11 @@ lowchart TD
     K --> D
                 </pre>
             </div>
+
             <h3 class="subsection-title">Constraint Checking Process</h3>
             <div class="mermaid-container">
                 <pre class="mermaid">
-f
-lowchart LR
+flowchart LR
     subgraph Constraints
         A[Time Window Check] --> B[Capacity Check]
         B --> C[Room Availability]
@@ -1132,12 +347,11 @@ lowchart LR
         E --> F[Gap Requirement]
     end
     F --> G{All Pass?}
-    G -->|Yes| H[
-✅ Valid]
-    G -->|No| I[
-❌ Invalid]
+    G -->|Yes| H[✅ Valid]
+    G -->|No| I[❌ Invalid]
                 </pre>
             </div>
+
             <h3 class="subsection-title">Time Complexity</h3>
             <div class="table-container">
                 <table>
@@ -1168,12 +382,12 @@ lowchart LR
                 </table>
             </div>
             <div class="info-box note">
-                <div class="info-box-title">
-📌 Optimization</div>
+                <div class="info-box-title">📌 Optimization</div>
                 <p>The algorithm uses early termination and slot caching to improve performance.
                     Large-scale tests show it handles 10,000+ students efficiently.</p>
             </div>
         </section>
+
         <!-- Section 7: System Architecture -->
         <section id="architecture" class="section">
             <h2 class="section-title">
@@ -1181,12 +395,11 @@ lowchart LR
                 System Architecture
             </h2>
             <p>
-                The application follows a layered architecture pattern to ensure modularity, 
-maintainability,
-                and clear separation of concerns. Each layer has a specific responsibility and 
-communicates
+                The application follows a layered architecture pattern to ensure modularity, maintainability,
+                and clear separation of concerns. Each layer has a specific responsibility and communicates
                 only with adjacent layers.
             </p>
+
             <h3 class="subsection-title">Class Diagram</h3>
             <div class="mermaid-container">
                 <pre class="mermaid">
@@ -1231,36 +444,31 @@ classDiagram
     ExamTimetable --> Exam
                 </pre>
             </div>
+
             <div class="architecture">
                 <div class="arch-layer">
-                    <span class="arch-layer-name">
-🎨 Presentation</span>
+                    <span class="arch-layer-name">🎨 Presentation</span>
                     <span class="arch-layer-desc">JavaFX UI, FXML Views, Controllers</span>
                     <span class="arch-layer-badge">UI</span>
                 </div>
                 <div class="arch-layer">
-                    <span class="arch-layer-name">
-⚙ Services</span>
-                    <span class="arch-layer-desc">SchedulerService, ConstraintChecker, 
-DataImportService</span>
+                    <span class="arch-layer-name">⚙ Services</span>
+                    <span class="arch-layer-desc">SchedulerService, ConstraintChecker, DataImportService</span>
                     <span class="arch-layer-badge">Business Logic</span>
                 </div>
                 <div class="arch-layer">
-                    <span class="arch-layer-name">
-📦 Domain</span>
-                    <span class="arch-layer-desc">Course, Student, Classroom, Exam, ExamSlot, 
-ExamTimetable</span>
+                    <span class="arch-layer-name">📦 Domain</span>
+                    <span class="arch-layer-desc">Course, Student, Classroom, Exam, ExamSlot, ExamTimetable</span>
                     <span class="arch-layer-badge">Models</span>
                 </div>
                 <div class="arch-layer">
-                    <span class="arch-layer-name">
-💾 Persistence</span>
-                    <span class="arch-layer-desc">CSV Parsers, SQLite Database, DataRepository</
-span>
+                    <span class="arch-layer-name">💾 Persistence</span>
+                    <span class="arch-layer-desc">CSV Parsers, SQLite Database, DataRepository</span>
                     <span class="arch-layer-badge">Data Access</span>
                 </div>
             </div>
         </section>
+
         <!-- Section 8: Technologies Used -->
         <section id="technologies" class="section">
             <h2 class="section-title">
@@ -1311,6 +519,7 @@ span>
                 </table>
             </div>
         </section>
+
         <!-- Section 9: Project Structure -->
         <section id="structure" class="section">
             <h2 class="section-title">
@@ -1332,8 +541,8 @@ span>
 ├── persistence/            # Data access
 │   └── DataRepository.java
 └── ui/                     # Presentation layer
-├── MainApp.java
-└── MainController.java
+    ├── MainApp.java
+    └── MainController.java
 src/main/resources/
 ├── MainView.fxml
 ├── SplashScreen.fxml
@@ -1343,6 +552,7 @@ src/test/java/com/examplanner/
 ├── domain/                 # Domain tests
 └── services/               # Service tests</code></pre>
         </section>
+
         <!-- Section 10: API Documentation -->
         <section id="api" class="section">
             <h2 class="section-title">
@@ -1350,6 +560,7 @@ src/test/java/com/examplanner/
                 API Documentation
             </h2>
             <p>Key service classes and their public methods:</p>
+
             <h3 class="subsection-title">SchedulerService</h3>
             <div class="table-container">
                 <table>
@@ -1377,6 +588,7 @@ src/test/java/com/examplanner/
                     </tbody>
                 </table>
             </div>
+
             <h3 class="subsection-title">ConstraintChecker</h3>
             <div class="table-container">
                 <table>
@@ -1416,6 +628,7 @@ src/test/java/com/examplanner/
                     </tbody>
                 </table>
             </div>
+
             <h3 class="subsection-title">DataImportService</h3>
             <div class="table-container">
                 <table>
@@ -1456,18 +669,19 @@ src/test/java/com/examplanner/
                 </table>
             </div>
         </section>
+
         <!-- Section 11: Testing -->
         <section id="testing" class="section">
             <h2 class="section-title">
                 <span class="section-number">11</span>
-                T
-esting
+                Testing
             </h2>
             <p>
                 The project includes comprehensive unit tests using JUnit 5 and Mockito frameworks.
                 All tests follow best practices including descriptive naming, nested test classes,
                 and proper assertions.
             </p>
+
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-value">102</div>
@@ -1486,6 +700,7 @@ esting
                     <div class="stat-label">Categories</div>
                 </div>
             </div>
+
             <h3 class="subsection-title">Test Coverage by Class</h3>
             <div class="table-container">
                 <table>
@@ -1545,14 +760,18 @@ esting
                     </tbody>
                 </table>
             </div>
+
             <h3 class="subsection-title">Running Tests</h3>
             <pre><code># Run all tests
 mvn test
+
 # Run specific test class
 mvn test -Dtest=CourseTest
+
 # Run with verbose output
 mvn test -Dsurefire.useFile=false</code></pre>
         </section>
+
         <!-- Section 12: Installation Guide -->
         <section id="installation" class="section">
             <h2 class="section-title">
@@ -1565,6 +784,7 @@ mvn test -Dsurefire.useFile=false</code></pre>
                 <li>Apache Maven 3.9 or higher</li>
                 <li>Git (for cloning the repository)</li>
             </ul>
+
             <h3 class="subsection-title">Installation Steps</h3>
             <ol>
                 <li>
@@ -1581,14 +801,14 @@ cd ExamTimetablePlanner</code></pre>
                     <pre><code>mvn javafx:run</code></pre>
                 </li>
             </ol>
+
             <div class="info-box warning">
-                <div class="info-box-title">
-⚠ JavaFX Configuration</div>
-                <p>Ensure that JavaFX is properly configured in your environment. The Maven POM file 
-includes all
+                <div class="info-box-title">⚠ JavaFX Configuration</div>
+                <p>Ensure that JavaFX is properly configured in your environment. The Maven POM file includes all
                     necessary JavaFX dependencies.</p>
             </div>
         </section>
+
         <!-- Section 13: Project Team -->
         <section id="team" class="section">
             <h2 class="section-title">
@@ -1628,6 +848,7 @@ includes all
                 </div>
             </div>
         </section>
+
         <!-- Section 14: Changelog -->
         <section id="changelog" class="section">
             <h2 class="section-title">
@@ -1670,6 +891,7 @@ includes all
                 </div>
             </div>
         </section>
+
         <!-- Section 15: Future Work -->
         <section id="future" class="section">
             <h2 class="section-title">
@@ -1679,30 +901,27 @@ includes all
             <h3 class="subsection-title">Planned Features</h3>
             <div class="cards-grid">
                 <div class="card">
-                    <div class="card-icon">
-🌐</div>
+                    <div class="card-icon">🌐</div>
                     <h4>Web Interface</h4>
                     <p>Browser-based version for remote access without installation.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-📧</div>
+                    <div class="card-icon">📧</div>
                     <h4>Email Notifications</h4>
                     <p>Automatic email alerts to students about their exam schedules.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-📱</div>
+                    <div class="card-icon">📱</div>
                     <h4>Mobile App</h4>
                     <p>iOS/Android companion app for students to view schedules.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon">
-🔗</div>
+                    <div class="card-icon">🔗</div>
                     <h4>LMS Integration</h4>
                     <p>Direct integration with popular Learning Management Systems.</p>
                 </div>
             </div>
+
             <h3 class="subsection-title">Known Issues</h3>
             <div class="table-container">
                 <table>
@@ -1716,20 +935,19 @@ includes all
                     <tbody>
                         <tr>
                             <td>Large CSV files (>50MB) may cause slow import</td>
-                            <td>
-🟡 In Progress</td>
+                            <td>🟡 In Progress</td>
                             <td>Split files into smaller chunks</td>
                         </tr>
                         <tr>
                             <td>Turkish character encoding in some CSV formats</td>
-                            <td>
-🟢 Fixed in 1.0.0</td>
+                            <td>🟢 Fixed in 1.0.0</td>
                             <td>Use UTF-8 encoding</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
+
         <!-- Section 16: References -->
         <section id="references" class="section">
             <h2 class="section-title">
@@ -1737,189 +955,31 @@ includes all
                 References
             </h2>
             <ul>
-                <li><strong>GitHub Repository:</strong> <a href="https://github.com/utkubilir/
-ExamTimetablePlanner"
+                <li><strong>GitHub Repository:</strong> <a href="https://github.com/utkubilir/ExamTimetablePlanner"
                         target="_blank">https://github.com/utkubilir/ExamTimetablePlanner</a></li>
                 <li><strong>JavaFX Documentation:</strong> <a href="https://openjfx.io/"
                         target="_blank">https://openjfx.io/</a></li>
-                <li><strong>JUnit 5 User Guide:</strong> <a href="https://junit.org/junit5/docs/current/
-user-guide/"
+                <li><strong>JUnit 5 User Guide:</strong> <a href="https://junit.org/junit5/docs/current/user-guide/"
                         target="_blank">https://junit.org/junit5/</a></li>
-                <li><strong>SQLite Documentation:</strong> <a href="https://www.sqlite.org/
-docs.html"
+                <li><strong>SQLite Documentation:</strong> <a href="https://www.sqlite.org/docs.html"
                         target="_blank">https://www.sqlite.org/</a></li>
             </ul>
         </section>
+
         <!-- Footer -->
         <footer class="footer">
             <p>
                 © 2025 Exam Timetable Planner | SE-302 Software Engineering Project<br>
-                <a href="https://github.com/utkubilir/ExamTimetablePlanner" target="_blank">View 
-Source on GitHub</a>
+                <a href="https://github.com/utkubilir/ExamTimetablePlanner" target="_blank">View Source on GitHub</a>
             </p>
         </footer>
     </main>
+
     <!-- Floating Buttons -->
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-🌙</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
     <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
-    <script>
-        // Initialize Mermaid
-        mermaid.initialize({ startOnLoad: true, theme: 'default' });
-        // Mobile Menu
-        const hamburger = document.getElementById('hamburger');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        hamburger?.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('open');
-        });
-        overlay?.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('open');
-        });
-        // Close sidebar when clicking a link (mobile)
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('open');
-            });
-        });
-        // Active nav link highlighting
-        const navLinks = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('.section');
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 120;
-                if (window.scrollY >= sectionTop) {
-                    current = section.getAttribute('id');
-                }
-            });
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${current}`) {
-                    link.classList.add('active');
-                }
-            });
-        });
-        // Progress Bar
-        window.addEventListener('scroll', () => {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - 
-document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            document.getElementById('progressBar').style.width = scrolled + '%';
-        });
-        // Back to Top
-        const backToTop = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 500) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
-        });
-        backToTop?.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-        // Dark Mode
-        const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-            themeToggle.textContent = '
-☀';
-        }
-        themeToggle?.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '
-☀' : '
-🌙';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        });
-        // Search
-        const searchModal = document.getElementById('searchModal');
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-        function openSearch() {
-            searchModal.classList.add('open');
-            searchInput.focus();
-        }
-        function closeSearch() {
-            searchModal.classList.remove('open');
-            searchInput.value = '';
-            searchResults.innerHTML = '<div class="search-hint">Press ESC to close</div>';
-        }
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                openSearch();
-            }
-            if (e.key === 'Escape') {
-                closeSearch();
-            }
-        });
-        searchModal?.addEventListener('click', (e) => {
-            if (e.target === searchModal) closeSearch();
-        });
-        function performSearch() {
-            const query = searchInput.value.toLowerCase().trim();
-            if (query.length < 2) {
-                searchResults.innerHTML = '<div class="search-hint">Type at least 2 characters...</
-div>';
-                return;
-            }
-            const results = [];
-            sections.forEach(section => {
-                const title = section.querySelector('.section-title')?.textContent || '';
-                const content = section.textContent.toLowerCase();
-                if (content.includes(query)) {
-                    results.push({
-                        id: section.id,
-                        title: title.replace(/^\d+/, '').trim(),
-50)
-                    });
-                        preview: content.substring(content.indexOf(query) - 30, content.indexOf(query) + 
-                }
-            });
-            if (results.length === 0) {
-                searchResults.innerHTML = '<div class="search-hint">No results found</div>';
-            } else {
-                searchResults.innerHTML = results.map(r => `
-                    <div class="search-result-item" onclick="goToSection('${r.id}')">
-                        <strong>${r.title}</strong>
-                        <div style="font-size:0.85rem;color:var(--gray-500);">...${r.preview}...</div>
-                    </div>
-                `).join('');
-            }
-        }
-        function goToSection(id) {
-            closeSearch();
-            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-        }
-        // Copy Button for Code Blocks
-        document.querySelectorAll('pre:not(.mermaid)').forEach(pre => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'code-wrapper';
-            pre.parentNode.insertBefore(wrapper, pre);
-            wrapper.appendChild(pre);
-            const btn = document.createElement('button');
-            btn.className = 'copy-btn';
-            btn.textContent = 'Copy';
-            btn.onclick = () => {
-                navigator.clipboard.writeText(pre.textContent);
-                btn.textContent = 'Copied!';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = 'Copy';
-                    btn.classList.remove('copied');
-                }, 2000);
-            };
-            wrapper.appendChild(btn);
-        });
-    </script>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
