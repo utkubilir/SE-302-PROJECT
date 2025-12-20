@@ -3841,14 +3841,13 @@ public class MainController {
             lblStatExamsValue.setText(String.valueOf(exams.size()));
         }
 
-        // Unique Courses (as proxy for students - Course model doesn't track enrolled
-        // students)
+        // Unique Students (Real count from Enrollments)
         if (lblStatStudentsValue != null) {
-            long uniqueCourses = exams.stream()
-                    .map(e -> e.getCourse().getCode())
+            long uniqueStudents = enrollments.stream()
+                    .map(e -> e.getStudent().getId())
                     .distinct()
                     .count();
-            lblStatStudentsValue.setText(String.valueOf(uniqueCourses));
+            lblStatStudentsValue.setText(String.valueOf(uniqueStudents));
         }
 
         // Unique Classrooms
@@ -3870,18 +3869,42 @@ public class MainController {
         }
 
         // ==========================================
-        // 2. CONFLICT WARNING
+        // 2. CONFLICT WARNING (Students with >1 Exam/Day)
         // ==========================================
+        int conflictCount = 0;
+
+        // Map: Student -> Date -> Count
+        Map<Student, Map<LocalDate, Long>> studentDailyExams = new HashMap<>();
+
+        // Pre-group exams by course for faster lookup
+        Map<String, List<Exam>> examsByCourse = exams.stream()
+                .collect(Collectors.groupingBy(e -> e.getCourse().getCode()));
+
+        for (Enrollment enroll : enrollments) {
+            List<Exam> courseExams = examsByCourse.get(enroll.getCourse().getCode());
+            if (courseExams != null) {
+                for (Exam ex : courseExams) {
+                    studentDailyExams.computeIfAbsent(enroll.getStudent(), k -> new HashMap<>())
+                            .merge(ex.getSlot().getDate(), 1L, Long::sum);
+                }
+            }
+        }
+
+        // Count conflicts (Soft constraint: >1 exam per day)
+        for (Map<LocalDate, Long> dayCounts : studentDailyExams.values()) {
+            for (Long count : dayCounts.values()) {
+                if (count > 1) {
+                    conflictCount++;
+                }
+            }
+        }
+
         if (conflictWarningBox != null) {
-            // Check for conflicts (simplified check)
-            int conflictCount = 0;
-            // Here you could add actual conflict detection logic
-            // For now, we'll hide it
             if (conflictCount > 0) {
                 conflictWarningBox.setVisible(true);
                 conflictWarningBox.setManaged(true);
                 if (lblConflictDetails != null) {
-                    lblConflictDetails.setText(conflictCount + " issue(s) detected");
+                    lblConflictDetails.setText(conflictCount + " students have >1 exam/day");
                 }
             } else {
                 conflictWarningBox.setVisible(false);
@@ -3933,19 +3956,16 @@ public class MainController {
         });
 
         // ==========================================
-        // 5. TIME SLOT DISTRIBUTION (Bar Chart)
+        // 5. TIME SLOT DISTRIBUTION (Bar Chart - Grouped by Hour)
         // ==========================================
         if (chartTimeSlots != null) {
             chartTimeSlots.getData().clear();
             chartTimeSlots.setAnimated(false);
 
             Map<String, Long> slotUsage = exams.stream()
-                    .collect(Collectors.groupingBy(e -> {
-                        java.time.LocalTime start = e.getSlot().getStartTime();
-                        java.time.LocalTime end = e.getSlot().getEndTime();
-                        return start.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")) + "-" +
-                                end.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
-                    }, Collectors.counting()));
+                    .collect(Collectors.groupingBy(
+                            e -> e.getSlot().getStartTime().format(DateTimeFormatter.ofPattern("HH:00")),
+                            Collectors.counting()));
 
             javafx.scene.chart.XYChart.Series<String, Number> slotSeries = new javafx.scene.chart.XYChart.Series<>();
             slotSeries.setName("Exams");
@@ -3961,26 +3981,31 @@ public class MainController {
         }
 
         // ==========================================
-        // 6. STUDENT EXAM LOAD DISTRIBUTION
+        // 6. STUDENT WORKLOAD DISTRIBUTION (Bar Chart)
         // ==========================================
         if (chartStudentLoad != null) {
             chartStudentLoad.getData().clear();
             chartStudentLoad.setAnimated(false);
 
-            // Courses per Classroom distribution (alternative metric since student
-            // enrollment not available)
-            Map<String, Long> classroomExamCount = exams.stream()
-                    .collect(Collectors.groupingBy(e -> e.getClassroom().getName(), Collectors.counting()));
+            // Calculate max exams per day for each student
+            // We already have studentDailyExams populated in step 2
+            Map<Long, Long> workloadDist = new HashMap<>(); // MaxExamsPerDay -> StudentCount
+
+            for (Map<LocalDate, Long> daily : studentDailyExams.values()) {
+                long maxDaily = daily.values().stream().mapToLong(l -> l).max().orElse(0);
+                if (maxDaily > 0) {
+                    workloadDist.merge(maxDaily, 1L, Long::sum);
+                }
+            }
 
             javafx.scene.chart.XYChart.Series<String, Number> loadSeries = new javafx.scene.chart.XYChart.Series<>();
-            loadSeries.setName("Exams");
+            loadSeries.setName("Students");
 
-            classroomExamCount.entrySet().stream()
-                    .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                    .limit(8) // Top 8 classrooms
+            workloadDist.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
                     .forEach(entry -> {
-                        loadSeries.getData()
-                                .add(new javafx.scene.chart.XYChart.Data<>(entry.getKey(), entry.getValue()));
+                        String label = entry.getKey() + (entry.getKey() == 1 ? " Exam/Day" : " Exams/Day");
+                        loadSeries.getData().add(new javafx.scene.chart.XYChart.Data<>(label, entry.getValue()));
                     });
 
             chartStudentLoad.getData().add(loadSeries);
@@ -4023,6 +4048,7 @@ public class MainController {
                 }
             }
         });
+
     }
 
     private void showExamsForDate(LocalDate date) {

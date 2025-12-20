@@ -287,7 +287,7 @@
                      <VBox fx:id="statCardStudents" styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER">
                          <FontIcon iconLiteral="fas-user-graduate" iconSize="28" styleClass="stat-icon stat-icon-success"/>
                          <Label fx:id="lblStatStudentsValue" styleClass="stat-value" text="0"/>
-                         <Label fx:id="lblStatStudentsLabel" styleClass="stat-label" text="Courses"/>
+                         <Label fx:id="lblStatStudentsLabel" styleClass="stat-label" text="Students"/>
                      </VBox>
                      <!-- Total Classrooms Card -->
                      <VBox fx:id="statCardClassrooms" styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER">
@@ -348,13 +348,13 @@
                      </VBox>
                      
                      <VBox styleClass="card" HBox.hgrow="ALWAYS">
-                         <Label fx:id="lblStudentLoad" styleClass="card-title" text="Top Classrooms" />
+                         <Label fx:id="lblStudentLoad" styleClass="card-title" text="Student Workload Distribution" />
                          <BarChart fx:id="chartStudentLoad" VBox.vgrow="ALWAYS">
                              <xAxis>
-                                 <CategoryAxis label="Classroom" />
+                                 <CategoryAxis label="Max Daily Exams" />
                              </xAxis>
                              <yAxis>
-                                 <NumberAxis label="Exams" />
+                                 <NumberAxis label="Student Count" />
                              </yAxis>
                          </BarChart>
                      </VBox>
