@@ -1989,21 +1989,3 @@
 .primary-button .icon-calendar-check {
     -fx-background-color: white;
 }
-.manual-title {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-}
-
-.manual-section {
-    -fx-padding: 10 0 10 0;
-}
-
-.manual-section-title {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-}
-
-.manual-section-text {
-    -fx-font-size: 12px;
-    -fx-text-fill: #6B7280;
-}

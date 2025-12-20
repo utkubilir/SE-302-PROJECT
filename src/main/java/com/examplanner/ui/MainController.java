@@ -20,6 +20,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Priority;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,6 +33,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.ListView;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 
@@ -55,7 +58,6 @@ import com.examplanner.ui.tour.TourStep.TourPosition;
 
 public class MainController {
 
-    
     @FXML
     private StackPane rootContainer;
 
@@ -275,43 +277,70 @@ public class MainController {
     private VBox viewUserManual;
 
     // Manual helper methods
-private void buildUserManual() {
+    private void buildUserManual() {
+        viewUserManual.getChildren().clear();
 
-    viewUserManual.getChildren().clear();
+        // Header
+        HBox header = new HBox(20);
+        header.setAlignment(Pos.CENTER_LEFT);
 
-    addManualTitle("Exam Timetable Planner – User Manual");
+        Button backBtn = new Button(bundle.getString("manual.back"));
+        backBtn.setGraphic(IconHelper.back());
+        backBtn.getStyleClass().add("secondary-button");
+        backBtn.setOnAction(e -> showDataImport());
 
-    addManualSection(
-        "1. Importing Data",
-        "Use the Data Import screen to load Courses, Students, Classrooms and Attendance CSV files. "
-      + "All data must be loaded before timetable generation."
-    );
+        VBox titleBox = new VBox();
+        Label title = new Label(bundle.getString("manual.title"));
+        title.getStyleClass().add("section-title");
+        Label subtitle = new Label(bundle.getString("manual.subtitle"));
+        subtitle.getStyleClass().add("section-subtitle");
+        titleBox.getChildren().addAll(title, subtitle);
 
-    addManualSection(
-        "2. Generating the Timetable",
-        "Click the Generate Timetable button to automatically schedule exams based on defined constraints."
-    );
+        header.getChildren().addAll(backBtn, titleBox);
 
-    addManualSection(
-        "3. Viewing the Timetable",
-        "The Timetable screen displays the complete exam schedule. Exams are shown with date, time and classroom."
-    );
+        // Content
+        VBox content = new VBox(10);
+        content.getStyleClass().add("manual-container");
 
-    addManualSection(
-        "4. Filtering Schedules",
-        "Use the filter option to view a specific student's or course's exam schedule."
-    );
+        // 1. Getting Started
+        TitledPane section1 = createManualSection(bundle.getString("manual.gettingStarted.title"),
+                bundle.getString("manual.gettingStarted.text"),
+                true);
+        VBox sec1Content = (VBox) section1.getContent();
+        sec1Content.getChildren().add(createManualSubsection(bundle.getString("manual.requirements.title"),
+                bundle.getString("manual.requirements.text")));
+        sec1Content.getChildren().add(createManualSubsection(bundle.getString("manual.workflow.title"),
+                bundle.getString("manual.workflow.text")));
+        sec1Content.getChildren().add(createManualTip(bundle.getString("manual.tip.csv")));
 
-    addManualSection(
-        "5. Manual Editing",
-        "Exams can be rescheduled using drag-and-drop. The system validates all changes in real time."
-    );
+        // 2. Data Import
+        TitledPane section2 = createManualSection(bundle.getString("manual.dataImport.title"),
+                bundle.getString("manual.dataImport.text"),
+                false);
+        VBox sec2Content = (VBox) section2.getContent();
+        sec2Content.getChildren().add(createManualSubsection(bundle.getString("manual.courses.title"),
+                bundle.getString("manual.courses.text")));
+        sec2Content.getChildren().add(createManualSubsection(bundle.getString("manual.students.title"),
+                bundle.getString("manual.students.text")));
+        sec2Content.getChildren().add(createManualSubsection(bundle.getString("manual.classrooms.title"),
+                bundle.getString("manual.classrooms.text")));
+        sec2Content.getChildren().add(createManualSubsection(bundle.getString("manual.attendance.title"),
+                bundle.getString("manual.attendance.text")));
 
-    addManualSection(
-        "6. Exporting",
-        "The final timetable can be exported to CSV or PDF format for sharing or archiving."
-    );
-}
+        // 3. Generation
+        TitledPane section3 = createManualSection(bundle.getString("manual.generation.title"),
+                bundle.getString("manual.generation.text"),
+                false);
+
+        content.getChildren().addAll(section1, section2, section3);
+
+        ScrollPane scroll = new ScrollPane(content);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background-color: transparent;");
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+
+        viewUserManual.getChildren().addAll(header, scroll);
+    }
 
     private TitledPane createManualSection(String title, String mainText, boolean expanded) {
         TitledPane tp = new TitledPane();
@@ -996,22 +1025,18 @@ private void buildUserManual() {
     }
 
     @FXML
-private void showUserManual() {
-    viewDataImport.setVisible(false);
-    viewDataImport.setManaged(false);
+    private void showUserManual() {
+        viewDataImport.setVisible(false);
+        viewDashboard.setVisible(false);
+        viewTimetable.setVisible(false);
+        viewUserManual.setVisible(true);
 
-    viewDashboard.setVisible(false);
-    viewDashboard.setManaged(false);
-
-    viewTimetable.setVisible(false);
-    viewTimetable.setManaged(false);
-
-    viewUserManual.setVisible(true);
-    viewUserManual.setManaged(true);
-
-    buildUserManual();
-}
-
+        if (sidebar != null) {
+            sidebar.setVisible(true);
+            sidebar.setManaged(true);
+        }
+        // setActive(btnUserManual); // Button removed
+    }
 
     private void setActive(Button btn) {
         if (btn == null)
@@ -2019,7 +2044,6 @@ private void showUserManual() {
         helpStage.setScene(helpScene);
         helpStage.showAndWait();
     }
-    
 
     private HBox createHelpOption(String iconLiteral, String text, String colorHex) {
         HBox btn = new HBox(12);
@@ -4352,26 +4376,5 @@ private void showUserManual() {
         setActive(btnStudentSearch);
         filterByStudent();
     }
-    private void addManualTitle(String text) {
-    Label title = new Label(text);
-    title.getStyleClass().add("section-title");
-    viewUserManual.getChildren().add(title);
-}
-
-private void addManualSection(String header, String body) {
-    Label h = new Label(header);
-    h.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-
-    Label b = new Label(body);
-    b.setWrapText(true);
-
-    VBox box = new VBox(6, h, b);
-    box.setStyle("-fx-padding: 8 0 8 0;");
-
-    viewUserManual.getChildren().add(box);
-}
-
-
-
 
 }
