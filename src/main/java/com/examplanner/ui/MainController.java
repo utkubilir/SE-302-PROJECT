@@ -154,6 +154,16 @@ public class MainController {
     private javafx.scene.layout.HBox conflictWarningBox;
     @FXML
     private Label lblConflictDetails;
+    @FXML
+    private Label lblConflictTitle;
+    @FXML
+    private Button btnViewConflicts;
+    @FXML
+    private Button btnDashboardExport;
+    @FXML
+    private Button btnDashboardConflicts;
+    @FXML
+    private Button btnDashboardRegenerate;
 
     @FXML
     private Button btnSearchFilter; // FXML'de verdiğimiz yeni ID
@@ -769,6 +779,18 @@ public class MainController {
             lblTimeSlots.setText(bundle.getString("dashboard.timeSlots"));
         if (lblStudentLoad != null)
             lblStudentLoad.setText(bundle.getString("dashboard.studentLoad"));
+
+        // Dashboard Buttons
+        if (btnDashboardExport != null)
+            btnDashboardExport.setText(bundle.getString("dashboard.exportReport"));
+        if (btnDashboardConflicts != null)
+            btnDashboardConflicts.setText(bundle.getString("dashboard.viewConflicts"));
+        if (btnDashboardRegenerate != null)
+            btnDashboardRegenerate.setText(bundle.getString("dashboard.regenerate"));
+        if (lblConflictTitle != null)
+            lblConflictTitle.setText(bundle.getString("dashboard.conflictsDetected"));
+        if (btnViewConflicts != null)
+            btnViewConflicts.setText(bundle.getString("dashboard.viewDetails"));
 
         // Timetable View
         if (lblTimetableTitle != null)
@@ -4283,11 +4305,13 @@ public class MainController {
         VBox header = new VBox(5);
         header.getStyleClass().add("modal-header");
 
-        Label title = new Label("Edit Exam: " + exam.getCourse().getName());
+        Label title = new Label(
+                java.text.MessageFormat.format(bundle.getString("editExam.title"), exam.getCourse().getName()));
         title.getStyleClass().add("section-title");
         title.setStyle("-fx-font-size: 18px;");
 
-        Label subtitle = new Label(exam.getCourse().getCode() + " • " + students.size() + " Students enrolled");
+        Label subtitle = new Label(exam.getCourse().getCode() + " • "
+                + java.text.MessageFormat.format(bundle.getString("editExam.studentsEnrolled"), students.size()));
         subtitle.getStyleClass().addAll("label", "text-secondary");
 
         header.getChildren().addAll(title, subtitle);
@@ -4314,7 +4338,7 @@ public class MainController {
 
         // Date Picker
         VBox dateSection = new VBox(5);
-        Label dateLabel = new Label("Exam Date");
+        Label dateLabel = new Label(bundle.getString("editExam.examDate"));
         dateLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #374151;");
         javafx.scene.control.DatePicker datePicker = new javafx.scene.control.DatePicker(exam.getSlot().getDate());
         datePicker.setMaxWidth(Double.MAX_VALUE);
@@ -4323,7 +4347,7 @@ public class MainController {
 
         // Time Selection
         VBox timeSection = new VBox(5);
-        Label timeLabel = new Label("Time Slot");
+        Label timeLabel = new Label(bundle.getString("editExam.timeSlot"));
         timeLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #374151;");
 
         HBox timeBox = new HBox(10);
@@ -4341,13 +4365,14 @@ public class MainController {
         }
         startTimeCombo.setValue(exam.getSlot().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
 
-        Label toLabel = new Label("to");
+        Label toLabel = new Label(bundle.getString("editExam.to"));
         toLabel.setStyle("-fx-text-fill: #6B7280;");
 
         Label endTimeLabel = new Label(exam.getSlot().getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         endTimeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #374151; -fx-font-weight: bold;");
 
-        Label durationLabel = new Label("(" + exam.getCourse().getExamDurationMinutes() + " min)");
+        Label durationLabel = new Label(
+                "(" + exam.getCourse().getExamDurationMinutes() + " " + bundle.getString("editExam.min") + ")");
         durationLabel.setStyle("-fx-text-fill: #9CA3AF; -fx-font-size: 12px;");
 
         timeBox.getChildren().addAll(startTimeCombo, toLabel, endTimeLabel, durationLabel);
@@ -4365,7 +4390,7 @@ public class MainController {
 
         // Classroom Selection
         VBox classroomSection = new VBox(5);
-        Label classroomLabel = new Label("Classroom");
+        Label classroomLabel = new Label(bundle.getString("editExam.classroom"));
         classroomLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #374151;");
 
         javafx.scene.control.ComboBox<Classroom> classroomCombo = new javafx.scene.control.ComboBox<>();
@@ -4382,7 +4407,8 @@ public class MainController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getName() + " (Capacity: " + item.getCapacity() + ")");
+                    setText(item.getName() + " (" + bundle.getString("editExam.capacity") + ": " + item.getCapacity()
+                            + ")");
                 }
             }
         });
@@ -4393,7 +4419,8 @@ public class MainController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getName() + " (Capacity: " + item.getCapacity() + ")");
+                    setText(item.getName() + " (" + bundle.getString("editExam.capacity") + ": " + item.getCapacity()
+                            + ")");
                 }
             }
         });
@@ -4443,7 +4470,7 @@ public class MainController {
                                 + "; -fx-border-color: " + dmSuccessBorder() + "; -fx-border-radius: 8;");
                 validationIcon.setText("✓");
                 validationIcon.setStyle("-fx-font-size: 16px; -fx-text-fill: " + dmSuccess() + ";");
-                validationLabel.setText("All constraints satisfied. This change is valid.");
+                validationLabel.setText(bundle.getString("editExam.validChange"));
                 validationLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: " + dmSuccessText() + ";");
             } else {
                 validationBox.setStyle(
@@ -4451,7 +4478,7 @@ public class MainController {
                                 + "; -fx-border-color: " + dmErrorBorder() + "; -fx-border-radius: 8;");
                 validationIcon.setText("⚠");
                 validationIcon.setStyle("-fx-font-size: 16px; -fx-text-fill: " + dmError() + ";");
-                validationLabel.setText("Conflict: " + error);
+                validationLabel.setText(java.text.MessageFormat.format(bundle.getString("editExam.conflict"), error));
                 validationLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: " + dmErrorText() + ";");
             }
         };
@@ -4465,7 +4492,7 @@ public class MainController {
         VBox currentInfoSection = new VBox(8);
         currentInfoSection
                 .setStyle("-fx-background-color: " + dmBgTertiary() + "; -fx-padding: 12; -fx-background-radius: 8;");
-        Label currentInfoTitle = new Label("Current Assignment");
+        Label currentInfoTitle = new Label(bundle.getString("editExam.currentAssignment"));
         currentInfoTitle
                 .setStyle("-fx-font-weight: bold; -fx-text-fill: " + dmTextTertiary() + "; -fx-font-size: 13px;");
 
@@ -4489,7 +4516,8 @@ public class MainController {
         FontIcon studentsIcon = IconHelper.attendance();
         studentsIcon.setIconSize(14);
 
-        Label studentsLabel = new Label("Enrolled Students (" + students.size() + ")");
+        Label studentsLabel = new Label(
+                java.text.MessageFormat.format(bundle.getString("editExam.enrolledStudents"), students.size()));
         studentsLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4F46E5;");
 
         Region spacer = new Region();
@@ -4518,11 +4546,11 @@ public class MainController {
         footer.setStyle("-fx-padding: 10 40 10 40; -fx-background-color: " + dmBgTertiary()
                 + "; -fx-background-radius: 0 0 12 12;");
 
-        Button cancelBtn = new Button("Cancel");
+        Button cancelBtn = new Button(bundle.getString("editExam.cancel"));
         cancelBtn.getStyleClass().add("secondary-button");
         cancelBtn.setOnAction(e -> dialog.close());
 
-        Button saveBtn = new Button("💾 Save Changes");
+        Button saveBtn = new Button(bundle.getString("editExam.saveChanges"));
         saveBtn.getStyleClass().add("primary-button");
         saveBtn.setOnAction(e -> {
             LocalDate newDate = datePicker.getValue();
