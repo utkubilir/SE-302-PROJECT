@@ -1,25 +1,31 @@
-// Initialize Mermaid
-mermaid.initialize({ startOnLoad: true, theme: 'default' });
+// Initialize Mermaid safely
+if (typeof mermaid !== 'undefined') {
+    try {
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    } catch (e) {
+        console.warn('Mermaid failed to initialize:', e);
+    }
+}
 
 // Mobile Menu
 const hamburger = document.getElementById('hamburger');
-const sidebar = document.getElementById('sidebar');
+const sidebarEl = document.getElementById('sidebar');
 const overlay = document.getElementById('sidebarOverlay');
 
 hamburger?.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
+    sidebarEl.classList.toggle('open');
     overlay.classList.toggle('open');
 });
 
 overlay?.addEventListener('click', () => {
-    sidebar.classList.remove('open');
+    sidebarEl.classList.remove('open');
     overlay.classList.remove('open');
 });
 
 // Close sidebar when clicking a link (mobile)
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
-        sidebar.classList.remove('open');
+        sidebarEl.classList.remove('open');
         overlay.classList.remove('open');
     });
 });
@@ -126,7 +132,7 @@ function performSearch() {
     sections.forEach(section => {
         const title = section.querySelector('.section-title')?.textContent || '';
         const content = section.textContent.toLowerCase();
-        
+
         if (content.includes(query)) {
             // Fix: Check index bounds for substring
             const index = content.indexOf(query);
@@ -169,17 +175,17 @@ document.querySelectorAll('pre:not(.mermaid)').forEach(pre => {
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
     btn.textContent = 'Copy';
-    
+
     btn.onclick = () => {
         navigator.clipboard.writeText(pre.textContent);
         btn.textContent = 'Copied!';
         btn.classList.add('copied');
-        
+
         setTimeout(() => {
             btn.textContent = 'Copy';
             btn.classList.remove('copied');
         }, 2000);
     };
-    
+
     wrapper.appendChild(btn);
 });

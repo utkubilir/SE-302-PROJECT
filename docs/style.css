@@ -892,3 +892,33 @@ body.dark-mode pre {
     color: var(--gray-500);
     margin-bottom: 0.5rem;
 }
+/* Screenshot Images */
+.screenshot-placeholder {
+    background: var(--gray-100);
+    border: 2px dashed var(--gray-300);
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.screenshot-placeholder:hover {
+    border-color: var(--primary);
+    background: var(--white);
+}
+
+.screenshot-img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: 1px solid var(--gray-200);
+    transition: transform 0.3s ease;
+}
+
+.screenshot-img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
