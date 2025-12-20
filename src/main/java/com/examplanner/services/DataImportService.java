@@ -282,7 +282,7 @@ public class DataImportService {
             boolean headerCsv = false;
             while ((line = br.readLine()) != null) {
                 lineNumber++;
-                line = line.trim();
+                line = stripBom(line.trim());
                 if (line.isEmpty() || line.startsWith("ALL OF THE"))
                     continue;
 
@@ -388,7 +388,7 @@ public class DataImportService {
             boolean headerCsv = false;
             while ((line = br.readLine()) != null) {
                 lineNumber++;
-                line = line.trim();
+                line = stripBom(line.trim());
                 if (line.isEmpty() || line.startsWith("ALL OF THE"))
                     continue;
 
