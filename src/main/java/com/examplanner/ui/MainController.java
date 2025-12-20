@@ -923,7 +923,6 @@ public class MainController {
             sortedExams.sort(Comparator.comparing((Exam e) -> e.getSlot().getDate())
                     .thenComparing(e -> e.getSlot().getStartTime()));
             examTableView.setItems(FXCollections.observableArrayList(sortedExams));
-            examTableView.refresh();
             return;
         }
 
@@ -976,7 +975,6 @@ public class MainController {
         filteredExams.sort(Comparator.comparing((Exam e) -> e.getSlot().getDate())
                 .thenComparing(e -> e.getSlot().getStartTime()));
         examTableView.setItems(FXCollections.observableArrayList(filteredExams));
-        examTableView.refresh();
     }
 
     @FXML
@@ -3058,41 +3056,33 @@ public class MainController {
 
         // Actions column with Edit button
         colActions.setCellFactory(param -> new TableCell<Exam, Void>() {
-            private Button editBtn;
-            
-            private Button createEditButton() {
-                Button btn = new Button(bundle.getString("action.edit"));
-                btn.setStyle(
+            private final Button editBtn = new Button(bundle.getString("action.edit"));
+            {
+                editBtn.setStyle(
                         "-fx-background-color: transparent; -fx-text-fill: #8B5CF6; -fx-cursor: hand; " +
                                 "-fx-border-color: #8B5CF6; -fx-border-radius: 4; -fx-background-radius: 4; " +
                                 "-fx-font-size: 14px; -fx-padding: 4 10;");
-                btn.setOnMouseEntered(e -> btn.setStyle(
+                editBtn.setOnMouseEntered(e -> editBtn.setStyle(
                         "-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-cursor: hand; " +
                                 "-fx-border-color: #8B5CF6; -fx-border-radius: 4; -fx-background-radius: 4; " +
                                 "-fx-font-size: 14px; -fx-padding: 4 10;"));
-                btn.setOnMouseExited(e -> btn.setStyle(
+                editBtn.setOnMouseExited(e -> editBtn.setStyle(
                         "-fx-background-color: transparent; -fx-text-fill: #8B5CF6; -fx-cursor: hand; " +
                                 "-fx-border-color: #8B5CF6; -fx-border-radius: 4; -fx-background-radius: 4; " +
                                 "-fx-font-size: 14px; -fx-padding: 4 10;"));
-                return btn;
+                editBtn.setOnAction(event -> {
+                    Exam exam = getTableView().getItems().get(getIndex());
+                    showExamDetails(exam);
+                });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || getIndex() < 0 || getIndex() >= getTableView().getItems().size()) {
+                if (empty) {
                     setGraphic(null);
-                    setText(null);
                 } else {
-                    if (editBtn == null) {
-                        editBtn = createEditButton();
-                    }
-                    editBtn.setOnAction(event -> {
-                        Exam exam = getTableView().getItems().get(getIndex());
-                        showExamDetails(exam);
-                    });
                     setGraphic(editBtn);
-                    setText(null);
                 }
             }
         });

@@ -1,12 +1,10 @@
 package com.examplanner.services;
 
 import com.examplanner.domain.Exam;
-import com.examplanner.domain.ExamSlot;
 import com.examplanner.domain.Student;
 import com.examplanner.domain.Enrollment;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -23,9 +21,6 @@ public class ScheduleState {
     // Index: StudentID -> Date -> Listen of Exams (for gap checks)
     private final Map<String, Map<LocalDate, List<Exam>>> studentDailyExams;
 
-    // Index: ClassroomID -> Date -> List of Exams (for classroom conflict checks)
-    private final Map<String, Map<LocalDate, List<Exam>>> classroomDailyExams;
-
     // Enrollment lookup (COURSE_CODE -> List<Student>)
     private final Map<String, List<Student>> courseStudentsMap;
 
@@ -33,7 +28,6 @@ public class ScheduleState {
         this.examsList = new ArrayList<>();
         this.studentDailyCounts = new HashMap<>(); // Lazy init inner maps
         this.studentDailyExams = new HashMap<>();
-        this.classroomDailyExams = new HashMap<>();
         this.courseStudentsMap = courseStudentsMap;
     }
 
@@ -61,15 +55,6 @@ public class ScheduleState {
             }
             dailyExams.get(date).add(exam);
         }
-
-        // 3. Update Classroom usage
-        String classroomId = exam.getClassroom().getId();
-        classroomDailyExams.putIfAbsent(classroomId, new HashMap<>());
-        Map<LocalDate, List<Exam>> classroomExams = classroomDailyExams.get(classroomId);
-        if (!classroomExams.containsKey(date)) {
-            classroomExams.put(date, new ArrayList<>());
-        }
-        classroomExams.get(date).add(exam);
     }
 
     public void removeLast() {
@@ -100,47 +85,25 @@ public class ScheduleState {
             Map<LocalDate, List<Exam>> dailyExams = studentDailyExams.get(sid);
             if (dailyExams != null) {
                 List<Exam> list = dailyExams.get(date);
-                if (list != null && !list.isEmpty()) {
-                    list.remove(list.size() - 1);
+                if (list != null) {
+                    list.remove(list.size() - 1); // Remove object reference, but since we add sequentially, removing
+                                                  // last is fine?
+                    // Wait, removing by object reference is safer if we ensure "exam" is the exact
+                    // instance.
+                    // Actually list.remove(Object) is O(N) for that small list.
+                    // Optimization: We know we just added it. Is it always the last one added?
+                    // Not necessarily for a student if we scheduled another exam for them in
+                    // between?
+                    // No, "add" adds to the global schedule.
+                    // "removeLast" removes the *very last* "add" call.
+                    // So for this student, this exam MIGHT be the last one added to their list?
+                    // Yes, because we traverse exams in order of Schedule generation.
+                    // So we can remove the last element of the list, IF we guarantee insertion
+                    // order logic.
+                    // Ideally: list.remove(exam);
                 }
             }
         }
-
-        // 3. Revert Classroom usage
-        String classroomId = exam.getClassroom().getId();
-        Map<LocalDate, List<Exam>> classroomExams = classroomDailyExams.get(classroomId);
-        if (classroomExams != null) {
-            List<Exam> list = classroomExams.get(date);
-            if (list != null && !list.isEmpty()) {
-                list.remove(list.size() - 1);
-            }
-        }
-    }
-
-    /**
-     * Check if a classroom is available for the given slot (no time overlap)
-     */
-    public boolean isClassroomAvailable(String classroomId, ExamSlot slot) {
-        Map<LocalDate, List<Exam>> dailyExams = classroomDailyExams.get(classroomId);
-        if (dailyExams == null) return true;
-        
-        List<Exam> examsOnDate = dailyExams.get(slot.getDate());
-        if (examsOnDate == null || examsOnDate.isEmpty()) return true;
-        
-        LocalTime newStart = slot.getStartTime();
-        LocalTime newEnd = slot.getEndTime();
-        
-        for (Exam existing : examsOnDate) {
-            LocalTime existingStart = existing.getSlot().getStartTime();
-            LocalTime existingEnd = existing.getSlot().getEndTime();
-            
-            // Check for time overlap
-            // Two intervals [a,b] and [c,d] overlap if a < d && c < b
-            if (newStart.isBefore(existingEnd) && existingStart.isBefore(newEnd)) {
-                return false; // Overlap detected
-            }
-        }
-        return true;
     }
 
     public List<Exam> getExams() {
