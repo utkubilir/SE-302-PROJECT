@@ -230,6 +230,53 @@ class SchedulerServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("Impossible Constraints Tests")
+    class ImpossibleConstraintsTests {
+
+        @Test
+        @DisplayName("Should fail when course duration is longer than working day")
+        @Timeout(value = 5, unit = TimeUnit.SECONDS)
+        void shouldFailWhenCourseTooLong() {
+            // Working day is 9:00 - 18:30 = 9.5 hours = 570 mins
+            // Try scheduling 600 mins course
+            Course longCourse = new Course("LONG", "Long Course", 600);
+            List<Classroom> classrooms = createClassrooms(1);
+
+            // Need enrollments to pass validation
+            List<Student> students = createStudents(1);
+            List<Enrollment> enrollments = createEnrollments(List.of(longCourse), students);
+
+            LocalDate startDate = LocalDate.now();
+
+            // Should throw RuntimeException when no schedule found
+            RuntimeException exception = assertThrows(RuntimeException.class, () -> schedulerService.generateTimetable(
+                    List.of(longCourse), classrooms, enrollments, startDate));
+
+            assertNotNull(exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Should fail when no classroom has enough capacity")
+        @Timeout(value = 5, unit = TimeUnit.SECONDS)
+        void shouldFailWhenCapacityInsufficient() {
+            Course course = new Course("C1", "Course", 60);
+
+            // 20 students
+            List<Student> students = createStudents(20);
+            List<Enrollment> enrollments = createEnrollments(List.of(course), students);
+
+            // Only small room (cap 10)
+            Classroom smallRoom = new Classroom("R1", "Small", 10);
+
+            // Should throw RuntimeException
+            RuntimeException exception = assertThrows(RuntimeException.class, () -> schedulerService.generateTimetable(
+                    List.of(course), List.of(smallRoom), enrollments, LocalDate.now()));
+
+            assertTrue(exception.getMessage().contains("Could not find a valid schedule"));
+        }
+    }
+
     // Helper methods
 
     private List<Course> createCourses(int count) {

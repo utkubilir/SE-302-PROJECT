@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -228,6 +230,114 @@ class ConstraintCheckerTest {
             constraintChecker.setMaxExamsPerDay(3);
             // No exception means success
             assertDoesNotThrow(() -> constraintChecker.setMaxExamsPerDay(1));
+        }
+    }
+
+    @Nested
+    @DisplayName("Student Constraint Tests")
+    class StudentConstraintTests {
+
+        private ScheduleState scheduleState;
+        private Map<String, List<Student>> courseStudentsMap;
+
+        @BeforeEach
+        void setUpState() {
+            // Setup students
+            List<Student> students = List.of(student1);
+            courseStudentsMap = Map.of(
+                    course1.getCode(), students,
+                    course2.getCode(), students);
+
+            scheduleState = new ScheduleState(courseStudentsMap);
+        }
+
+        @Test
+        @DisplayName("Should detect daily limit violation")
+        void shouldDetectDailyLimitViolation() {
+            constraintChecker.setMaxExamsPerDay(2);
+
+            // Add 2 exams for student1 on same day
+            addExamToState(course1, LocalDate.of(2024, 12, 20), 9, 0, 11, 0);
+            addExamToState(course2, LocalDate.of(2024, 12, 20), 12, 0, 14, 0);
+
+            // Try to check a 3rd exam
+            ExamSlot slot3 = new ExamSlot(
+                    LocalDate.of(2024, 12, 20),
+                    LocalTime.of(15, 0),
+                    LocalTime.of(17, 0));
+
+            assertTrue(constraintChecker.violatesDailyLimit(student1, slot3, scheduleState));
+        }
+
+        @Test
+        @DisplayName("Should allow exams within daily limit")
+        void shouldAllowExamsWithinDailyLimit() {
+            constraintChecker.setMaxExamsPerDay(2);
+
+            // Add 1 exam
+            addExamToState(course1, LocalDate.of(2024, 12, 20), 9, 0, 11, 0);
+
+            // Check 2nd exam
+            ExamSlot slot2 = new ExamSlot(
+                    LocalDate.of(2024, 12, 20),
+                    LocalTime.of(12, 0),
+                    LocalTime.of(14, 0));
+
+            assertFalse(constraintChecker.violatesDailyLimit(student1, slot2, scheduleState));
+        }
+
+        @Test
+        @DisplayName("Should detect immediate overlap as minimum gap violation")
+        void shouldDetectImmediateOverlapAsGapViolation() {
+            addExamToState(course1, LocalDate.of(2024, 12, 20), 9, 0, 11, 0);
+
+            // Overlapping slot
+            ExamSlot overlaps = new ExamSlot(
+                    LocalDate.of(2024, 12, 20),
+                    LocalTime.of(10, 0),
+                    LocalTime.of(12, 0));
+
+            assertFalse(constraintChecker.hasMinimumGap(student1, overlaps, scheduleState));
+        }
+
+        @Test
+        @DisplayName("Should detect violation when gap is insufficient")
+        void shouldDetectViolationWhenGapInsufficient() {
+            constraintChecker.setMinGapMinutes(60); // 1 hour gap required
+
+            // Exam ends at 11:00
+            addExamToState(course1, LocalDate.of(2024, 12, 20), 9, 0, 11, 0);
+
+            // Next exam starts at 11:30 (30 min gap)
+            ExamSlot shortGap = new ExamSlot(
+                    LocalDate.of(2024, 12, 20),
+                    LocalTime.of(11, 30),
+                    LocalTime.of(13, 30));
+
+            assertFalse(constraintChecker.hasMinimumGap(student1, shortGap, scheduleState));
+        }
+
+        @Test
+        @DisplayName("Should allow when gap is sufficient")
+        void shouldAllowWhenGapSufficient() {
+            constraintChecker.setMinGapMinutes(60);
+
+            // Exam ends at 11:00
+            addExamToState(course1, LocalDate.of(2024, 12, 20), 9, 0, 11, 0);
+
+            // Next starts at 12:00 (60 min gap)
+            ExamSlot sufficientGap = new ExamSlot(
+                    LocalDate.of(2024, 12, 20),
+                    LocalTime.of(12, 0),
+                    LocalTime.of(14, 0));
+
+            assertTrue(constraintChecker.hasMinimumGap(student1, sufficientGap, scheduleState));
+        }
+
+        private void addExamToState(Course course, LocalDate date, int h1, int m1, int h2, int m2) {
+            ExamSlot slot = new ExamSlot(date, LocalTime.of(h1, m1), LocalTime.of(h2, m2));
+            Exam exam = new Exam(course, classroom1, slot);
+            scheduleState.add(exam);
         }
     }
 }

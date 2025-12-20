@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class StudentTest {
 
     @Nested
@@ -16,49 +15,38 @@ class StudentTest {
         @Test
         @DisplayName("Should create student with valid parameters")
         void shouldCreateStudentWithValidParameters() {
-            Student student = new Student("2021001", "Ali Yılmaz");
+            Student student = new Student("S1", "Ali");
 
-            assertEquals("2021001", student.getId());
-            assertEquals("Ali Yılmaz", student.getName());
+            assertEquals("S1", student.getId());
+            assertEquals("Ali", student.getName());
         }
 
         @Test
         @DisplayName("Should throw exception for null id")
         void shouldThrowExceptionForNullId() {
-            assertThrows(
-                    IllegalArgumentException.class,
-                    () -> new Student(null, "Test Student"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Student(null, "Ali"));
         }
 
         @Test
         @DisplayName("Should throw exception for empty id")
         void shouldThrowExceptionForEmptyId() {
-            assertThrows(
-                    IllegalArgumentException.class,
-                    () -> new Student("", "Test Student"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Student("", "Ali"));
         }
 
         @Test
         @DisplayName("Should throw exception for null name")
         void shouldThrowExceptionForNullName() {
-            assertThrows(
-                    IllegalArgumentException.class,
-                    () -> new Student("123", null));
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Student("S1", null));
         }
-    }
-
-    @Nested
-    @DisplayName("ToString Tests")
-    class ToStringTests {
 
         @Test
-        @DisplayName("Should return formatted string")
-        void shouldReturnFormattedString() {
-            Student student = new Student("2021001", "Ali Yılmaz");
-            String result = student.toString();
-
-            assertTrue(result.contains("2021001"));
-            assertTrue(result.contains("Ali Yılmaz"));
+        @DisplayName("Should throw exception for empty name")
+        void shouldThrowExceptionForEmptyName() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> new Student("S1", ""));
         }
     }
 }

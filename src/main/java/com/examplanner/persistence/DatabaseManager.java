@@ -8,19 +8,25 @@ import java.sql.Statement;
 public class DatabaseManager {
 
     private static final String APP_DIR = System.getProperty("user.home") + java.io.File.separator + ".examplanner";
-    private static final String DB_URL = "jdbc:sqlite:" + APP_DIR + java.io.File.separator + "examplanner.db";
+    private static String dbUrl = "jdbc:sqlite:" + APP_DIR + java.io.File.separator + "examplanner.db";
+
+    public static void setJdbcUrl(String url) {
+        dbUrl = url;
+    }
 
     public static void initializeDatabase() {
-        // Ensure application directory exists
-        java.io.File dir = new java.io.File(APP_DIR);
-        if (!dir.exists()) {
-            dir.mkdirs();
+        // Ensure application directory exists only if using file-based default DB
+        if (dbUrl.contains(APP_DIR)) {
+            java.io.File dir = new java.io.File(APP_DIR);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
         }
 
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+        try (Connection conn = DriverManager.getConnection(dbUrl)) {
             if (conn != null) {
                 createTables(conn);
-                System.out.println("Database initialized successfully.");
+                System.out.println("Database initialized successfully (" + dbUrl + ").");
             }
         } catch (SQLException e) {
             System.err.println("Database initialization failed: " + e.getMessage());
@@ -29,7 +35,7 @@ public class DatabaseManager {
     }
 
     public static Connection connect() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+        return DriverManager.getConnection(dbUrl);
     }
 
     private static void createTables(Connection conn) throws SQLException {
