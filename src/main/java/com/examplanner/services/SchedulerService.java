@@ -32,10 +32,13 @@ import java.util.stream.Collectors;
  * 5) Aynı sınıf aynı gün ve zaman diliminde iki sınava verilemez.
  * 
  * Yöntem:
- * - Çok kalabalık dersleri, en büyük sınıf kapasitesine sığacak şekilde dengeli parçalara böl.
+ * - Çok kalabalık dersleri, en büyük sınıf kapasitesine sığacak şekilde dengeli
+ * parçalara böl.
  * - Sınavları kalabalıktan küçüğe sırala.
- * - Her sınav için gün 1'den başlayıp sırayla gün/slot dene; kurallara uyuyorsa ilk uygun yere yerleştir.
- * - Eğer bir ders bölündüyse: ilk parçanın yerleştiği gün/slot'u kilitle; diğer parçalar da aynı gün/slot'ta yerleşmeli.
+ * - Her sınav için gün 1'den başlayıp sırayla gün/slot dene; kurallara uyuyorsa
+ * ilk uygun yere yerleştir.
+ * - Eğer bir ders bölündüyse: ilk parçanın yerleştiği gün/slot'u kilitle; diğer
+ * parçalar da aynı gün/slot'ta yerleşmeli.
  * - Backtracking ile daha iyi çözümler bul.
  */
 public class SchedulerService {
@@ -48,6 +51,9 @@ public class SchedulerService {
     private Map<String, List<Student>> courseStudentsMap;
     private Map<String, Integer> enrollmentCounts;
     private Map<String, Set<String>> studentCoursesMap;
+
+    // Cached adaptive timeout (calculated based on data size)
+    private long cachedTimeoutMs = 5000;
 
     public SchedulerService() {
         this.constraintChecker = new ConstraintChecker();
@@ -99,7 +105,7 @@ public class SchedulerService {
         List<Classroom> sortedClassrooms = classrooms.stream()
                 .sorted(Comparator.comparingInt(Classroom::getCapacity).reversed())
                 .collect(Collectors.toList());
-        
+
         int maxClassroomCapacity = sortedClassrooms.isEmpty() ? 0 : sortedClassrooms.get(0).getCapacity();
         System.out.println("Max classroom capacity: " + maxClassroomCapacity);
 
@@ -111,10 +117,10 @@ public class SchedulerService {
 
         // Save original randomization setting
         boolean originalRandomization = useRandomization;
-        
+
         // Binary search must be deterministic to find true optimal
         useRandomization = false;
-        
+
         int minDaysNeeded = calculateMinDaysNeeded(examParts, classrooms);
         int low = Math.max(1, minDaysNeeded);
         int high = maxDays;
@@ -126,7 +132,15 @@ public class SchedulerService {
             int mid = low + (high - low) / 2;
             System.out.println("\n>>> Trying " + mid + " day(s)...");
 
-            ExamTimetable result = attemptScheduleBacktrack(mid, examParts, sortedClassrooms, timeSlots, enrollments, startDate);
+            // Try greedy first (much faster for most cases)
+            ExamTimetable result = attemptScheduleGreedy(mid, examParts, sortedClassrooms, timeSlots, enrollments,
+                    startDate);
+
+            // Fall back to backtracking only if greedy fails
+            if (result == null) {
+                System.out.println("    Greedy failed, trying backtracking...");
+                result = attemptScheduleBacktrack(mid, examParts, sortedClassrooms, timeSlots, enrollments, startDate);
+            }
 
             if (result != null) {
                 System.out.println(">>> SUCCESS with " + mid + " day(s)! Trying fewer...");
@@ -150,22 +164,30 @@ public class SchedulerService {
         System.out.println("\n✓ OPTIMAL: " + optimalDays + " day(s)");
         System.out.println("Generating final schedule with randomization: " + useRandomization);
 
-        // Generate final schedule with randomization for variety
-        ExamTimetable bestResult = null;
-        int maxAttempts = useRandomization ? 10 : 1;
-        for (int attempt = 0; attempt < maxAttempts && bestResult == null; attempt++) {
-            if (attempt > 0) {
-                System.out.println("  Retry attempt " + (attempt + 1) + "...");
-            }
-            bestResult = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms, timeSlots, enrollments, startDate);
-        }
-        
-        // Fallback to deterministic if needed
+        // Generate final schedule - use greedy first
+        ExamTimetable bestResult = attemptScheduleGreedy(optimalDays, examParts, sortedClassrooms, timeSlots,
+                enrollments, startDate);
+
+        // Fallback to backtracking if greedy fails
         if (bestResult == null) {
-            System.out.println("  Falling back to deterministic...");
-            useRandomization = false;
-            bestResult = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms, timeSlots, enrollments, startDate);
-            useRandomization = originalRandomization;
+            System.out.println("  Greedy failed for final, trying backtracking...");
+            int maxAttempts = useRandomization ? 3 : 1;
+            for (int attempt = 0; attempt < maxAttempts && bestResult == null; attempt++) {
+                if (attempt > 0) {
+                    System.out.println("  Retry attempt " + (attempt + 1) + "...");
+                }
+                bestResult = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms, timeSlots, enrollments,
+                        startDate);
+            }
+
+            // Last resort: deterministic backtracking
+            if (bestResult == null) {
+                System.out.println("  Falling back to deterministic...");
+                useRandomization = false;
+                bestResult = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms, timeSlots, enrollments,
+                        startDate);
+                useRandomization = originalRandomization;
+            }
         }
 
         if (bestResult != null) {
@@ -204,14 +226,14 @@ public class SchedulerService {
         List<Classroom> sortedClassrooms = classrooms.stream()
                 .sorted(Comparator.comparingInt(Classroom::getCapacity).reversed())
                 .collect(Collectors.toList());
-        
+
         int maxClassroomCapacity = sortedClassrooms.isEmpty() ? 0 : sortedClassrooms.get(0).getCapacity();
         List<LocalTime> timeSlots = generateTimeSlots();
         List<ExamPart> examParts = createExamParts(courses, maxClassroomCapacity);
 
         boolean originalRandomization = useRandomization;
         useRandomization = false;
-        
+
         int minDaysNeeded = calculateMinDaysNeeded(examParts, classrooms);
         int low = Math.max(1, minDaysNeeded);
         int high = maxDays;
@@ -221,7 +243,15 @@ public class SchedulerService {
 
         while (low <= high) {
             int mid = low + (high - low) / 2;
-            ExamTimetable result = attemptScheduleBacktrack(mid, examParts, sortedClassrooms, timeSlots, enrollments, startDate);
+
+            // Try greedy first (much faster)
+            ExamTimetable result = attemptScheduleGreedy(mid, examParts, sortedClassrooms, timeSlots, enrollments,
+                    startDate);
+
+            // Fall back to backtracking only if greedy fails
+            if (result == null) {
+                result = attemptScheduleBacktrack(mid, examParts, sortedClassrooms, timeSlots, enrollments, startDate);
+            }
 
             if (result != null) {
                 optimalDays = mid;
@@ -241,23 +271,23 @@ public class SchedulerService {
         System.out.println("\n✓ OPTIMAL: " + optimalDays + " day(s)");
 
         System.out.println("\nGenerating varied schedule for optimal days...");
-        
+
         // Try multiple times with randomization to find a valid schedule
         ExamTimetable optimalSchedule = null;
-        int maxAttempts = useRandomization ? 10 : 1;
+        int maxAttempts = useRandomization ? 5 : 1;
         for (int attempt = 0; attempt < maxAttempts && optimalSchedule == null; attempt++) {
             if (attempt > 0) {
                 System.out.println("  Retry attempt " + (attempt + 1) + "...");
             }
-            optimalSchedule = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms, 
+            optimalSchedule = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms,
                     timeSlots, enrollments, startDate);
         }
-        
+
         // Fallback to deterministic if randomization failed
         if (optimalSchedule == null) {
             System.out.println("  Falling back to deterministic schedule...");
             useRandomization = false;
-            optimalSchedule = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms, 
+            optimalSchedule = attemptScheduleBacktrack(optimalDays, examParts, sortedClassrooms,
                     timeSlots, enrollments, startDate);
             useRandomization = originalRandomization;
         }
@@ -272,7 +302,7 @@ public class SchedulerService {
                 break;
             }
 
-            ExamTimetable altSchedule = attemptScheduleSpread(altDays, examParts, sortedClassrooms, 
+            ExamTimetable altSchedule = attemptScheduleSpread(altDays, examParts, sortedClassrooms,
                     timeSlots, enrollments, startDate);
 
             if (altSchedule != null) {
@@ -336,12 +366,13 @@ public class SchedulerService {
                 int startIdx = 0;
                 for (int p = 0; p < numParts; p++) {
                     int partSize = baseSize + (p < remainder ? 1 : 0);
-                    List<Student> partStudents = new ArrayList<>(shuffledStudents.subList(startIdx, startIdx + partSize));
+                    List<Student> partStudents = new ArrayList<>(
+                            shuffledStudents.subList(startIdx, startIdx + partSize));
                     allParts.add(new ExamPart(course, partStudents, p, numParts));
                     startIdx += partSize;
                 }
 
-                System.out.println("  Course " + course.getCode() + " split into " + numParts + 
+                System.out.println("  Course " + course.getCode() + " split into " + numParts +
                         " parts (" + studentCount + " students)");
             }
         }
@@ -356,6 +387,156 @@ public class SchedulerService {
     }
 
     /**
+     * Fast greedy scheduling algorithm - no backtracking
+     * Places each course in the first valid slot found.
+     * Much faster than backtracking for most cases.
+     */
+    private ExamTimetable attemptScheduleGreedy(int maxDays, List<ExamPart> examParts,
+            List<Classroom> classrooms, List<LocalTime> timeSlots,
+            List<Enrollment> enrollments, LocalDate startDate) {
+
+        ScheduleState state = new ScheduleState(courseStudentsMap);
+        List<Exam> scheduledExams = new ArrayList<>();
+
+        Map<String, Integer> classroomUsageCount = new HashMap<>();
+        for (Classroom c : classrooms) {
+            classroomUsageCount.put(c.getId(), 0);
+        }
+
+        // Group exam parts by course
+        Map<String, List<ExamPart>> partsByCourse = examParts.stream()
+                .collect(Collectors.groupingBy(p -> p.course.getCode()));
+
+        // Get unique course codes in order
+        List<String> courseCodes = examParts.stream()
+                .map(p -> p.course.getCode())
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Process each course greedily
+        for (String courseCode : courseCodes) {
+            List<ExamPart> courseParts = partsByCourse.get(courseCode);
+            Course course = courseParts.get(0).course;
+            int examDuration = course.getExamDurationMinutes();
+
+            boolean placed = false;
+
+            // Try each day in order
+            for (int dayOffset = 0; dayOffset < maxDays && !placed; dayOffset++) {
+                LocalDate date = startDate.plusDays(dayOffset);
+
+                // Check if any student has max exams today
+                boolean dayBlocked = false;
+                for (ExamPart part : courseParts) {
+                    if (anyStudentHasMaxExamsOnDay(part.students, date, state)) {
+                        dayBlocked = true;
+                        break;
+                    }
+                }
+                if (dayBlocked)
+                    continue;
+
+                // Try each time slot
+                for (LocalTime slotStart : timeSlots) {
+                    LocalTime slotEnd = slotStart.plusMinutes(examDuration);
+
+                    if (slotEnd.isAfter(LocalTime.of(18, 30))) {
+                        continue;
+                    }
+
+                    ExamSlot slot = new ExamSlot(date, slotStart, slotEnd);
+
+                    // Try to place all parts at this slot
+                    List<Classroom> assignedClassrooms = new ArrayList<>();
+                    Set<String> newlyUsedClassrooms = new HashSet<>();
+                    boolean canPlaceAllParts = true;
+
+                    for (ExamPart part : courseParts) {
+                        Classroom assigned = findSuitableClassroomGreedy(part, slot, classrooms,
+                                newlyUsedClassrooms, classroomUsageCount, state);
+
+                        if (assigned == null) {
+                            canPlaceAllParts = false;
+                            break;
+                        }
+
+                        assignedClassrooms.add(assigned);
+                        newlyUsedClassrooms.add(assigned.getId());
+                    }
+
+                    if (!canPlaceAllParts) {
+                        continue;
+                    }
+
+                    // Check student constraints: 3 hour gap
+                    boolean studentConstraintsOk = true;
+                    for (ExamPart part : courseParts) {
+                        for (Student student : part.students) {
+                            List<Exam> studentExamsToday = state.getExamsForStudentDate(student.getId(), date);
+                            for (Exam existing : studentExamsToday) {
+                                long gapMinutes = calculateGapMinutes(existing.getSlot(), slot);
+                                if (gapMinutes < 180) {
+                                    studentConstraintsOk = false;
+                                    break;
+                                }
+                            }
+                            if (!studentConstraintsOk)
+                                break;
+                        }
+                        if (!studentConstraintsOk)
+                            break;
+                    }
+
+                    if (!studentConstraintsOk) {
+                        continue;
+                    }
+
+                    // Place all parts - greedy: commit immediately, no backtracking
+                    for (int i = 0; i < courseParts.size(); i++) {
+                        ExamPart part = courseParts.get(i);
+                        Classroom classroom = assignedClassrooms.get(i);
+
+                        Exam exam = new Exam(part.course, classroom, slot);
+                        scheduledExams.add(exam);
+                        state.add(exam);
+                        classroomUsageCount.merge(classroom.getId(), 1, Integer::sum);
+                    }
+
+                    placed = true;
+                    break; // Move to next course
+                }
+            }
+
+            // If greedy couldn't place this course, fail fast
+            if (!placed) {
+                return null;
+            }
+        }
+
+        return new ExamTimetable(scheduledExams, enrollments);
+    }
+
+    /**
+     * Find suitable classroom for greedy scheduling (simpler, faster)
+     */
+    private Classroom findSuitableClassroomGreedy(ExamPart part, ExamSlot slot, List<Classroom> classrooms,
+            Set<String> newlyUsedClassrooms, Map<String, Integer> classroomUsageCount,
+            ScheduleState state) {
+
+        int studentCount = part.getStudentCount();
+
+        // Find first classroom with enough capacity that's available
+        for (Classroom c : classrooms) {
+            if (c.getCapacity() >= studentCount
+                    && !newlyUsedClassrooms.contains(c.getId())
+                    && state.isClassroomAvailable(c.getId(), slot)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Backtracking scheduling algorithm
      */
     private ExamTimetable attemptScheduleBacktrack(int maxDays, List<ExamPart> examParts,
@@ -364,7 +545,7 @@ public class SchedulerService {
 
         ScheduleState state = new ScheduleState(courseStudentsMap);
         List<Exam> scheduledExams = new ArrayList<>();
-        
+
         Map<String, Integer> classroomUsageCount = new HashMap<>();
         for (Classroom c : classrooms) {
             classroomUsageCount.put(c.getId(), 0);
@@ -381,7 +562,7 @@ public class SchedulerService {
                 .collect(Collectors.toList());
 
         long startTime = System.currentTimeMillis();
-        long timeoutMs = 30000; // 30 second timeout
+        long timeoutMs = cachedTimeoutMs; // Adaptive timeout based on data size
 
         boolean success = backtrack(0, courseCodes, partsByCourse, maxDays, classrooms, timeSlots,
                 startDate, state, scheduledExams, classroomUsageCount, startTime, timeoutMs);
@@ -395,7 +576,7 @@ public class SchedulerService {
     /**
      * Recursive backtracking
      */
-    private boolean backtrack(int courseIndex, List<String> courseCodes, 
+    private boolean backtrack(int courseIndex, List<String> courseCodes,
             Map<String, List<ExamPart>> partsByCourse, int maxDays,
             List<Classroom> classrooms, List<LocalTime> timeSlots,
             LocalDate startDate, ScheduleState state, List<Exam> scheduledExams,
@@ -444,7 +625,8 @@ public class SchedulerService {
                     break;
                 }
             }
-            if (dayBlocked) continue;
+            if (dayBlocked)
+                continue;
 
             // Prepare time slot order - shuffle for variety
             List<LocalTime> slotOrder = new ArrayList<>(timeSlots);
@@ -468,14 +650,14 @@ public class SchedulerService {
                 boolean canPlaceAllParts = true;
 
                 for (ExamPart part : courseParts) {
-                    Classroom assigned = findSuitableClassroom(part, slot, workingClassrooms, 
+                    Classroom assigned = findSuitableClassroom(part, slot, workingClassrooms,
                             newlyUsedClassrooms, classroomUsageCount, state);
-                    
+
                     if (assigned == null) {
                         canPlaceAllParts = false;
                         break;
                     }
-                    
+
                     assignedClassrooms.add(assigned);
                     newlyUsedClassrooms.add(assigned.getId());
                 }
@@ -496,9 +678,11 @@ public class SchedulerService {
                                 break;
                             }
                         }
-                        if (!studentConstraintsOk) break;
+                        if (!studentConstraintsOk)
+                            break;
                     }
-                    if (!studentConstraintsOk) break;
+                    if (!studentConstraintsOk)
+                        break;
                 }
 
                 if (!studentConstraintsOk) {
@@ -510,7 +694,7 @@ public class SchedulerService {
                 for (int i = 0; i < courseParts.size(); i++) {
                     ExamPart part = courseParts.get(i);
                     Classroom classroom = assignedClassrooms.get(i);
-                    
+
                     Exam exam = new Exam(part.course, classroom, slot);
                     placedExams.add(exam);
                     scheduledExams.add(exam);
@@ -540,7 +724,7 @@ public class SchedulerService {
     private Classroom findSuitableClassroom(ExamPart part, ExamSlot slot, List<Classroom> classrooms,
             Set<String> newlyUsedClassrooms, Map<String, Integer> classroomUsageCount,
             ScheduleState state) {
-        
+
         int studentCount = part.getStudentCount();
 
         List<Classroom> sortedClassrooms = classrooms.stream()
@@ -555,11 +739,11 @@ public class SchedulerService {
         if (useRandomization && sortedClassrooms.size() > 1) {
             int minCapacity = sortedClassrooms.get(0).getCapacity();
             int threshold = minCapacity + 20;
-            
+
             List<Classroom> candidates = sortedClassrooms.stream()
                     .filter(c -> c.getCapacity() <= threshold)
                     .collect(Collectors.toList());
-            
+
             if (!candidates.isEmpty()) {
                 return candidates.get(random.nextInt(candidates.size()));
             }
@@ -577,7 +761,7 @@ public class SchedulerService {
 
         ScheduleState state = new ScheduleState(courseStudentsMap);
         List<Exam> scheduledExams = new ArrayList<>();
-        
+
         Map<Integer, Integer> examsPerDay = new HashMap<>();
         for (int i = 0; i < maxDays; i++) {
             examsPerDay.put(i, 0);
@@ -594,13 +778,13 @@ public class SchedulerService {
 
         for (ExamPart examPart : examParts) {
             String courseCode = examPart.course.getCode();
-            
+
             if (scheduledCourses.contains(courseCode)) {
                 continue;
             }
 
             List<ExamPart> courseParts = partsByCourse.get(courseCode);
-            
+
             boolean scheduled = scheduleCoursePartsSpread(courseParts, maxDays, classrooms, timeSlots,
                     startDate, state, scheduledExams, examsPerDay, classroomUsageCount);
 
@@ -644,7 +828,8 @@ public class SchedulerService {
                     break;
                 }
             }
-            if (dayBlocked) continue;
+            if (dayBlocked)
+                continue;
 
             // Prepare time slot order - shuffle for variety
             List<LocalTime> slotOrder = new ArrayList<>(timeSlots);
@@ -666,14 +851,14 @@ public class SchedulerService {
                 boolean canPlaceAllParts = true;
 
                 for (ExamPart part : courseParts) {
-                    Classroom assigned = findSuitableClassroom(part, slot, workingClassrooms, 
+                    Classroom assigned = findSuitableClassroom(part, slot, workingClassrooms,
                             newlyUsedClassrooms, classroomUsageCount, state);
-                    
+
                     if (assigned == null) {
                         canPlaceAllParts = false;
                         break;
                     }
-                    
+
                     assignedClassrooms.add(assigned);
                     newlyUsedClassrooms.add(assigned.getId());
                 }
@@ -694,9 +879,11 @@ public class SchedulerService {
                                 break;
                             }
                         }
-                        if (!studentConstraintsOk) break;
+                        if (!studentConstraintsOk)
+                            break;
                     }
-                    if (!studentConstraintsOk) break;
+                    if (!studentConstraintsOk)
+                        break;
                 }
 
                 if (!studentConstraintsOk) {
@@ -707,13 +894,13 @@ public class SchedulerService {
                 for (int i = 0; i < courseParts.size(); i++) {
                     ExamPart part = courseParts.get(i);
                     Classroom classroom = assignedClassrooms.get(i);
-                    
+
                     Exam exam = new Exam(part.course, classroom, slot);
                     scheduledExams.add(exam);
                     state.add(exam);
                     classroomUsageCount.merge(classroom.getId(), 1, Integer::sum);
                 }
-                
+
                 examsPerDay.merge(dayOffset, 1, Integer::sum);
                 return true;
             }
@@ -763,6 +950,51 @@ public class SchedulerService {
 
         System.out.println("  Courses with enrollments: " + courseStudentsMap.size());
         System.out.println("  Unique students: " + studentCoursesMap.size());
+
+        // Calculate adaptive timeout based on data size
+        cachedTimeoutMs = calculateAdaptiveTimeout(
+                courseStudentsMap.size(),
+                studentCoursesMap.size(),
+                enrollments.size());
+        System.out.println("  Adaptive timeout set to: " + cachedTimeoutMs + "ms");
+    }
+
+    /**
+     * Calculates adaptive timeout based on data complexity.
+     * Larger datasets require more time to find optimal solutions.
+     * 
+     * Formula: Uses logarithmic scaling based on course count and enrollment size.
+     * - Small datasets (<50 courses, <500 enrollments): 5 seconds
+     * - Medium datasets: 10-15 seconds
+     * - Large datasets: 20-30 seconds
+     * - Extra large datasets: 30-45 seconds
+     * 
+     * @param courseCount     Number of unique courses
+     * @param studentCount    Number of unique students
+     * @param enrollmentCount Total enrollment records
+     * @return Timeout in milliseconds (5000 - 45000)
+     */
+    private long calculateAdaptiveTimeout(int courseCount, int studentCount, int enrollmentCount) {
+        // Complexity factor: courses * log10(enrollments)
+        // This approximates the search space complexity
+        double complexityFactor = courseCount * Math.log10(Math.max(enrollmentCount, 10));
+
+        long timeoutMs;
+        if (complexityFactor < 50) {
+            timeoutMs = 5000; // 5 seconds for small datasets
+        } else if (complexityFactor < 100) {
+            timeoutMs = 10000; // 10 seconds
+        } else if (complexityFactor < 150) {
+            timeoutMs = 15000; // 15 seconds
+        } else if (complexityFactor < 200) {
+            timeoutMs = 20000; // 20 seconds
+        } else if (complexityFactor < 300) {
+            timeoutMs = 30000; // 30 seconds
+        } else {
+            timeoutMs = 45000; // 45 seconds max for very large datasets
+        }
+
+        return timeoutMs;
     }
 
     private List<LocalTime> generateTimeSlots() {
@@ -799,7 +1031,7 @@ public class SchedulerService {
         int minDaysForSlots = (int) Math.ceil((double) courseCount / (classrooms.size() * slotsPerDay));
 
         int result = Math.max(Math.max(minDaysForCapacity, minDaysForStudents), minDaysForSlots);
-        System.out.println("  Minimum days estimate: " + result + " (capacity=" + minDaysForCapacity + 
+        System.out.println("  Minimum days estimate: " + result + " (capacity=" + minDaysForCapacity +
                 ", students=" + minDaysForStudents + ", slots=" + minDaysForSlots + ")");
         return result;
     }
