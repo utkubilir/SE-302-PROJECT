@@ -999,27 +999,7 @@ body.dark-mode pre {
     top: 0;
 }
 
-/* Print Button */
-.header-actions {
-    margin: 1.5rem 0;
-}
 
-.print-btn {
-    background: var(--white);
-    border: 1px solid var(--gray-200);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--gray-600);
-    transition: all 0.2s;
-}
-
-.print-btn:hover {
-    background: var(--gray-100);
-    border-color: var(--primary);
-    color: var(--primary);
-}
 
 /* FAQ Accordion */
 .faq-container {
@@ -1101,15 +1081,7 @@ body.dark-mode .faq-item[open] {
     background: rgba(37, 99, 235, 0.1);
 }
 
-body.dark-mode .print-btn {
-    background: var(--gray-100);
-    border-color: var(--gray-200);
-    color: var(--gray-500);
-}
 
-body.dark-mode .print-btn:hover {
-    background: var(--gray-200);
-}
 
 /* Prism.js Dark Mode Override */
 body.dark-mode pre[class*="language-"],

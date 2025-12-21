@@ -118,10 +118,9 @@
             <a href="#installation" class="nav-link">13. Installation Guide</a>
             <a href="#team" class="nav-link">14. Project Team</a>
             <a href="#faq" class="nav-link">15. FAQ</a>
-            <a href="#sidebar-design" class="nav-link">16. Sidebar Design</a>
-            <a href="#import-strategy" class="nav-link">17. Data Import Strategy</a>
-            <a href="#conclusion" class="nav-link">18. Conclusion</a>
-            <a href="#references" class="nav-link">19. References</a>
+            <a href="#import-strategy" class="nav-link">16. Data Import Strategy</a>
+            <a href="#conclusion" class="nav-link">17. Conclusion</a>
+            <a href="#references" class="nav-link">18. References</a>
         </nav>
     </aside>
 
@@ -140,9 +139,7 @@
                 <span class="hero-subcta">v1.0.0 • Open Source • JavaFX</span>
             </div>
 
-            <div class="header-actions">
-                <button onclick="window.print()" class="print-btn" title="Print or save as PDF">🖨️ Print</button>
-            </div>
+
 
             <div class="report-meta">
                 <div class="meta-item">
@@ -1308,74 +1305,12 @@ cd ExamTimetablePlanner</code></pre>
             </div>
         </section>
 
-        <!-- Section 16: Sidebar Design & Implementation -->
-        <section id="sidebar-design" class="section">
-            <h2 class="section-title">
-                <span class="section-number">16</span>
-                Sidebar Design & Implementation
-            </h2>
 
 
-            <p>The design and implementation of the sidebar focused on the following technical details:</p>
-
-            <h3 class="subsection-title">Desktop Experience</h3>
-            <p>
-                On desktop, <code>position: fixed</code> was used to make navigation accessible at all times. However,
-                this
-                required a 280px left margin for the main content. This was managed centrally using CSS variables. The
-                Scroll-Spy logic, a key usability feature, was implemented using JavaScript; sidebar links
-                automatically activate as the user scrolls through the page.
-            </p>
-
-            <h3 class="subsection-title">Mobile Compatibility and Animations</h3>
-            <p>
-                On small screens, the Sidebar is hidden using <code>translateX(-100%)</code> to avoid covering content.
-                When the hamburger menu is pressed, the menu is opened with a smooth sliding effect using CSS
-                <code>transition</code>.
-                During this time, the `sidebar-overlay` created in the background enhances focus and ensures the menu
-                closes when clicked outside.
-            </p>
-
-            <h3 class="subsection-title">Technical Structure</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col">Feature</th>
-                            <th scope="col">Method Used</th>
-                            <th scope="col">Detail</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Stability</strong></td>
-                            <td><code>position: fixed</code></td>
-                            <td>100vh height fixed to viewport</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Mobile Hiding</strong></td>
-                            <td><code>transform: translateX</code></td>
-                            <td>Hardware-accelerated smooth transition</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Interactivity</strong></td>
-                            <td><code>scroll</code> event listener</td>
-                            <td>Intersection Observer logic detecting active section</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Theme Compatibility</strong></td>
-                            <td>CSS Variables</td>
-                            <td>Dynamic color change in dark mode transitions</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Section 17: Data Import Strategy -->
+        <!-- Section 16: Data Import Strategy -->
         <section id="import-strategy" class="section">
             <h2 class="section-title">
-                <span class="section-number">17</span>
+                <span class="section-number">16</span>
                 Data Import Strategy
             </h2>
 
@@ -1437,10 +1372,10 @@ cd ExamTimetablePlanner</code></pre>
 
 
 
-        <!-- Section 18: Conclusion -->
+        <!-- Section 17: Conclusion -->
         <section id="conclusion" class="section">
             <h2 class="section-title">
-                <span class="section-number">18</span>
+                <span class="section-number">17</span>
                 Conclusion
             </h2>
             <p>
@@ -1464,10 +1399,10 @@ cd ExamTimetablePlanner</code></pre>
             </div>
         </section>
 
-        <!-- Section 19: References -->
+        <!-- Section 18: References -->
         <section id="references" class="section">
             <h2 class="section-title">
-                <span class="section-number">19</span>
+                <span class="section-number">18</span>
                 References
             </h2>
             <ul>
