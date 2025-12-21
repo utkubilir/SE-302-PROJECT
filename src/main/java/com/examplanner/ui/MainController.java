@@ -2472,7 +2472,7 @@ public class MainController {
         aboutBox.setAlignment(javafx.geometry.Pos.CENTER);
         Label lblApp = new Label("Exam Timetable Planner");
         lblApp.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: -fx-color-text;");
-        Label lblVer = new Label("Version 1.0.0");
+        Label lblVer = new Label("Version 1.0.1");
         lblVer.setStyle("-fx-font-size: 12px; -fx-text-fill: -fx-color-text-secondary;");
         // Developers (Rich Hyperlinks)
         javafx.scene.layout.FlowPane devFlow = new javafx.scene.layout.FlowPane();
